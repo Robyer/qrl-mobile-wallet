@@ -1,104 +1,410 @@
 {
+  "@addressBook": {
+    "description": "a description to use the address book"
+  },
   "addressBook": "Address book",
+  "@authenticationFailed": {
+    "description": "a message that indicates authentication failure"
+  },
   "authenticationFailed": "Authentication failed!",
+  "@addressNotValid": {
+    "description": "a message that indicates an invalid address"
+  },
   "addressNotValid": "Address is not valid!",
+  "@addWallet": {
+    "description": "a button label for adding a wallet"
+  },
   "addWallet": "ADD WALLET",
+  "@amount": {
+    "description": "a label for the amount field"
+  },
   "amount": "Amount",
+  "@balance": {
+    "description": "a label for the balance field"
+  },
   "balance": "Balance",
+  "@cancel": {
+    "description": "a button label for cancelling an action"
+  },
   "cancel": "CANCEL",
+  "@checkingDevice": {
+    "description": "a message that indicates the device is being checked"
+  },
   "checkingDevice": "Checking device...",
+  "@confirm": {
+    "description": "a button label for confirming an action"
+  },
   "confirm": "CONFIRM",
+  "@confirmRemoveAddress": {
+    "description": "a confirmation message for removing an address"
+  },
   "confirmRemoveAddress": "Are you sure you want to remove this address?",
+  "@confirmRemoveWallet": {
+    "description": "a confirmation message for removing a wallet"
+  },
   "confirmRemoveWallet": "Are you sure you want to remove this wallet?",
+  "@community": {
+    "description": "a label for the community section"
+  },
   "community": "Community",
+  "@createWallet": {
+    "description": "a button label for creating a wallet"
+  },
   "createWallet": "CREATE WALLET",
+  "@createWalletTitle": {
+    "description": "a title for the wallet creation screen"
+  },
   "createWalletTitle": "Create wallet",
+  "@creatingWallet": {
+    "description": "a message that indicates a wallet is being created"
+  },
   "creatingWallet": "Creating wallet...",
+  "@copiedToClipboard": {
+    "description": "a message that indicates the text has been copied to the clipboard"
+  },
   "copiedToClipboard": "Copied to clipboard",
+  "@copy": {
+    "description": "a button label for copying text"
+  },
   "copy": "COPY",
+  "@confirmTransaction": {
+    "description": "a title for the transaction confirmation screen"
+  },
   "confirmTransaction": "Confirm transaction",
+  "@delete": {
+    "description": "a button label for deleting an item"
+  },
   "delete": "Delete",
+  "@deletingAddress": {
+    "description": "a message that indicates an address is being deleted"
+  },
   "deletingAddress": "Deleting address...",
+  "@deletingWallet": {
+    "description": "a message that indicates a wallet is being deleted"
+  },
   "deletingWallet": "Deleting wallet...",
+  "@deviceLogin": {
+    "description": "a label for device login option"
+  },
   "deviceLogin": "Use device login",
+  "@deviatingDefault": {
+    "description": "a warning message that deviating from the default is at your own risk"
+  },
   "deviatingDefault": "Deviating from the default is at your own risk",
+  "@done": {
+    "description": "a button label for completing an action"
+  },
   "done": "DONE",
+  "@errorDuringBalanceRetrieval": {
+    "description": "an error message that indicates an error occurred during balance retrieval"
+  },
   "errorDuringBalanceRetrieval": "Error during balance retrieval:",
+  "@errorSendTransaction": {
+    "description": "an error message that indicates an error occurred during sending a transaction"
+  },
   "errorSendTransaction": "Error during send transaction:",
+  "@errorWalletCreation": {
+    "description": "an error message that indicates an error occurred during wallet creation"
+  },
   "errorWalletCreation": "Error during creation of wallet:",
+  "@fee": {
+    "description": "a label for the fee field"
+  },
   "fee": "Fee: ",
+  "@fromAddress": {
+    "description": "a label for the 'from address' field"
+  },
   "fromAddress": "From address",
+  "@generalEnquiries": {
+    "description": "a label for general enquiries section"
+  },
   "generalEnquiries": "General enquiries",
+  "@hashFunction": {
+    "description": "a label for the hash function field"
+  },
   "hashFunction": "Hash function",
+  "@hexseed": {
+    "description": "a label for the hexseed field"
+  },
   "hexseed": "Hexseed",
+  "@important": {
+    "description": "a label for an important message"
+  },
   "important": "Important",
+  "@join": {
+    "description": "a button label for joining the community"
+  },
   "join": "JOIN OUR COMMUNITY",
+  "@joinMailing": {
+    "description": "a message that invites the user to join the mailing list or community channels"
+  },
   "joinMailing": "Join our mailing list, contact the team or join our vibrant and friendly community of users, developer and enthusiast on on of our channels.",
+  "@keepPrivate": {
+    "description": "a message that reminds the user to keep their private information private"
+  },
   "keepPrivate": "Keep this information private at all times!",
+  "@language": {
+    "description": "a label for the language field"
+  },
   "language": "Language",
+  "@ledger": {
+    "description": "a label for the Quantum Resistant Ledger"
+  },
   "ledger": "THE QUANTUM RESISTANT LEDGER",
+  "@loadingAddresses": {
+    "description": "a message that indicates addresses are being loaded"
+  },
   "loadingAddresses": "Loading addresses...",
+  "@loadingMnemonic": {
+    "description": "a message that indicates mnemonic is being loaded"
+  },
   "loadingMnemonic": "Loading mnemonic...",
+  "@loadingWallets": {
+    "description": "a message that indicates wallets are being loaded"
+  },
   "loadingWallets": "Loading wallets",
+  "@marketCap": {
+    "description": "a label for the market cap field"
+  },
   "marketCap": "Market CAP",
+  "@mnemonic": {
+    "description": "a label for the mnemonic field"
+  },
   "mnemonic": "Mnemonic",
+  "@no": {
+    "description": "a button label for negative response"
+  },
   "no": "NO",
+  "@nodeUrl": {
+    "description": "a label for the node URL field"
+  },
   "nodeUrl": "Node URL",
+  "@noMoreOts1": {
+    "description": "A message that appears when a user has exhausted all of their One-Time Signature (OTS) keys."
+  },
   "noMoreOts1": "You have no more OTS keys left...",
+  "@noMoreOts2": {
+    "description": "and can no longer make transactions."
+  },
   "noMoreOts2": "QRL is lost forever.....",
+  "@noAuthenticationFound": {
+    "description": "A message that appears when a device does not have any authentication methods set up."
+  },
   "noAuthenticationFound": "No authentication method found on device!",
+  "@noTransactionsFound": {
+    "description": "A message that appears when no transactions are found in a user's wallet."
+  },
   "noTransactionsFound": "No transactions found",
+  "@openAddressBook": {
+    "description": "A button that opens a user's address book."
+  },
   "openAddressBook": "Open address book",
+  "@openWallet": {
+    "description": "A button that allows a user to open their wallet."
+  },
   "openWallet": "Open wallet",
+  "@openExistingWallet": {
+    "description": "A button that allows a user to open an existing wallet."
+  },
   "openExistingWallet": "Open existing wallet",
+  "@openWithMnemonics": {
+    "description": " button that allows a user to open their wallet using a mnemonic phrase."
+  },
   "openWithMnemonics": "Open with mnemonics",
+  "@openWithHexseed": {
+    "description": "A button that allows a user to open their wallet using a hex seed."
+  },
   "openWithHexseed": "Open with hexseed",
+  "@onBoard": {
+    "description": "A message that appears when a user opens the app."
+  },
   "onBoard": "We are happy to have you on board!",
+  "@openInExplorer": {
+    "description": "A button that opens a block explorer to view transaction details."
+  },
   "openInExplorer": "Open in Explorer",
+  "@otsKeyIndex": {
+    "description": "A label that indicates the index of a One-Time Signature key."
+  },
   "otsKeyIndex": "OTS Key Index:",
+  "@otsKeysLeft1": {
+    "description": "The first part of a message that informs a user how many OTS keys they have left."
+  },
   "otsKeysLeft1": "You only have",
-  "otsKeysLeft2": "OTS keys left.\\nIf there are no OTS keys left you cannot make any more transactions and your funds will be lost. \\nContinue transaction?",
+  "@otsKeysLeft2": {
+    "description": "The second part of a message that informs a user how many OTS keys they have left and the consequences of running out."
+  },
+  "otsKeysLeft2": "OTS keys left.\nIf there are no OTS keys left you cannot make any more transactions and your funds will be lost. \nContinue transaction?",
+  "@outOfSignatures": {
+    "description": "A message that informs a user that they will need to create a new wallet once they run out of signatures."
+  },
   "outOfSignatures": "Once you run out of signatures you will need to create a new wallet. Be aware that wallet creation and transaction time increases with tree height. \nContinue wallet creation with current setup",
+  "@price": {
+    "description": "A label that indicates the price of QRL."
+  },
   "price": "PRICE",
+  "@priceChange": {
+    "description": "A label that indicates the percentage change in the price of QRL over the past 24 hours."
+  },
   "priceChange": "24H Change",
+  "@port": {
+    "description": "A label that indicates a network port number."
+  },
   "port": "Port",
+  "@pressEnquiries": {
+    "description": "A link that directs press inquiries to the QRL contact e-mail."
+  },
   "pressEnquiries": "Press enquiries",
+  "@qrl": {
+    "description": "QRL"
+  },
   "qrl": "QRL",
+  "@receive": {
+    "description": "A button that allows a user to receive cryptocurrency."
+  },
   "receive": "RECEIVE",
+  "@receiveTitle": {
+    "description": "he title of a page or section that allows a user to receive cryptocurrency."
+  },
   "receiveTitle": "Receive",
+  "@received": {
+    "description": "A label that indicates that a user has received cryptocurrency."
+  },
   "received": "RECEIVED",
+  "@recoverySeeds": {
+    "description": "A label that indicates the recovery seeds for a wallet."
+  },
   "recoverySeeds": "Recovery seeds",
+  "@recoveryWarning": {
+    "description": "A warning message that advises a user to store their recovery seeds in a secure location outside of their device."
+  },
   "recoveryWarning": "Store your recovery seeds outside of this device and keep this information private at all times.\nThey are the backup keys to your wallet and the only way to open your wallet if something goes wrong.\nIf you lose your recovery seeds any funds inside your wallet will be lost.",
+  "@removeWallet": {
+    "description": "Confirmation prompt to remove a wallet from the user's list of wallets."
+  },
   "removeWallet": "Are you sure you want to remove this wallet?",
+  "@review": {
+    "description": "Button or link text to review a transaction or other information before submitting it."
+  },
   "review": "REVIEW",
+  "@saveToAddressBook": {
+    "description": "Button or link text to save a new wallet address to the user's address book."
+  },
   "saveToAddressBook": "Save to address book",
+  "@savingSettings": {
+    "description": "text displayed to indicate that the wallet's settings are being saved or updated."
+  },
   "savingSettings": "Saving settings...",
+  "@scanAddress": {
+    "description": "Button or link text to open the device's camera for scanning a QR code containing a wallet address."
+  },
   "scanAddress": "Scan address",
+  "@scanHexseed": {
+    "description": "Button or link text to open the device's camera for scanning a QR code containing a wallet's hexseed or recovery phrase."
+  },
   "scanHexseed": "Scan hexseed",
+  "@settingsSaved": {
+    "description": "Text displayed to indicate that the wallet's settings have been successfully saved or updated."
+  },
   "settingsSaved": "Settings saved",
+  "@send": {
+    "description": "Button or link text to initiate a transaction from the user's wallet to another wallet address."
+  },
   "send": "SEND",
+  "@sendTitle": {
+    "description": "Title text for the page or section of the wallet app used to send a cryptocurrency transaction."
+  },
   "sendTitle": "Send",
+  "@sent": {
+    "description": "Text displayed to indicate that a transaction has been successfully sent from the user's wallet."
+  },
   "sent": "SENT",
+  "@sendAmount": {
+    "description": "Label for a field where the user enters the amount to be sent in a transaction."
+  },
   "sendAmount": "Send amount",
+  "@sendingTransaction": {
+    "description": "Text displayed to indicate that a transaction is being sent from the user's wallet."
+  },
   "sendingTransaction": "Sending Transaction",
+  "@sendingToWalletAddress": {
+    "description": "Text displayed to indicate the destination wallet address for a transaction."
+  },
   "sendingToWalletAddress": "Sending to Wallet Address",
+  "@settings": {
+    "description": "Label for a section of the wallet app used to configure various settings, such as security or languages."
+  },
   "settings": "Settings",
+  "@showKeys": {
+    "description": "Button text to display the public and private keys associated with a wallet address."
+  },
   "showKeys": "Show keys",
+  "@supportRequest": {
+    "description": "link text to the QRL teams support e-mail."
+  },
   "supportRequest": "Support request",
+  "@transactionDetails": {
+    "description": "Label for a page or section of the wallet app used to display the details of a specific transaction."
+  },
   "transactionDetails": "Transaction Details",
+  "@transactionHash": {
+    "description": "Label for a field that displays the unique identifier for a transaction, known as its transaction hash."
+  },
   "transactionHash": "Transaction Hash",
+  "@transfer": {
+    "description": "Button or link text to initiate a transfer"
+  },
   "transfer": "Transfer",
+  "@treeHeight": {
+    "description": "Tree Height"
+  },
   "treeHeight": "Tree Height",
+  "@toAddress": {
+    "description": "Label for a field where the user enters the wallet address of the recipient for a transaction."
+  },
   "toAddress": "To address",
+  "@unconfirmed": {
+    "description": "Text displayed to indicate that a transaction is still waiting for confirmation from the network."
+  },
   "unconfirmed": "Unconfirmed",
+  "@useDeviceLogin": {
+    "description": "Checkbox or toggle button to enable or disable using the device's biometric login or other security features to access the wallet app."
+  },
   "useDeviceLogin": "Use device login",
+  "@verifyingTransaction": {
+    "description": "Text displayed to indicate that a transaction is being verified by the network."
+  },
   "verifyingTransaction": "Verifying transaction...",
+  "@wallets": {
+    "description": "Label for a section of the wallet app used to display the user's list of  wallets."
+  },
   "wallets": "Wallets",
+  "@walletAddress": {
+    "description": "Label for a section of the wallet app used to add the user wallet address or the wallet address of a receiver for a transaction."
+  },
   "walletAddress": "Wallet address",
+  "@warning": {
+    "description": "A message a user can get when there is something important"
+  },
   "warning": "Warning",
+  "@walletSetup": {
+    "description": "Label for a page where the user is creating a new wallet "
+  },
   "walletSetup": "Wallet Setup",
+  "@walletName": {
+    "description": "Label for pages where the name of the user wallet is being displayed "
+  },
   "walletName": "Wallet name",
+  "@welcomeTo": {
+    "description": "Message in the splashscreen when someone is opening the wallet"
+  },
   "welcomeTo": "Welcome to",
+  "@yes": {
+    "description": "Confirmation messages"
+  },
   "yes": "YES",
+  "@yourPublicWalletAddress": {
+    "description": "Label for pages where the users QRL wallet address is being displayed"
+  },
   "yourPublicWalletAddress": "Your public wallet address"
 }
