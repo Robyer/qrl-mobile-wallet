@@ -33,6 +33,7 @@ dependencies:
   secure_application: ^3.8.0
   flutter_bloc: ^8.1.1
   equatable: ^2.0.5
+  bloc_concurrency: ^0.2.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Util {
@@ -8,5 +11,9 @@ class Util {
     )) {
       throw 'Could not launch $url';
     }
+  }
+
+  static void dismissKeyboard(BuildContext context) {
+    FocusScope.of(context).unfocus();
   }
 }

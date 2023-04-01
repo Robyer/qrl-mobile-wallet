@@ -10,6 +10,9 @@ class StringUtil {
   }
 
   static String formatAmount(int amount) {
+    if (amount <= 0) {
+      return "0";
+    }
     return (Decimal.fromInt(amount) / Decimal.fromInt(1000000000))
         .toDecimal()
         .toString();

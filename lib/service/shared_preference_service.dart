@@ -20,4 +20,12 @@ class SharedPreferenceService {
   Future<int?> getIntValue(String key) async {
     return _sharedPreferences.getInt(key);
   }
+
+  Future<void> removeValue(String key) async {
+    _sharedPreferences.remove(key);
+  }
+
+  Future<Set<String>> getKeys() async {
+    return _sharedPreferences.getKeys();
+  }
 }

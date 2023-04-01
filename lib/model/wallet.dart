@@ -1,33 +1,38 @@
 class Wallet {
-  final int _walletNumber;
-  final String _name;
-  final String _address;
-  final String _hexSeed;
-  final String _xmsspk;
-  final int _height;
+  final int id;
+  String name;
+  final String address;
+  final int height;
 
-  Wallet(this._walletNumber, this._name, this._address, this._hexSeed,
-      this._xmsspk, this._height);
+  Wallet(this.id, this.name, this.address, this.height);
 
-  int get walletNumber => _walletNumber;
+  factory Wallet.fromJson(Map<String, dynamic> json) {
+    return Wallet(
+      json["id"],
+      json["name"],
+      json["address"],
+      json["height"],
+    );
+  }
 
-  String get xmsspk => _xmsspk;
-
-  String get hexSeed => _hexSeed;
-
-  String get address => _address;
-
-  String get name => _name;
-
-  int get height => _height;
+  Map toJson() => {
+        "id": id,
+        "name": name,
+        "address": address,
+        "height": height,
+      };
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is Wallet &&
           runtimeType == other.runtimeType &&
-          _walletNumber == other._walletNumber;
+          id == other.id &&
+          name == other.name &&
+          address == other.address &&
+          height == other.height;
 
   @override
-  int get hashCode => _walletNumber.hashCode;
+  int get hashCode =>
+      id.hashCode ^ name.hashCode ^ address.hashCode ^ height.hashCode;
 }

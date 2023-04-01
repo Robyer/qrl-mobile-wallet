@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:mobile_wallet/model/wallet.dart';
 import 'package:mobile_wallet/service/ffi_wallet_service.dart';
@@ -9,89 +12,67 @@ class WalletService {
   final SharedPreferenceService _sharedPreferenceService;
   final SecuredStorageService _securedStorageService;
   final GrpcService _grpcService;
+  final FfiWalletService _ffiWalletService;
 
   WalletService(this._sharedPreferenceService, this._securedStorageService,
-      this._grpcService);
+      this._grpcService, this._ffiWalletService);
 
   Future<int> getWalletCount() async {
-    return await _sharedPreferenceService.getIntValue("wallet-count") ?? 0;
+    return (await _getWalletIdList()).length;
   }
 
-  Future<int> getCurrentWalletNumber() async {
-    return await _sharedPreferenceService
-            .getIntValue("current-wallet-number") ??
-        1;
-  }
-
-  Future<void> setCurrentWalletNumber(int newIndex) async {
-    if (await getWalletCount() < newIndex) {
-      newIndex = 1;
+  Future<List<int>> _getWalletIdList() async {
+    String? walletIdListString =
+        await _sharedPreferenceService.getStringValue("wallet-id-list");
+    if (walletIdListString != null) {
+      List<int> walletIdList =
+          (jsonDecode(walletIdListString) as List<dynamic>).cast<int>();
+      return walletIdList;
     }
-    return await _sharedPreferenceService.setIntValue(
-        "current-wallet-number", newIndex);
+    return [];
   }
 
-  Future<Wallet> getWallet(int walletNumber,
-      {bool getHexSeed = false,
-      bool getXmsspk = false,
-      bool internal = false}) async {
-    String? name = await _securedStorageService.getValue("name$walletNumber");
-    String? address =
-        await _securedStorageService.getValue("address$walletNumber");
-    String? hexSeed = getHexSeed
-        ? await _securedStorageService.getValue("hexSeed$walletNumber")
-        : "";
-    String? xmsspk = getXmsspk
-        ? await _securedStorageService.getValue("xmsspk$walletNumber")
-        : "";
-    String? height =
-        await _securedStorageService.getValue("height$walletNumber");
-    if (name == null ||
-        address == null ||
-        hexSeed == null ||
-        xmsspk == null ||
-        height == null) {
-      if (!internal) {
-        await deleteWallet(walletNumber, internal: true);
-        throw Exception("Wallet data corrupt, cleared wallet data");
+  Future<int?> getCurrentWalletId() async {
+    return await _sharedPreferenceService.getIntValue("current-wallet-id");
+  }
+
+  Future<void> setCurrentWalletId(int id) async {
+    return await _sharedPreferenceService.setIntValue("current-wallet-id", id);
+  }
+
+  Future<Wallet> getWallet(int id) async {
+    String? walletString = await _securedStorageService.getValue("wallet-$id");
+    if (walletString == null) {
+      throw Exception("No wallet with id $id found!");
+    }
+    return Wallet.fromJson(jsonDecode(walletString));
+  }
+
+  Future<List<Wallet>> getWallets() async {
+    return await Future.wait((await _getWalletIdList())
+        .map((walletId) async => await getWallet(walletId))
+        .toList());
+  }
+
+  Future<void> deleteWallet(int id) async {
+    await _securedStorageService.deleteValue("hexseed-$id");
+    await _securedStorageService.deleteValue("xmsspk-$id");
+    await _securedStorageService.deleteValue("wallet-$id");
+    List<int> walletIdList = await _getWalletIdList();
+    walletIdList.removeWhere((element) => element == id);
+    if (walletIdList.isNotEmpty) {
+      await _sharedPreferenceService.setStringValue(
+          "wallet-id-list", jsonEncode(walletIdList));
+    } else {
+      await _sharedPreferenceService.removeValue("wallet-id-list");
+    }
+    if (await getCurrentWalletId() == id) {
+      if (walletIdList.isNotEmpty) {
+        setCurrentWalletId(walletIdList.first);
+      } else {
+        await _sharedPreferenceService.removeValue("current-wallet-id");
       }
     }
-    return Wallet(walletNumber, name ?? "", address ?? "", hexSeed ?? "",
-        xmsspk ?? "", height != null ? int.parse(height) : 0);
-  }
-
-  Future<List<Wallet>> getWallets(
-      {bool getHexSeed = false,
-      bool getXmsspk = false,
-      bool internal = false}) async {
-    int walletCount =
-        (await _sharedPreferenceService.getIntValue("wallet-count") ?? 1);
-    List<Wallet> wallets = <Wallet>[];
-    for (int i = 0; i < walletCount; i++) {
-      wallets.add(await getWallet(i + 1,
-          getHexSeed: getHexSeed, getXmsspk: getXmsspk, internal: internal));
-    }
-    return wallets;
-  }
-
-  Future<void> deleteWallet(int walletNumber, {bool internal = false}) async {
-    List<Wallet> wallets =
-        await getWallets(getHexSeed: true, getXmsspk: true, internal: internal);
-    wallets.removeAt(walletNumber - 1);
-    var totalWalletCount = wallets.length;
-    for (int i = 0; i < totalWalletCount; i++) {
-      Wallet wallet = wallets[i];
-      int walletCount = i + 1;
-      saveWalletValues(walletCount, wallet.name, wallet.hexSeed, wallet.address,
-          wallet.xmsspk, wallet.height);
-    }
-    int danglingCounter = totalWalletCount + 1;
-    _securedStorageService.deleteValue("name$danglingCounter");
-    _securedStorageService.deleteValue("hexSeed$danglingCounter");
-    _securedStorageService.deleteValue("address$danglingCounter");
-    _securedStorageService.deleteValue("xmsspk$danglingCounter");
-    _securedStorageService.deleteValue("height$danglingCounter");
-    _sharedPreferenceService.setIntValue("wallet-count", totalWalletCount);
   }
 
   Future<Wallet> createWallet(String name,
@@ -102,13 +83,14 @@ class WalletService {
     String? createdWalletResult;
     if (treeHeight != null && hashFunction != null) {
       createdWalletResult = await compute<List<int>, String>(
-          ffiCreateWalletFromParams, [treeHeight, hashFunction]);
+          _ffiWalletService.ffiCreateWalletFromParams,
+          [treeHeight, hashFunction]);
     } else if (hexSeed != null) {
-      createdWalletResult =
-          await compute<String, String>(ffiOpenWalletWithHexSeed, hexSeed);
+      createdWalletResult = await compute<String, String>(
+          _ffiWalletService.ffiOpenWalletWithHexSeed, hexSeed);
     } else if (mnemonic != null) {
-      createdWalletResult =
-          await compute<String, String>(ffiOpenWalletWithMnemonic, mnemonic);
+      createdWalletResult = await compute<String, String>(
+          _ffiWalletService.ffiOpenWalletWithMnemonic, mnemonic);
     }
     if (createdWalletResult == null) {
       throw Exception("Unknown error during creation of wallet");
@@ -117,54 +99,81 @@ class WalletService {
   }
 
   Future<Wallet> _saveWallet(String name, String createdWalletResult) async {
-    int walletNumber =
-        (await _sharedPreferenceService.getIntValue("wallet-count") ?? 0) + 1;
+    List<int> walletIdList = await _getWalletIdList();
+    int id = _generateRandomId(walletIdList);
     List<String> splitted = createdWalletResult.split("||");
     String hexSeed = splitted[0];
     String address = splitted[1];
     String xmsspk = splitted[2];
     int height = int.parse(splitted[3]);
-    saveWalletValues(walletNumber, name, hexSeed, address, xmsspk, height);
-    _sharedPreferenceService.setIntValue("wallet-count", walletNumber);
-    return Wallet(walletNumber, name, address, hexSeed, xmsspk, height);
+    Wallet wallet = Wallet(id, name, address, height);
+    await _securedStorageService.setValue("hexseed-$id", hexSeed);
+    await _securedStorageService.setValue("xmsspk-$id", xmsspk);
+    await _securedStorageService.setValue(
+        "wallet-$id", jsonEncode(wallet.toJson()));
+    walletIdList.add(id);
+    await _sharedPreferenceService.setStringValue(
+        "wallet-id-list", jsonEncode(walletIdList));
+    if (await getCurrentWalletId() == null) {
+      await setCurrentWalletId(id);
+    }
+    return wallet;
   }
 
-  void saveWalletValues(int walletNumber, String name, String hexSeed,
-      String address, String xmsspk, int height) {
-    _securedStorageService.setValue("name$walletNumber", name);
-    _securedStorageService.setValue("hexSeed$walletNumber", hexSeed);
-    _securedStorageService.setValue("address$walletNumber", address);
-    _securedStorageService.setValue("xmsspk$walletNumber", xmsspk);
-    _securedStorageService.setValue("height$walletNumber", height.toString());
+  int _generateRandomId(List<int> walletIdList) {
+    var nextInt = Random().nextInt(999999);
+    if (walletIdList.contains(nextInt)) {
+      return _generateRandomId(walletIdList);
+    }
+    return nextInt;
   }
 
   Future<String> getMnemonic(String hexSeed) async {
-    return await compute<String, String>(ffiGetMnemonic, hexSeed);
+    return await compute<String, String>(
+        _ffiWalletService.ffiGetMnemonic, hexSeed);
+  }
+
+  Future<String> getHexSeed(int id) async {
+    String? hexSeed = await _securedStorageService.getValue("hexseed-$id");
+    if (hexSeed == null) {
+      throw Exception("No hexseed found for wallet id: $id");
+    }
+    return hexSeed;
+  }
+
+  Future<String> _getXmsspk(int id) async {
+    String? xmsspk = await _securedStorageService.getValue("xmsspk-$id");
+    if (xmsspk == null) {
+      throw Exception("No xmsspk found for wallet id: $id");
+    }
+    return xmsspk;
   }
 
   Future<bool> isAddressValid(String address) async {
     return await compute<String, bool>(
-        ffiIsAddressValid,
+        _ffiWalletService.ffiIsAddressValid,
         address.startsWith("Q")
             ? address.substring(1, address.length)
             : address);
   }
 
-  Future<void> sendTransaction(int walletNumber, int amount,
-      String receiverWalletAddress, int otsIndex, int fee) async {
-    Wallet wallet =
-        await getWallet(walletNumber, getHexSeed: true, getXmsspk: true);
-    receiverWalletAddress = receiverWalletAddress.startsWith("Q")
+  Future<void> sendTransaction(int id, List<int> amounts, List<String> receiverWalletAddresses,
+      int otsIndex, int fee) async {
+    Wallet wallet = await getWallet(id);
+    receiverWalletAddresses = receiverWalletAddresses.map((receiverWalletAddress) => receiverWalletAddress.startsWith("Q")
         ? receiverWalletAddress.substring(1, receiverWalletAddress.length)
-        : receiverWalletAddress;
+        : receiverWalletAddress).toList();
     String transactionData = await compute<List<Object>, String>(
-        ffiCreateTransaction,
-        [wallet.hexSeed, amount, receiverWalletAddress, otsIndex, fee]);
-    await _grpcService.sendTransaction(wallet.address, wallet.xmsspk, amount,
-        receiverWalletAddress, otsIndex, fee, transactionData);
+        _ffiWalletService.ffiCreateTransaction,
+        [await getHexSeed(id), amounts, receiverWalletAddresses, otsIndex, fee]);
+    await _grpcService.sendTransaction(wallet.address, await _getXmsspk(id),
+        amounts, receiverWalletAddresses, otsIndex, fee, transactionData);
   }
 
-  updateWalletName(int walletNumber, String name) {
-    _securedStorageService.setValue("name$walletNumber", name);
+  updateWalletName(int id, String name) async {
+    Wallet wallet = await getWallet(id);
+    wallet.name = name;
+    await _securedStorageService.setValue(
+        "wallet-$id", jsonEncode(wallet.toJson()));
   }
 }

@@ -13,6 +13,11 @@ void main() {
         SharedPreferenceService(await SharedPreferences.getInstance());
   });
 
+  test("test get keys", () async {
+    Set<String> set = await sharedPreferenceService!.getKeys();
+    expect(set, {"test-1", "test-2"});
+  });
+
   test("test default values", () async {
     String test1 =
         await sharedPreferenceService!.getStringValue("test-1") ?? "";

@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_wallet/model/app_language.dart';
 import 'package:mobile_wallet/model/app_settings.dart';
@@ -10,9 +9,6 @@ void main() {
   SettingsService? settingsService;
   setUp(() async {
     SharedPreferences.setMockInitialValues({
-      "use-device-login": 1,
-      "node-url": "test.node.url.com",
-      "port": 12345,
       "fee": 100,
     });
     settingsService = SettingsService(
@@ -21,24 +17,26 @@ void main() {
 
   test("test default values", () async {
     AppSettings appSettings = await settingsService!.getAppSettings();
-    expect(appSettings.useDeviceLogin, true);
-    expect(appSettings.nodeUrl, "test.node.url.com");
-    expect(appSettings.port, 12345);
+    expect(appSettings.useDeviceLogin, false);
+    expect(appSettings.nodeUrl, "mainnet-1.automated.theqrl.org");
+    expect(appSettings.port, 19009);
+    expect(appSettings.appLanguage, AppLanguage.en);
     int fee = await settingsService!.getFeeSetting();
     expect(fee, 100);
   });
 
   test("test update values", () async {
     await settingsService!.saveAppSettings(AppSettings(
-        false,
-        "test.update.node.com",
-        54321,
-        AppLanguage.en));
+        useDeviceLogin: true,
+        nodeUrl: "test.update.node.com",
+        port: 54321,
+        appLanguage: AppLanguage.nl));
     await settingsService!.updateFeeSetting(500);
     AppSettings appSettings = await settingsService!.getAppSettings();
-    expect(appSettings.useDeviceLogin, false);
+    expect(appSettings.useDeviceLogin, true);
     expect(appSettings.nodeUrl, "test.update.node.com");
     expect(appSettings.port, 54321);
+    expect(appSettings.appLanguage, AppLanguage.nl);
     int fee = await settingsService!.getFeeSetting();
     expect(fee, 500);
   });

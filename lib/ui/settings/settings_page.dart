@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mobile_wallet/main.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mobile_wallet/model/app_language.dart';
 import 'package:mobile_wallet/model/app_settings.dart';
 import 'package:mobile_wallet/service/authentication_service.dart';
 import 'package:mobile_wallet/service/service_locator.dart';
 import 'package:mobile_wallet/service/settings_service.dart';
+import 'package:mobile_wallet/ui/app/app_bloc.dart';
+import 'package:mobile_wallet/ui/component/bottomsheetselect/bottom_sheet_select.dart';
 import 'package:mobile_wallet/ui/component/dialogs.dart';
 import 'package:mobile_wallet/ui/component/qrl_button.dart';
 import 'package:mobile_wallet/ui/component/qrl_textfield.dart';
 import 'package:mobile_wallet/ui/component/snack_bars.dart';
 import 'package:mobile_wallet/ui/settings/community_page.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
+import 'package:mobile_wallet/ui/util/util.dart';
 import 'package:wakelock/wakelock.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -68,55 +71,23 @@ class _SettingsPageState extends State<SettingsPage> {
                     onChanged: (value) => _toggleSwitch(value),
                     value: _isSwitched),
               ),
-              Center(
-                child: SizedBox(
-                  width: 512,
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: 8, bottom: 8, left: 32, right: 32),
-                    child: InputDecorator(
-                      decoration: InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5),
-                            borderSide: const BorderSide(
-                                width: 1, color: CustomColors.qrlYellowColor)),
-                        contentPadding: const EdgeInsets.only(
-                            left: 12, right: 12, top: 4, bottom: 4),
-                        labelText: AppLocalizations.of(context)!.language,
-                        labelStyle:
-                            const TextStyle(color: CustomColors.qrlYellowColor),
-                        floatingLabelBehavior: FloatingLabelBehavior.always,
-                        border: const OutlineInputBorder(),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<AppLanguage>(
-                          isExpanded: true,
-                          value: _selectedAppLanguage ?? AppLanguage.en,
-                          icon: const Icon(
-                            Icons.arrow_drop_down,
-                            color: CustomColors.qrlYellowColor,
-                          ),
-                          underline: null,
-                          onChanged: (AppLanguage? value) {
-                            if (value != null) {
-                              setState(() {
-                                _selectedAppLanguage = value;
-                              });
-                            }
-                          },
-                          items: AppLanguage.values
-                              .map<DropdownMenuItem<AppLanguage>>(
-                                  (AppLanguage value) {
-                            return DropdownMenuItem<AppLanguage>(
-                              value: value,
-                              child: Text(value.displayName),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+              BottomSheetSelect<AppLanguage>(
+                selectedItem: _selectedAppLanguage ?? AppLanguage.en,
+                items: AppLanguage.values,
+                floatingLabelValue: AppLocalizations.of(context)!.language,
+                valueChanged: (AppLanguage? value) {
+                  if (value != null) {
+                    setState(() {
+                      _selectedAppLanguage = value;
+                    });
+                  }
+                },
+                labelConverter: (value) {
+                  return value.displayName;
+                },
+                itemConverter: (value) {
+                  return value.displayName;
+                },
               ),
               Padding(
                 padding: const EdgeInsets.only(
@@ -214,6 +185,7 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   _toggleSwitch(bool value) async {
+    Util.dismissKeyboard(context);
     if (value) {
       Dialogs.showLoadingDialog(
           context, AppLocalizations.of(context)!.checkingDevice);
@@ -266,6 +238,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   _onPressedJoinOurCommunity() async {
     if (mounted) {
+      Util.dismissKeyboard(context);
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const CommunityPage()),
@@ -275,6 +248,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   _onPressedConfirm() async {
     try {
+      Util.dismissKeyboard(context);
       Wakelock.enable();
       Dialogs.showLoadingDialog(
           context, AppLocalizations.of(context)!.savingSettings);
@@ -282,13 +256,13 @@ class _SettingsPageState extends State<SettingsPage> {
       _currentAppSettings!.useDeviceLogin = _isSwitched;
       _currentAppSettings!.nodeUrl = _nodeUrlController.text;
       _currentAppSettings!.port = int.parse(_portController.text);
-      _currentAppSettings!.appLanguage = _selectedAppLanguage;
+      _currentAppSettings!.appLanguage = _selectedAppLanguage ?? AppLanguage.en;
       await settingsService.saveAppSettings(_currentAppSettings!);
       if (mounted) {
         Dialogs.hideLoadingDialog(context);
         SnackBars.showSnackBar(
             context, AppLocalizations.of(context)!.settingsSaved);
-        QrlMobileWalletApp.of(context)!.resetState();
+        BlocProvider.of<AppBloc>(context).add(SettingsUpdatedEvent());
       }
     } finally {
       Wakelock.disable();
