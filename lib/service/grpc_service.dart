@@ -3,7 +3,7 @@ import 'package:grpc/grpc.dart';
 import 'package:mobile_wallet/model/app_settings.dart';
 import 'package:mobile_wallet/model/extended_wallet_data.dart';
 import 'package:mobile_wallet/service/settings_service.dart';
-import 'package:mobile_wallet/ui/util/string_util.dart';
+import 'package:mobile_wallet/util/string_util.dart';
 
 import 'proto/qrl.pbgrpc.dart';
 
@@ -159,13 +159,15 @@ class GrpcService {
   Future<void> sendTransaction(
       String senderWalletAddress,
       String xmssPk,
-      int amount,
-      String receiverWalletAddress,
+      List<int> amounts,
+      List<String> receiverWalletAddresses,
       int otsIndex,
       int fee,
       String transactionData) async {
-    List<int> receiverWalletBytes = StringUtil.toBytes(receiverWalletAddress);
-    Int64 int64Amount = Int64(amount);
+    List<List<int>> receiverWalletBytesList = receiverWalletAddresses
+        .map((address) => StringUtil.toBytes(address))
+        .toList();
+    List<Int64> int64Amounts = amounts.map((amount) => Int64(amount)).toList();
     Int64 int64Fee = Int64(fee);
     String signature =
         transactionData.substring(0, (transactionData.length - 64));
@@ -177,8 +179,8 @@ class GrpcService {
     try {
       PublicAPIClient publicAPIClient = PublicAPIClient(clientChannel);
       var transferCoinsReq = TransferCoinsReq(
-          addressesTo: [receiverWalletBytes],
-          amounts: [int64Amount],
+          addressesTo: receiverWalletBytesList,
+          amounts: int64Amounts,
           fee: int64Fee,
           xmssPk: StringUtil.toBytes(xmssPk));
       TransferCoinsResp transferCoinsResp =
@@ -186,7 +188,7 @@ class GrpcService {
       await publicAPIClient.pushTransaction(PushTransactionReq(
           transactionSigned: Transaction(
               transfer: Transaction_Transfer(
-                  addrsTo: [receiverWalletBytes], amounts: [int64Amount]),
+                  addrsTo: receiverWalletBytesList, amounts: int64Amounts),
               signature: txSignature,
               transactionHash: txHash,
               fee: int64Fee,

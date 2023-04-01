@@ -1,4 +1,5 @@
-import 'package:mobile_wallet/model/app_language.dart';
+import 'dart:convert';
+
 import 'package:mobile_wallet/model/app_settings.dart';
 import 'package:mobile_wallet/service/shared_preference_service.dart';
 
@@ -10,31 +11,20 @@ class SettingsService {
 
   Future<AppSettings> getAppSettings() async {
     if (_appSettings == null) {
-      bool useDeviceLogin =
-          (await _sharedPreferenceService.getIntValue("use-device-login") ??
-                      0) ==
-                  0
-              ? false
-              : true;
-      String nodeUrl =
-          await _sharedPreferenceService.getStringValue("node-url") ??
-              "mainnet-1.automated.theqrl.org";
-      int port = await _sharedPreferenceService.getIntValue("port") ?? 19009;
-      String? appLanguage =
-          await _sharedPreferenceService.getStringValue("app-language");
-      _appSettings = AppSettings(
-          useDeviceLogin, nodeUrl, port, AppLanguage.fromName(appLanguage));
+      String? json =
+      await _sharedPreferenceService.getStringValue("app-settings");
+      if (json != null) {
+        _appSettings = AppSettings.fromJson(jsonDecode(json));
+      } else {
+        _appSettings = AppSettings();
+      }
     }
     return _appSettings!;
   }
 
   Future<void> saveAppSettings(AppSettings appSettings) async {
-    _sharedPreferenceService.setIntValue(
-        "use-device-login", appSettings.useDeviceLogin ? 1 : 0);
-    _sharedPreferenceService.setStringValue("node-url", appSettings.nodeUrl);
-    _sharedPreferenceService.setIntValue("port", appSettings.port);
     _sharedPreferenceService.setStringValue(
-        "app-language", "${appSettings.appLanguage}");
+        "app-settings", jsonEncode(appSettings));
     _appSettings = appSettings;
   }
 

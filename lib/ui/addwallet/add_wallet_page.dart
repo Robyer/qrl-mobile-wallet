@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:mobile_wallet/ui/addwallet/create_wallet_page.dart';
-import 'package:mobile_wallet/ui/addwallet/open_wallet_page.dart';
+import 'package:mobile_wallet/ui/addwallet/add_wallet_data_page.dart';
+import 'package:mobile_wallet/ui/addwallet/add_wallet_existing_page.dart';
 import 'package:mobile_wallet/ui/component/qrl_app_bar.dart';
 import 'package:mobile_wallet/ui/component/qrl_button.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
+
+enum AddWalletMode { hexSeed, mnemonic, create }
 
 class AddWalletPage extends StatelessWidget {
   const AddWalletPage({Key? key}) : super(key: key);
@@ -66,7 +68,8 @@ class AddWalletPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const CreateWalletPage()),
+                              builder: (context) => const AddWalletDataPage(
+                                  AddWalletMode.create)),
                         );
                       },
                       text: AppLocalizations.of(context)!.createWallet,
@@ -85,7 +88,8 @@ class AddWalletPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const OpenWalletPage()),
+                              builder: (context) =>
+                                  const AddWalletExistingPage()),
                         );
                       },
                       text: AppLocalizations.of(context)!.addWallet,

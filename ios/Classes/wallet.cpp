@@ -19,6 +19,7 @@
 #endif
 
 using std::string;
+using std::vector;
 
 void platform_log(const char *fmt, ...) {
     va_list args;
@@ -145,32 +146,37 @@ const char* isAddressValid(char *address) {
 }
 
 extern "C" __attribute__((visibility("default"))) __attribute((used))
-const char* createTransaction(char *hexSeed, int64_t amount, char *receiverWalletAddress, int64_t otsIndex, int64_t fee) {
-    string receiverWalletAddressStr(receiverWalletAddress);
+const char* createTransaction(char *hexSeed, int64_t* amounts, char** receiverWalletAddresses, int transactionCount, int64_t otsIndex, int64_t fee) {
     string hexSeedStr(hexSeed);
 
-    std::vector<unsigned char> concatenatedVector(55);
+    std::vector<unsigned char> concatenatedVector(8 + (47 * transactionCount));
     for (int i = 0; i < 8; i++) {
         concatenatedVector[7 - i] = (fee >> (i * 8));
     }
 
-    int nrec = receiverWalletAddressStr.length();
-    char rechexBytes[nrec+1];
-    strcpy(rechexBytes, receiverWalletAddressStr.c_str());
-    char *recpos = rechexBytes;
-
-    unsigned char val[39];
     int vectorPos = 8;
-    for (int count = 0; count < (sizeof(rechexBytes) / 2); count++) {
-        sscanf(recpos, "%2hhx", &val[count]);
-        concatenatedVector[vectorPos] = val[count];
-        recpos += 2;
-        vectorPos++;
-    }
+    for (int t = 0; t < transactionCount; t++) {
+        string receiverWalletAddressStr(receiverWalletAddresses[t]);
 
-    int vectorPos2 = 54;
-    for (int i = 0; i < 8; i++){
-        concatenatedVector[vectorPos2 - i] = (amount >> (i * 8));
+        int nrec = receiverWalletAddressStr.length();
+        char rechexBytes[nrec+1];
+        strcpy(rechexBytes, receiverWalletAddressStr.c_str());
+        char *recpos = rechexBytes;
+
+        unsigned char val[39];
+        for (int count = 0; count < (sizeof(rechexBytes) / 2); count++) {
+            sscanf(recpos, "%2hhx", &val[count]);
+            concatenatedVector[vectorPos] = val[count];
+            recpos += 2;
+            vectorPos++;
+        }
+
+        int vectorPos2 = 46 + (8 + (t * 47));
+        for (int i = 0; i < 8; i++){
+            concatenatedVector[vectorPos2 - i] = (amounts[t] >> (i * 8));
+        }
+
+        vectorPos = vectorPos2 + 1;
     }
 
     auto shaSum = sha2_256(concatenatedVector);

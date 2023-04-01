@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_wallet/ui/addwallet/open_wallet_hex_seed_page.dart';
-import 'package:mobile_wallet/ui/addwallet/open_wallet_mnemonic_page.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:mobile_wallet/ui/addwallet/add_wallet_data_page.dart';
+import 'package:mobile_wallet/ui/addwallet/add_wallet_page.dart';
 import 'package:mobile_wallet/ui/component/qrl_app_bar.dart';
 import 'package:mobile_wallet/ui/component/qrl_button.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
-class OpenWalletPage extends StatelessWidget {
-  const OpenWalletPage({Key? key}) : super(key: key);
+class AddWalletExistingPage extends StatelessWidget {
+  const AddWalletExistingPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class OpenWalletPage extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-             Center(
+            Center(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(AppLocalizations.of(context)!.walletSetup,
@@ -28,7 +28,7 @@ class OpenWalletPage extends StatelessWidget {
                     )),
               ),
             ),
-             Center(
+            Center(
                 child: Padding(
               padding: const EdgeInsets.only(bottom: 32),
               child: Text(AppLocalizations.of(context)!.openExistingWallet),
@@ -43,8 +43,8 @@ class OpenWalletPage extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                const OpenWalletMnemonicPage()),
+                            builder: (context) => const AddWalletDataPage(
+                                AddWalletMode.mnemonic)),
                       );
                     },
                     text: AppLocalizations.of(context)!.openWithMnemonics,
@@ -63,7 +63,7 @@ class OpenWalletPage extends StatelessWidget {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const OpenWalletHexSeedPage()),
+                                const AddWalletDataPage(AddWalletMode.hexSeed)),
                       );
                     },
                     text: AppLocalizations.of(context)!.openWithHexseed,

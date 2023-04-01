@@ -7,6 +7,10 @@
     "description": "a message that indicates authentication failure"
   },
   "authenticationFailed": "Authentication failed!",
+  "@addRecipient": {
+    "description": "a label for adding an additional recipient"
+  },
+  "addRecipient": "ADD RECIPIENT",
   "@addressNotValid": {
     "description": "a message that indicates an invalid address"
   },
@@ -131,6 +135,10 @@
     "description": "a label for an important message"
   },
   "important": "Important",
+  "@insufficientBalance": {
+    "description": "a message that indicates insufficient balance for a transaction"
+  },
+  "insufficientBalance": "Insufficient balance: Your account balance is not sufficient to complete this transaction. Please add funds to your account and try again.",
   "@join": {
     "description": "a button label for joining the community"
   },
@@ -155,12 +163,16 @@
     "description": "a message that indicates addresses are being loaded"
   },
   "loadingAddresses": "Loading addresses...",
+  "@loadingHexSeed": {
+    "description": "a message that indicates hexseed is being loaded"
+  },
+  "loadingHexSeed": "Loading hexseed...",
   "@loadingMnemonic": {
     "description": "a message that indicates mnemonic is being loaded"
   },
   "loadingMnemonic": "Loading mnemonic...",
   "@loadingWallets": {
-    "description": "a message that indicates wallets are being loaded"
+    "description": "a message that indicates mnemonic is being loaded"
   },
   "loadingWallets": "Loading wallets",
   "@marketCap": {
@@ -367,6 +379,10 @@
     "description": "Text displayed to indicate that a transaction is still waiting for confirmation from the network."
   },
   "unconfirmed": "Unconfirmed",
+  "@updateName": {
+    "description": "Tooltip for change wallet name button."
+  },
+  "updateName": "Update name",
   "@useDeviceLogin": {
     "description": "Checkbox or toggle button to enable or disable using the device's biometric login or other security features to access the wallet app."
   },

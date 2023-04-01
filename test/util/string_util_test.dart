@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_wallet/ui/util/string_util.dart';
+import 'package:mobile_wallet/util/string_util.dart';
 
 void main() {
   test("test reverse", () async {

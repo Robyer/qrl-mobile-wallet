@@ -2,6 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobile_wallet/service/address_book_service.dart';
 import 'package:mobile_wallet/service/authentication_service.dart';
+import 'package:mobile_wallet/service/ffi_wallet_service.dart';
 import 'package:mobile_wallet/service/grpc_service.dart';
 import 'package:mobile_wallet/service/market_service.dart';
 import 'package:mobile_wallet/service/secured_storage_service.dart';
@@ -26,8 +27,13 @@ setupServiceLocator(SharedPreferences sharedPreferences) {
   getIt.registerLazySingleton<SecuredStorageService>(
       () => securedStorageService);
   getIt.registerLazySingleton<GrpcService>(() => grpcService);
+  FfiWalletService ffiWalletService = FfiWalletService();
+  getIt.registerLazySingleton<FfiWalletService>(() => ffiWalletService);
   getIt.registerLazySingleton<WalletService>(() => WalletService(
-      sharedPreferenceService, securedStorageService, grpcService));
+      sharedPreferenceService,
+      securedStorageService,
+      grpcService,
+      ffiWalletService));
   getIt.registerLazySingleton<MarketService>(() => MarketService());
   getIt.registerLazySingleton<AuthenticationService>(
       () => AuthenticationService(settingsService));

@@ -3,6 +3,32 @@ import 'dart:io';
 
 import "package:ffi/ffi.dart";
 
+class FfiWalletService {
+  String ffiCreateWalletFromParams(List<int> params) {
+    return _ffiCreateWalletFromParams(params);
+  }
+
+  String ffiGetMnemonic(String hexSeed) {
+    return _ffiGetMnemonic(hexSeed);
+  }
+
+  String ffiOpenWalletWithHexSeed(String hexSeed) {
+    return _ffiOpenWalletWithHexSeed(hexSeed);
+  }
+
+  String ffiOpenWalletWithMnemonic(String mnemonic) {
+    return _ffiOpenWalletWithMnemonic(mnemonic);
+  }
+
+  bool ffiIsAddressValid(String address) {
+    return _ffiIsAddressValid(address);
+  }
+
+  String ffiCreateTransaction(List<Object> params) {
+    return _ffiCreateTransaction(params);
+  }
+}
+
 DynamicLibrary _openWalletLib() {
   DynamicLibrary walletLib = Platform.isAndroid
       ? DynamicLibrary.open("libwallet.so")
@@ -10,7 +36,7 @@ DynamicLibrary _openWalletLib() {
   return walletLib;
 }
 
-String ffiCreateWalletFromParams(List<int> params) {
+String _ffiCreateWalletFromParams(List<int> params) {
   Pointer<Utf8> Function(int treeHeight, int hashFunction) nativeCreateWallet =
       _openWalletLib()
           .lookup<NativeFunction<Pointer<Utf8> Function(Int64, Int64)>>(
@@ -19,7 +45,7 @@ String ffiCreateWalletFromParams(List<int> params) {
   return nativeCreateWallet(params[0], params[1]).toDartString();
 }
 
-String ffiGetMnemonic(String hexSeed) {
+String _ffiGetMnemonic(String hexSeed) {
   Pointer<Utf8> nativeHexSeed = hexSeed.toNativeUtf8();
   Pointer<Utf8> Function(Pointer<Utf8> hexSeed) nativeGetMnemonic =
       _openWalletLib()
@@ -31,7 +57,7 @@ String ffiGetMnemonic(String hexSeed) {
   return mnemonic;
 }
 
-String ffiOpenWalletWithHexSeed(String hexSeed) {
+String _ffiOpenWalletWithHexSeed(String hexSeed) {
   Pointer<Utf8> nativeHexSeed = hexSeed.toNativeUtf8();
   Pointer<Utf8> Function(Pointer<Utf8> hexSeed) nativeOpenWalletWithHexSeed =
       _openWalletLib()
@@ -43,7 +69,7 @@ String ffiOpenWalletWithHexSeed(String hexSeed) {
   return result;
 }
 
-String ffiOpenWalletWithMnemonic(String mnemonic) {
+String _ffiOpenWalletWithMnemonic(String mnemonic) {
   Pointer<Utf8> nativeMnemonic = mnemonic.toNativeUtf8();
   Pointer<Utf8> Function(Pointer<Utf8> hexSeed) nativeOpenWalletWithMnemonic =
       _openWalletLib()
@@ -55,7 +81,7 @@ String ffiOpenWalletWithMnemonic(String mnemonic) {
   return result;
 }
 
-bool ffiIsAddressValid(String address) {
+bool _ffiIsAddressValid(String address) {
   Pointer<Utf8> nativeAddress = address.toNativeUtf8();
   Pointer<Utf8> Function(Pointer<Utf8> address) nativeIsAddressValid =
       _openWalletLib()
@@ -67,27 +93,53 @@ bool ffiIsAddressValid(String address) {
   return result == "valid";
 }
 
-String ffiCreateTransaction(List<Object> params) {
+String _ffiCreateTransaction(List<Object> params) {
   Pointer<Utf8> nativeHexSeed = (params[0] as String).toNativeUtf8();
-  int amount = (params[1] as int);
-  Pointer<Utf8> nativeReceiverWalletAddress =
-      (params[2] as String).toNativeUtf8();
+  List<int> amounts = (params[1] as List<int>);
+  List<String> receiverWalletAddresses = (params[2] as List<String>);
   int otsIndex = params[3] as int;
   int fee = params[4] as int;
+  int transactionCount = amounts.length;
 
-  Pointer<Utf8> Function(Pointer<Utf8> hexSeed, int amount,
-          Pointer<Utf8> receiverWalletAddress, int otsIndex, int fee)
-      nativeCreateWallet = _openWalletLib()
+  Pointer<Utf8> Function(
+          Pointer<Utf8> hexSeed,
+          Pointer<Int64> amounts,
+          Pointer<Pointer<Utf8>> receiverWalletAddresses,
+          int transactionCount,
+          int otsIndex,
+          int fee) nativeCreateTransaction =
+      _openWalletLib()
           .lookup<
               NativeFunction<
-                  Pointer<Utf8> Function(Pointer<Utf8>, Int64, Pointer<Utf8>,
-                      Int64, Int64)>>("createTransaction")
+                  Pointer<Utf8> Function(
+                      Pointer<Utf8>,
+                      Pointer<Int64>,
+                      Pointer<Pointer<Utf8>>,
+                      Int32,
+                      Int64,
+                      Int64)>>("createTransaction")
           .asFunction();
 
-  String result = nativeCreateWallet(
-          nativeHexSeed, amount, nativeReceiverWalletAddress, otsIndex, fee)
+  final amountsPtr = malloc<Int64>(transactionCount);
+  for (int i = 0; i < transactionCount; i++) {
+    amountsPtr[i] = amounts[i];
+  }
+
+  final receiverWalletAddressesPtr = malloc<Pointer<Utf8>>(transactionCount);
+  for (int i = 0; i < transactionCount; i++) {
+    receiverWalletAddressesPtr[i] = receiverWalletAddresses[i].toNativeUtf8();
+  }
+
+  String result = nativeCreateTransaction(nativeHexSeed, amountsPtr,
+          receiverWalletAddressesPtr, transactionCount, otsIndex, fee)
       .toDartString();
+
   malloc.free(nativeHexSeed);
-  malloc.free(nativeReceiverWalletAddress);
+  for (int i = 0; i < transactionCount; i++) {
+    malloc.free(receiverWalletAddressesPtr[i]);
+  }
+  malloc.free(receiverWalletAddressesPtr);
+  malloc.free(amountsPtr);
+
   return result;
 }

@@ -3,7 +3,7 @@ import 'package:mobile_wallet/model/extended_wallet_data.dart';
 import 'package:mobile_wallet/ui/component/qrl_app_bar.dart';
 import 'package:mobile_wallet/ui/component/qrl_button.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
-import 'package:mobile_wallet/ui/util/string_util.dart';
+import 'package:mobile_wallet/util/string_util.dart';
 import 'package:mobile_wallet/ui/util/util.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 

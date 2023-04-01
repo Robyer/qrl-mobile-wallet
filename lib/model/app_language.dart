@@ -13,7 +13,7 @@ enum AppLanguage {
 
   const AppLanguage(this.displayName, this.locale);
 
-  static AppLanguage? fromName(String? name) {
+  static AppLanguage fromName(String? name) {
     switch (name) {
       case "AppLanguage.en":
         return en;
@@ -26,7 +26,7 @@ enum AppLanguage {
       case "AppLanguage.ko":
         return ko;
     }
-    return null;
+    return en;
   }
 
   static List<Locale> availableLocales() {
