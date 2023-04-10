@@ -87,72 +87,76 @@ class _SendTransactionView extends StatelessWidget {
             break;
         }
       },
-      child: _buildScaffold(),
+      child: _buildScaffold(context),
     );
   }
 
-  Scaffold _buildScaffold() {
+  Scaffold _buildScaffold(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       appBar: QrlAppBar(),
-      body: LayoutBuilder(
-        builder: (context, constraints) => Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(AppLocalizations.of(context)!.sendTitle,
-                      style: const TextStyle(
-                        color: CustomColors.qrlLightBlueColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      )),
-                ),
+      body: Column(
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(AppLocalizations.of(context)!.sendTitle,
+                  style: const TextStyle(
+                    color: CustomColors.qrlLightBlueColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  )),
+            ),
+          ),
+          Center(
+              child: Padding(
+            padding: const EdgeInsets.only(bottom: 32),
+            child: Text(AppLocalizations.of(context)!.sendAmount),
+          )),
+          Center(
+              child: Padding(
+            padding: const EdgeInsets.only(left: 32, right: 32, bottom: 16),
+            child: Text(
+              "Q${_wallet.address}",
+              textAlign: TextAlign.center,
+            ),
+          )),
+          Expanded(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                const TransactionLineComponent(),
+                _buildFeeOtsRow(context),
+                Center(
+                    child: Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: Text(AppLocalizations.of(context)!.balance),
+                )),
+                Center(
+                    child: Padding(
+                        padding: const EdgeInsets.only(
+                            bottom: 24, left: 32, right: 32),
+                        child: Text(
+                            "${StringUtil.formatAmount(_extendedWalletData.balance)} QRL",
+                            style: const TextStyle(
+                              color: CustomColors.qrlLightBlueColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            )))),
+              ],
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: SizedBox(
+                width: 256,
+                child: _buildReviewBlocBuilder(),
               ),
-              Center(
-                  child: Padding(
-                padding: const EdgeInsets.only(bottom: 32),
-                child: Text(AppLocalizations.of(context)!.sendAmount),
-              )),
-              Center(
-                  child: Padding(
-                padding: const EdgeInsets.only(left: 32, right: 32, bottom: 16),
-                child: Text(
-                  "Q${_wallet.address}",
-                  textAlign: TextAlign.center,
-                ),
-              )),
-              const TransactionLineComponent(),
-              _buildFeeOtsRow(context),
-              Center(
-                  child: Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(AppLocalizations.of(context)!.balance),
-              )),
-              Center(
-                  child: Padding(
-                      padding: const EdgeInsets.only(
-                          bottom: 24, left: 32, right: 32),
-                      child: Text(
-                          "${StringUtil.formatAmount(_extendedWalletData.balance)} QRL",
-                          style: const TextStyle(
-                            color: CustomColors.qrlLightBlueColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          )))),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 36),
-                  child: SizedBox(
-                    width: 256,
-                    child: _buildReviewBlocBuilder(),
-                  ),
-                ),
-              ),
-            ]),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -197,23 +201,10 @@ class _SendTransactionView extends StatelessWidget {
         } else {
           widget = row;
         }
-        int itemCount = state.transactionLines.length;
-        if (itemCount > 1) {
-          return Padding(
-            padding: const EdgeInsets.only(left: 32, right: 32, bottom: 16),
-            child: widget,
-          );
-        } else {
-          return Expanded(
-            child: Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: const EdgeInsets.only(left: 32, right: 32, bottom: 16),
-                child: widget,
-              ),
-            ),
-          );
-        }
+        return Padding(
+          padding: const EdgeInsets.only(left: 32, right: 32, bottom: 16),
+          child: widget,
+        );
       },
     );
   }
@@ -314,7 +305,8 @@ class _SendTransactionView extends StatelessWidget {
     return BlocBuilder<SendTransactionBloc, SendTransactionState>(
       buildWhen: (previous, current) =>
           current.status == SendTransactionStatus.reviewable ||
-          previous.status == SendTransactionStatus.reviewable,
+          (previous.status == SendTransactionStatus.reviewable &&
+              current.status != SendTransactionStatus.verifying),
       builder: (context, state) => QrlButton(
         state.status == SendTransactionStatus.reviewable
             ? () {

@@ -47,5 +47,9 @@
 		<true/>
 		<key>NSFaceIDUsageDescription</key>
         <string>Authenticate</string>
+        <key>UIBackgroundModes</key>
+        <array>
+            <string>fetch</string>
+        </array>
 	</dict>
 </plist>

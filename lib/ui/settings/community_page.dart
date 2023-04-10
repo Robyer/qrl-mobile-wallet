@@ -158,7 +158,7 @@ class CommunityPage extends StatelessWidget {
                           iconSize: 32,
                           onPressed: () async {
                             Uri url =
-                                Uri.parse("https://github.com/theQRL/QRL, ");
+                                Uri.parse("https://github.com/theQRL/QRL");
                             await Util.launchInBrowser(url);
                           },
                         ),

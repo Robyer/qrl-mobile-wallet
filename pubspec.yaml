@@ -34,6 +34,9 @@ dependencies:
   flutter_bloc: ^8.1.1
   equatable: ^2.0.5
   bloc_concurrency: ^0.2.1
+  workmanager: ^0.5.1
+  flutter_local_notifications: ^13.0.0
+  permission_handler: ^10.2.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
