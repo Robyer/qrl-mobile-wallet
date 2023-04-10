@@ -5,6 +5,7 @@ import 'package:mobile_wallet/service/authentication_service.dart';
 import 'package:mobile_wallet/service/ffi_wallet_service.dart';
 import 'package:mobile_wallet/service/grpc_service.dart';
 import 'package:mobile_wallet/service/market_service.dart';
+import 'package:mobile_wallet/service/notification_service.dart';
 import 'package:mobile_wallet/service/secured_storage_service.dart';
 import 'package:mobile_wallet/service/settings_service.dart';
 import 'package:mobile_wallet/service/wallet_service.dart';
@@ -39,4 +40,5 @@ setupServiceLocator(SharedPreferences sharedPreferences) {
       () => AuthenticationService(settingsService));
   getIt.registerLazySingleton<AddressBookService>(
       () => AddressBookService(sharedPreferenceService));
+  getIt.registerLazySingleton<NotificationService>(() => NotificationService());
 }

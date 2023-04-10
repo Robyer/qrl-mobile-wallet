@@ -21,70 +21,50 @@ class TransactionLineComponent extends StatelessWidget {
           current.status == SendTransactionStatus.reviewable,
       builder: (context, state) {
         int itemCount = state.transactionLines.length;
-        if (itemCount > 1) {
-          return Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: itemCount,
-                itemBuilder: (context, index) => Column(
-                  children: [
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: InkWell(
-                          child: const Padding(
-                            padding: EdgeInsets.only(top: 4, right: 32),
-                            child: Icon(
-                                size: 18,
-                                color: CustomColors.qrlYellowColor,
-                                Icons.close),
-                          ),
-                          onTap: () =>
-                              BlocProvider.of<SendTransactionBloc>(context)
-                                  .add(RemoveTransactionLineEvent(index))),
-                    ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(top: 16, left: 32, right: 32),
-                      child: AddressField(
-                          index, state.transactionLines[index].address),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 16, right: 8, bottom: 16, top: 4),
-                      child: _buildSaveToAddressBookBlocBuilder(index),
-                    ),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(left: 32, right: 32, bottom: 8),
-                      child: _buildAmountBlocBuilder(index),
-                    ),
-                  ],
-                ),
+        return Column(
+          children: [
+            ListView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: itemCount,
+              itemBuilder: (context, index) => Column(
+                children: [
+                  itemCount > 1
+                      ? Align(
+                          alignment: Alignment.topRight,
+                          child: InkWell(
+                              child: const Padding(
+                                padding: EdgeInsets.only(top: 4, right: 32),
+                                child: Icon(
+                                    size: 18,
+                                    color: CustomColors.qrlYellowColor,
+                                    Icons.close),
+                              ),
+                              onTap: () =>
+                                  BlocProvider.of<SendTransactionBloc>(context)
+                                      .add(RemoveTransactionLineEvent(index))),
+                        )
+                      : const SizedBox.shrink(),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
+                    child: AddressField(
+                        index, state.transactionLines[index].address),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16, right: 8, bottom: 16, top: 4),
+                    child: _buildSaveToAddressBookBlocBuilder(index),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.only(left: 32, right: 32, bottom: 8),
+                    child: _buildAmountBlocBuilder(index),
+                  ),
+                ],
               ),
             ),
-          );
-        } else {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Column(children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
-                child: AddressField(0, state.transactionLines[0].address),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(
-                    left: 16, right: 8, bottom: 16, top: 4),
-                child: _buildSaveToAddressBookBlocBuilder(0),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 32, right: 32, bottom: 8),
-                child: _buildAmountBlocBuilder(0),
-              ),
-            ]),
-          );
-        }
+          ],
+        );
       },
     );
   }

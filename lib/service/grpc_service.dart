@@ -209,4 +209,42 @@ class GrpcService {
     );
     return clientChannel;
   }
+
+  Future<bool> hasIncomingTransactionsAfterDate(
+      String walletAddress, DateTime lastCheckDateTime) async {
+    List<int> addressBytes = StringUtil.toBytes(walletAddress);
+    ClientChannel clientChannel = await getClientChannel();
+    try {
+      PublicAPIClient publicAPIClient = PublicAPIClient(clientChannel);
+      GetAddressStateResp getAddressStateResp = await publicAPIClient
+          .getAddressState(GetAddressStateReq(address: addressBytes));
+      var state = getAddressStateResp.state;
+      List<List<int>> transactionsHashes = state.transactionHashes;
+      int totalTransactions = transactionsHashes.length;
+
+      for (int i = totalTransactions - 1; i >= 0; i--) {
+        GetObjectResp getObjectResp = await publicAPIClient
+            .getObject(GetObjectReq(query: transactionsHashes[i]));
+        TransactionExtended transaction = getObjectResp.transaction;
+        DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
+            transaction.timestampSeconds.toInt() * 1000);
+        if (dateTime.isBefore(lastCheckDateTime)) {
+          break;
+        }
+        Transaction tx = transaction.tx;
+        if ("transfer" == tx.whichTransactionType().name.toLowerCase()) {
+          String senderAddress = transaction.addrFrom
+              .map((e) => e.toRadixString(16).padLeft(2, '0'))
+              .join();
+          bool incoming = senderAddress != walletAddress;
+          if (incoming) {
+            return true;
+          }
+        }
+      }
+    } finally {
+      clientChannel.shutdown();
+    }
+    return false;
+  }
 }

@@ -175,6 +175,10 @@
     "description": "a message that indicates mnemonic is being loaded"
   },
   "loadingWallets": "Loading wallets",
+  "@loadingSettings": {
+    "description": "a message that indicates settings are being loaded"
+  },
+  "loadingSettings": "Loading settings",
   "@marketCap": {
     "description": "a label for the market cap field"
   },
@@ -251,6 +255,10 @@
     "description": "A message that informs a user that they will need to create a new wallet once they run out of signatures."
   },
   "outOfSignatures": "Once you run out of signatures you will need to create a new wallet. Be aware that wallet creation and transaction time increases with tree height. \nContinue wallet creation with current setup",
+  "@permissionNotGranted": {
+    "description": "Device permission not granted."
+  },
+  "permissionNotGranted": "Permission not granted",
   "@price": {
     "description": "A label that indicates the price of QRL."
   },
@@ -259,6 +267,14 @@
     "description": "A label that indicates the percentage change in the price of QRL over the past 24 hours."
   },
   "priceChange": "24H Change",
+  "@priceNotificationHeader": {
+    "description": "Header label of price notification."
+  },
+  "priceNotificationHeader": "Price Notification",
+  "@priceNotificationMessage": {
+    "description": "Message of price notification."
+  },
+  "priceNotificationMessage": "Price: ${price} USD, Change 24 Hour: {change24hours}%",
   "@port": {
     "description": "A label that indicates a network port number."
   },
@@ -366,6 +382,14 @@
   "@transfer": {
     "description": "Button or link text to initiate a transfer"
   },
+  "@transactionNotificationHeader": {
+    "description": "Header label of transaction notification."
+  },
+  "transactionNotificationHeader": "Transaction Received",
+  "@transactionNotificationMessage": {
+    "description": "Message of transaction notification."
+  },
+  "transactionNotificationMessage": "A new transaction has been received",
   "transfer": "Transfer",
   "@treeHeight": {
     "description": "Tree Height"
@@ -387,6 +411,14 @@
     "description": "Checkbox or toggle button to enable or disable using the device's biometric login or other security features to access the wallet app."
   },
   "useDeviceLogin": "Use device login",
+  "@usePriceNotification": {
+    "description": "Checkbox or toggle button to enable or disable showing notifications for current price."
+  },
+  "usePriceNotification": "Use price notifications",
+  "@useTransactionNotification": {
+    "description": "Checkbox or toggle button to enable or disable showing notifications for incoming transactions."
+  },
+  "useTransactionNotification": "Use transaction notifications",
   "@verifyingTransaction": {
     "description": "Text displayed to indicate that a transaction is being verified by the network."
   },
