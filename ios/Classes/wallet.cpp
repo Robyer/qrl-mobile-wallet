@@ -7,7 +7,6 @@
 #include <PicoSHA2/picosha2.h>
 #include <qrl/misc.h>
 #include <qrl/xmssBasic.h>
-#include <android/log.h>
 #include <inttypes.h>
 #include <string>
 #include <syslog.h>
@@ -66,7 +65,9 @@ const char* createWallet(int64_t treeHeight, int64_t hashFunction) {
     result.append(xmsspk);
     result.append("||");
     result.append(std::to_string(xmss.getHeight()));
-    return result.c_str();
+    char* result_cstr = new char[result.length() + 1];
+    std::strcpy(result_cstr, result.c_str());
+    return result_cstr;
 }
 
 extern "C" __attribute__((visibility("default"))) __attribute((used))
@@ -75,7 +76,9 @@ const char* getMnemonic(char *hexSeed) {
     QRLDescriptor desc = QRLDescriptor::fromExtendedSeed(hstr2bin(hexSeedStr));
     XmssFast xmss = XmssFast( hstr2bin(hexSeedStr.substr(6)), desc.getHeight(), desc.getHashFunction(), eAddrFormatType::SHA256_2X);
     std::string mnemonic = bin2mnemonic(xmss.getExtendedSeed());
-    return mnemonic.c_str();
+    char* mnemonic_cstr = new char[mnemonic.length() + 1];
+    std::strcpy(mnemonic_cstr, mnemonic.c_str());
+    return mnemonic_cstr;
 }
 
 extern "C" __attribute__((visibility("default"))) __attribute((used))
@@ -92,7 +95,9 @@ const char* openWalletWithHexSeed(char *hexSeed) {
     result.append(xmsspk);
     result.append("||");
     result.append(std::to_string(xmss.getHeight()));
-    return result.c_str();
+    char* result_cstr = new char[result.length() + 1];
+    std::strcpy(result_cstr, result.c_str());
+    return result_cstr;
 }
 
 extern "C" __attribute__((visibility("default"))) __attribute((used))
@@ -109,7 +114,9 @@ const char* openWalletWithMnemonic(char *mnemonic) {
     result.append(xmsspk);
     result.append("||");
     result.append(std::to_string(xmss.getHeight()));
-    return result.c_str();
+    char* result_cstr = new char[result.length() + 1];
+    std::strcpy(result_cstr, result.c_str());
+    return result_cstr;
 }
 
 extern "C" __attribute__((visibility("default"))) __attribute((used))
@@ -220,5 +227,7 @@ const char* createTransaction(char *hexSeed, int64_t* amounts, char** receiverWa
 
     std::string data = bin2hstr(signature);
     data += bin2hstr(shaSumTx);
-    return data.c_str();
+    char* data_cstr = new char[data.length() + 1];
+    std::strcpy(data_cstr, data.c_str());
+    return data_cstr;
 }
