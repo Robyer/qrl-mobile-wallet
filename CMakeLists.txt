@@ -4,6 +4,8 @@
 cmake_minimum_required(VERSION 3.5)
 project(qrllib)
 
+option(BUILD_ANDROID "Build Android components" ON)
+
 set(CMAKE_CXX_STANDARD 14)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -pedantic")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wno-deprecated-declarations")
@@ -88,7 +90,10 @@ add_library(kyber SHARED ${LIB_KYBER_SRC} ${REF_KYBER_SRC})
 target_include_directories(kyber PRIVATE ${LIB_KYBER_INCLUDES} )
 
 # Allow cpp logging
-find_library(ANDROID_LOG_LIB log)
+if(BUILD_ANDROID)
+    find_library(ANDROID_LOG_LIB log)
+    target_link_libraries(wallet ${ANDROID_LOG_LIB})
+endif()
 
 target_link_libraries(qrllib shasha)
 target_link_libraries(wallet qrllib shasha kyber)

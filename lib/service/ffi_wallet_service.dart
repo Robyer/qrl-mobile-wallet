@@ -32,17 +32,20 @@ class FfiWalletService {
 DynamicLibrary _openWalletLib() {
   DynamicLibrary walletLib = Platform.isAndroid
       ? DynamicLibrary.open("libwallet.so")
-      : DynamicLibrary.open("wallet.framework/wallet");
+      : DynamicLibrary.process();
   return walletLib;
 }
 
 String _ffiCreateWalletFromParams(List<int> params) {
   Pointer<Utf8> Function(int treeHeight, int hashFunction) nativeCreateWallet =
-      _openWalletLib()
-          .lookup<NativeFunction<Pointer<Utf8> Function(Int64, Int64)>>(
-              "createWallet")
-          .asFunction();
-  return nativeCreateWallet(params[0], params[1]).toDartString();
+  _openWalletLib()
+      .lookup<NativeFunction<Pointer<Utf8> Function(Int64, Int64)>>(
+      "createWallet")
+      .asFunction();
+  Pointer<Utf8> resultPtr = nativeCreateWallet(params[0], params[1]);
+  String result = resultPtr.toDartString();
+  calloc.free(resultPtr);
+  return result;
 }
 
 String _ffiGetMnemonic(String hexSeed) {
@@ -52,8 +55,10 @@ String _ffiGetMnemonic(String hexSeed) {
           .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
               "getMnemonic")
           .asFunction();
-  String mnemonic = nativeGetMnemonic(nativeHexSeed).toDartString();
-  malloc.free(nativeHexSeed);
+  Pointer<Utf8> mnemonicPtr = nativeGetMnemonic(nativeHexSeed);
+  String mnemonic = mnemonicPtr.toDartString();
+  calloc.free(nativeHexSeed);
+  calloc.free(mnemonicPtr);
   return mnemonic;
 }
 
@@ -64,8 +69,10 @@ String _ffiOpenWalletWithHexSeed(String hexSeed) {
           .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
               "openWalletWithHexSeed")
           .asFunction();
-  String result = nativeOpenWalletWithHexSeed(nativeHexSeed).toDartString();
-  malloc.free(nativeHexSeed);
+  Pointer<Utf8> resultPtr = nativeOpenWalletWithHexSeed(nativeHexSeed);
+  String result = resultPtr.toDartString();
+  calloc.free(nativeHexSeed);
+  calloc.free(resultPtr);
   return result;
 }
 
@@ -76,8 +83,10 @@ String _ffiOpenWalletWithMnemonic(String mnemonic) {
           .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
               "openWalletWithMnemonic")
           .asFunction();
-  String result = nativeOpenWalletWithMnemonic(nativeMnemonic).toDartString();
-  malloc.free(nativeMnemonic);
+  Pointer<Utf8> resultPtr = nativeOpenWalletWithMnemonic(nativeMnemonic);
+  String result = resultPtr.toDartString();
+  calloc.free(nativeMnemonic);
+  calloc.free(resultPtr);
   return result;
 }
 
@@ -88,8 +97,10 @@ bool _ffiIsAddressValid(String address) {
           .lookup<NativeFunction<Pointer<Utf8> Function(Pointer<Utf8>)>>(
               "isAddressValid")
           .asFunction();
-  String result = nativeIsAddressValid(nativeAddress).toDartString();
-  malloc.free(nativeAddress);
+  Pointer<Utf8> resultPtr = nativeIsAddressValid(nativeAddress);
+  String result = resultPtr.toDartString();
+  calloc.free(nativeAddress);
+  calloc.free(resultPtr);
   return result == "valid";
 }
 
@@ -130,16 +141,18 @@ String _ffiCreateTransaction(List<Object> params) {
     receiverWalletAddressesPtr[i] = receiverWalletAddresses[i].toNativeUtf8();
   }
 
-  String result = nativeCreateTransaction(nativeHexSeed, amountsPtr,
-          receiverWalletAddressesPtr, transactionCount, otsIndex, fee)
-      .toDartString();
+  Pointer<Utf8> resultPtr = nativeCreateTransaction(nativeHexSeed, amountsPtr,
+      receiverWalletAddressesPtr, transactionCount, otsIndex, fee);
+
+  String result = resultPtr.toDartString();
 
   malloc.free(nativeHexSeed);
   for (int i = 0; i < transactionCount; i++) {
     malloc.free(receiverWalletAddressesPtr[i]);
   }
-  malloc.free(receiverWalletAddressesPtr);
-  malloc.free(amountsPtr);
+  calloc.free(receiverWalletAddressesPtr);
+  calloc.free(amountsPtr);
+  calloc.free(resultPtr);
 
   return result;
 }
