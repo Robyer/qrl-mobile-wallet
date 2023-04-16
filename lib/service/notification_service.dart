@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -115,7 +116,8 @@ Future<FlutterLocalNotificationsPlugin> getLocalNotificationsPlugin() async {
       FlutterLocalNotificationsPlugin();
   const settingsAndroid = AndroidInitializationSettings("@mipmap/ic_launcher");
   const DarwinInitializationSettings initializationSettingsDarwin =
-      DarwinInitializationSettings();
+      DarwinInitializationSettings(
+          onDidReceiveLocalNotification: onDidReceiveLocalNotification);
   const settings = InitializationSettings(
       android: settingsAndroid, iOS: initializationSettingsDarwin);
   await flutterLocalNotificationsPlugin.initialize(settings);
@@ -159,4 +161,9 @@ Future<DateTime> _getAndUpdateLastCheckDateTime(
   await sharedPreferenceService.setIntValue(
       "transaction-last-check-date-time", now.millisecondsSinceEpoch);
   return lastCheckDateTime;
+}
+
+void onDidReceiveLocalNotification(
+    int id, String? title, String? body, String? payload) async {
+
 }

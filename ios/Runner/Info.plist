@@ -45,11 +45,28 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<true/>
-		<key>NSFaceIDUsageDescription</key>
-        <string>Authenticate</string>
         <key>UIBackgroundModes</key>
         <array>
             <string>fetch</string>
         </array>
+        <key>NSCameraUsageDescription</key>
+        <string>Allow camera access for scanning qr codes.</string>
+        <key>NSFaceIDUsageDescription</key>
+        <string>Allow authentication with Face ID.</string>
+        <key>UIBackgroundModes</key>
+        <array>
+          <string>fetch</string>
+          <string>background-processing</string>
+          <string>external-accessory</string>
+        </array>
+        <key>UIUserNotificationType</key>
+        <dict>
+          <key>UIUserNotificationTypeAlert</key>
+          <true/>
+          <key>UIUserNotificationTypeBadge</key>
+          <true/>
+          <key>UIUserNotificationTypeSound</key>
+          <true/>
+        </dict>
 	</dict>
 </plist>
