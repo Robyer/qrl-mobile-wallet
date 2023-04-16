@@ -202,6 +202,9 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     if (status.isDenied || status.isRestricted || status.isLimited) {
       status = await permission.request();
     }
+    if (status.isPermanentlyDenied) {
+      await openAppSettings();
+    }
     return status.isGranted;
   }
 }

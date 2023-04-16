@@ -5,10 +5,9 @@ class SnackBars {
       {Duration? duration}) {
     ScaffoldMessengerState scaffoldMessengerState =
         ScaffoldMessenger.of(context);
-    scaffoldMessengerState.clearSnackBars();
     scaffoldMessengerState.showSnackBar(SnackBar(
       content: Text(message),
-      duration: duration ?? const Duration(milliseconds: 4000),
+      duration: duration ?? const Duration(milliseconds: 2500),
     ));
   }
 }
