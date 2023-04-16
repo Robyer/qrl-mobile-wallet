@@ -17,8 +17,7 @@ class TransactionLineComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<SendTransactionBloc, SendTransactionState>(
       buildWhen: (previous, current) =>
-          current.status == SendTransactionStatus.transactionLineCountUpdated ||
-          current.status == SendTransactionStatus.reviewable,
+          current.status == SendTransactionStatus.transactionLineCountUpdated,
       builder: (context, state) {
         int itemCount = state.transactionLines.length;
         return Column(
@@ -46,7 +45,8 @@ class TransactionLineComponent extends StatelessWidget {
                         )
                       : const SizedBox.shrink(),
                   Padding(
-                    padding: const EdgeInsets.only(top: 16, left: 32, right: 32),
+                    padding:
+                        const EdgeInsets.only(top: 16, left: 32, right: 32),
                     child: AddressField(
                         index, state.transactionLines[index].address),
                   ),

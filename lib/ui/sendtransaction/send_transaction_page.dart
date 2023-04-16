@@ -51,7 +51,7 @@ class _SendTransactionView extends StatelessWidget {
           current.status == SendTransactionStatus.error ||
           current.status == SendTransactionStatus.verified ||
           current.status == SendTransactionStatus.notEnoughFunds,
-      listener: (context, state) {
+      listener: (context, state) async {
         switch (state.status) {
           case SendTransactionStatus.verifying:
             Dialogs.showLoadingDialog(
@@ -70,7 +70,7 @@ class _SendTransactionView extends StatelessWidget {
           case SendTransactionStatus.verified:
             for (TransactionLine transactionLine in state.transactionLines) {
               if (transactionLine.saveToAddressBook) {
-                _saveToAddressBook(context, transactionLine.address!);
+                await _saveToAddressBook(context, transactionLine.address!);
               }
             }
             Dialogs.hideLoadingDialog(context);
