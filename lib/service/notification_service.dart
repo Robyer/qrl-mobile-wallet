@@ -12,6 +12,7 @@ import 'package:mobile_wallet/service/secured_storage_service.dart';
 import 'package:mobile_wallet/service/settings_service.dart';
 import 'package:mobile_wallet/service/shared_preference_service.dart';
 import 'package:mobile_wallet/service/wallet_service.dart';
+import 'package:mobile_wallet/ui/util/custom_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:workmanager/workmanager.dart';
 
@@ -96,6 +97,8 @@ Future<void> _showNotification(String title, String body, String channel,
     channel,
     channelName,
     importance: Importance.high,
+    color: CustomColors.qrlDarkBlueMaterial,
+    icon: "ic_notification",
   );
   DarwinNotificationDetails iOSPlatformChannelSpecifics =
       DarwinNotificationDetails(threadIdentifier: channel);
@@ -114,7 +117,7 @@ Future<void> _showNotification(String title, String body, String channel,
 Future<FlutterLocalNotificationsPlugin> getLocalNotificationsPlugin() async {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
-  const settingsAndroid = AndroidInitializationSettings("@mipmap/ic_launcher");
+  const settingsAndroid = AndroidInitializationSettings("ic_notification");
   const DarwinInitializationSettings initializationSettingsDarwin =
       DarwinInitializationSettings(
           onDidReceiveLocalNotification: onDidReceiveLocalNotification);
@@ -164,6 +167,4 @@ Future<DateTime> _getAndUpdateLastCheckDateTime(
 }
 
 void onDidReceiveLocalNotification(
-    int id, String? title, String? body, String? payload) async {
-
-}
+    int id, String? title, String? body, String? payload) async {}
