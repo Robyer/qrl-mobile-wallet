@@ -32,7 +32,7 @@ class NotificationService {
       _priceNotificationTaskName,
       _priceNotificationTaskName,
       existingWorkPolicy: ExistingWorkPolicy.replace,
-      frequency: const Duration(minutes: 15),
+      frequency: const Duration(minutes: 60),
     );
   }
 
