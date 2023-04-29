@@ -28,15 +28,16 @@ for config in "${CONFIGURATIONS[@]}"; do
 done
 
 # Create xcframeworks
-for library in qrllib shasha wallet kyber; do
+for library in shasha qrllib kyber wallet; do
   xcodebuild -create-xcframework \
-             -library "build/Release-iphoneos/Release/lib$library.dylib" \
-             -library "build/Release-iphonesimulator/Release/lib$library.dylib" \
-             -output "build/$library.xcframework"
+             -framework "build/Release-iphoneos/Release/$library.framework" \
+             -framework "build/Release-iphonesimulator/Release/$library.framework" \
+             -output "build/$library.xcframework" \
+
 done
 
 # Copy xcframeworks to the ios folder
 mkdir -p ios/Frameworks
-for library in qrllib shasha wallet kyber; do
+for library in shasha qrllib kyber wallet; do
   cp -R "build/$library.xcframework" "ios/Frameworks/"
 done

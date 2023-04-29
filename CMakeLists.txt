@@ -77,24 +77,91 @@ SET_SOURCE_FILES_PROPERTIES(${LIBXMSSALT_SRC} PROPERTIES LANGUAGE CXX)
 SET_SOURCE_FILES_PROPERTIES(${LIB_SHASHA_SRC} PROPERTIES LANGUAGE CXX)
 SET_SOURCE_FILES_PROPERTIES(${REF_KYBER_SRC} PROPERTIES LANGUAGE CXX)
 
-add_library(shasha SHARED ${LIB_SHASHA_SRC})
-target_include_directories(shasha PRIVATE ${LIB_SHASHA_INCLUDES} )
-
-add_library(qrllib SHARED ${LIB_QRL_SRC} ${LIBXMSSALT_SRC})
-target_include_directories(qrllib PRIVATE ${LIB_QRL_INCLUDES} ${LIB_SHASHA_INCLUDES})
-
-add_library(wallet SHARED ${REF_WALLET_SRC})
-target_include_directories(wallet PRIVATE ios/Classes/)
-
-add_library(kyber SHARED ${LIB_KYBER_SRC} ${REF_KYBER_SRC})
-target_include_directories(kyber PRIVATE ${LIB_KYBER_INCLUDES} )
-
 # Allow cpp logging
 if(BUILD_ANDROID)
+add_library(shasha SHARED ${LIB_SHASHA_SRC})
+    target_include_directories(shasha PRIVATE ${LIB_SHASHA_INCLUDES} )
+
+    add_library(qrllib SHARED ${LIB_QRL_SRC} ${LIBXMSSALT_SRC})
+    target_include_directories(qrllib PRIVATE ${LIB_QRL_INCLUDES} ${LIB_SHASHA_INCLUDES})
+
+    add_library(wallet SHARED ${REF_WALLET_SRC})
+    target_include_directories(wallet PRIVATE ios/Classes/)
+
+    add_library(kyber SHARED ${LIB_KYBER_SRC} ${REF_KYBER_SRC})
+    target_include_directories(kyber PRIVATE ${LIB_KYBER_INCLUDES} )
     find_library(ANDROID_LOG_LIB log)
     target_link_libraries(wallet ${ANDROID_LOG_LIB})
+    target_link_libraries(qrllib shasha)
+    target_link_libraries(wallet qrllib shasha kyber)
+    target_link_libraries(wallet ${ANDROID_LOG_LIB} )
+else()
+    add_library(shasha SHARED ${LIB_SHASHA_SRC} qrllib/src/shasha/shasha.h)
+    target_include_directories(shasha PRIVATE ${LIB_SHASHA_INCLUDES})
+    set_target_properties(shasha PROPERTIES FRAMEWORK TRUE
+                                            FRAMEWORK_VERSION A
+                                            MACOSX_FRAMEWORK_IDENTIFIER com.qrl.mobileWallet.shasha
+                                            XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
+                                            PUBLIC_HEADER "qrllib/src/shasha/shasha.h")
+
+    set(LIB_QRL_HEADERS
+        qrllib/src/xmss-alt/algsxmss_fast.h
+        qrllib/src/xmss-alt/algsxmss.h
+        qrllib/src/xmss-alt/hash.h
+        qrllib/src/xmss-alt/hash_address.h
+        qrllib/src/xmss-alt/xmss_common.h
+        qrllib/src/xmss-alt/wots.h
+        qrllib/src/xmss-alt/fips202.h
+        qrllib/src/qrl/hashing.h
+        qrllib/src/qrl/misc.h
+        qrllib/src/qrl/qrlAddressFormat.h
+        qrllib/src/qrl/qrlDescriptor.h
+        qrllib/src/qrl/qrlHelper.h
+        qrllib/src/qrl/wordlist.h
+        qrllib/src/qrl/xmssBase.h
+        qrllib/src/qrl/xmssBasic.h
+        qrllib/src/qrl/xmssFast.h
+        qrllib/src/qrl/xmssPool.h
+    )
+
+    add_library(qrllib SHARED ${LIB_QRL_SRC} ${LIBXMSSALT_SRC} ${LIB_QRL_HEADERS})
+    target_include_directories(qrllib PRIVATE ${LIB_QRL_INCLUDES} ${LIB_SHASHA_INCLUDES})
+    target_link_libraries(qrllib "-framework shasha")
+    set_target_properties(qrllib PROPERTIES FRAMEWORK TRUE
+                                              FRAMEWORK_VERSION A
+                                              MACOSX_FRAMEWORK_IDENTIFIER com.qrl.mobileWallet.qrllib
+                                              XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
+                                              PUBLIC_HEADER "${LIB_QRL_HEADERS}")
+
+   set(LIB_KYBER_HEADERS
+        qrllib/src/kyber/kyber.h
+        qrllib/deps/kyber/ref/randombytes.h
+        qrllib/deps/kyber/ref/poly.h
+        qrllib/deps/kyber/ref/polyvec.h
+        qrllib/deps/kyber/ref/reduce.h
+        qrllib/deps/kyber/ref/cbd.h
+        qrllib/deps/kyber/ref/ntt.h
+        qrllib/deps/kyber/ref/verify.h
+        qrllib/deps/kyber/ref/indcpa.h
+        qrllib/deps/kyber/ref/kex.h
+        qrllib/deps/kyber/ref/fips202.h
+    )
+
+    add_library(kyber SHARED ${LIB_KYBER_SRC} ${REF_KYBER_SRC} ${LIB_KYBER_HEADERS})
+    target_include_directories(kyber PRIVATE ${LIB_KYBER_INCLUDES})
+    set_target_properties(kyber PROPERTIES FRAMEWORK TRUE
+                                              FRAMEWORK_VERSION A
+                                              MACOSX_FRAMEWORK_IDENTIFIER com.qrl.mobileWallet.kyber
+                                              XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
+                                              PUBLIC_HEADER "${LIB_KYBER_HEADERS}")
+
+    add_library(wallet SHARED ${REF_WALLET_SRC} ios/Classes/wallet.h)
+    target_include_directories(wallet PRIVATE ios/Classes/)
+    target_link_libraries(wallet "-framework qrllib" "-framework shasha" "-framework kyber")
+    set_target_properties(wallet PROPERTIES FRAMEWORK TRUE
+                                              FRAMEWORK_VERSION A
+                                              MACOSX_FRAMEWORK_IDENTIFIER com.qrl.mobileWallet.wallet
+                                              XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
+                                              PUBLIC_HEADER "ios/Classes/wallet.h")
 endif()
 
-target_link_libraries(qrllib shasha)
-target_link_libraries(wallet qrllib shasha kyber)
-target_link_libraries(wallet ${ANDROID_LOG_LIB} )

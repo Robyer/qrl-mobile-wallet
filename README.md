@@ -65,6 +65,14 @@ android [click here](https://docs.flutter.dev/deployment/android)
 For more information on building and releasing for
 IOS [click here](https://docs.flutter.dev/deployment/ios)
 
+### Building xcframework
+run [build_xcframework.sh](build_xcframework.sh) to generate xcframeworks for iphone and iphonesimulator in Frameworks folder.
+
+In case you run into erros like cmake/xcode/etc not found run command:
+```
+export PATH="/opt/homebrew/bin:$PATH"
+```
+
 ## Translations
 
 After adding or changing translations run command:

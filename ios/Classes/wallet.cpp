@@ -1,3 +1,4 @@
+#include "wallet.h"
 #include <stdint.h>
 
 #include <qrl/xmssBase.h>
