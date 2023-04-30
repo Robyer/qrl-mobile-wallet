@@ -150,8 +150,8 @@ String _ffiCreateTransaction(List<Object> params) {
   for (int i = 0; i < transactionCount; i++) {
     malloc.free(receiverWalletAddressesPtr[i]);
   }
-  calloc.free(receiverWalletAddressesPtr);
-  calloc.free(amountsPtr);
+  malloc.free(receiverWalletAddressesPtr);
+  malloc.free(amountsPtr);
   calloc.free(resultPtr);
 
   return result;

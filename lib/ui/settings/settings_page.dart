@@ -165,7 +165,9 @@ class _SettingsView extends StatelessWidget {
     return BlocBuilder<SettingsBloc, SettingsState>(
         buildWhen: (previous, current) =>
             current.status == SettingsStatus.ready ||
-            current.status == SettingsStatus.useDeviceLoginChanged,
+            current.status == SettingsStatus.useDeviceLoginChanged ||
+            current.status == SettingsStatus.noAuthenticationFound ||
+            current.status == SettingsStatus.authenticationFailed,
         builder: (context, state) {
           return Padding(
             padding: const EdgeInsets.only(top: 8, left: 16, right: 8),
@@ -187,7 +189,9 @@ class _SettingsView extends StatelessWidget {
     return BlocBuilder<SettingsBloc, SettingsState>(
         buildWhen: (previous, current) =>
             current.status == SettingsStatus.ready ||
-            current.status == SettingsStatus.useTransactionNotificationChanged,
+            current.status ==
+                SettingsStatus.useTransactionNotificationChanged ||
+            current.status == SettingsStatus.permissionNotGranted,
         builder: (context, state) {
           return Padding(
             padding: const EdgeInsets.only(left: 16, right: 8),
@@ -206,7 +210,8 @@ class _SettingsView extends StatelessWidget {
     return BlocBuilder<SettingsBloc, SettingsState>(
         buildWhen: (previous, current) =>
             current.status == SettingsStatus.ready ||
-            current.status == SettingsStatus.usePriceNotificationChanged,
+            current.status == SettingsStatus.usePriceNotificationChanged ||
+            current.status == SettingsStatus.permissionNotGranted,
         builder: (context, state) {
           return Padding(
             padding: const EdgeInsets.only(bottom: 8, left: 16, right: 8),

@@ -1,3 +1,4 @@
+#include "wallet.h"
 #include <stdint.h>
 
 #include <qrl/xmssBase.h>
@@ -121,35 +122,43 @@ const char* openWalletWithMnemonic(char *mnemonic) {
 
 extern "C" __attribute__((visibility("default"))) __attribute((used))
 const char* isAddressValid(char *address) {
+    string result;
     try {
-      string addressStr(address);
-      std::vector<uint8_t> addressBytes = hstr2bin(addressStr);
-      if (addressBytes.size()!=(QRLDescriptor::getSize()+ADDRESS_HASH_SIZE+4))
-        return "invalid";
+        string addressStr(address);
+        std::vector<uint8_t> addressBytes = hstr2bin(addressStr);
+        if (addressBytes.size() != (QRLDescriptor::getSize() + ADDRESS_HASH_SIZE + 4))
+            result = "invalid";
+        else {
+            auto descr = QRLDescriptor::fromBytes(
+                    std::vector<uint8_t>(
+                            addressBytes.cbegin(),
+                            addressBytes.cbegin() + QRLDescriptor::getSize()));
+            if (descr.getAddrFormatType() != eAddrFormatType::SHA256_2X) {
+                result = "invalid";
+            } else {
+                std::vector<uint8_t> hashed_key2(ADDRESS_HASH_SIZE, 0);
 
-      auto descr = QRLDescriptor::fromBytes(
-                        std::vector<uint8_t>(
-                                addressBytes.cbegin(),
-                                addressBytes.cbegin()+QRLDescriptor::getSize()));
-      if (descr.getAddrFormatType()!=eAddrFormatType::SHA256_2X) {
-        return "invalid";
-      }
-      std::vector<uint8_t> hashed_key2(ADDRESS_HASH_SIZE, 0);
+                picosha2::hash256(addressBytes.cbegin(),
+                                  addressBytes.cbegin() + QRLDescriptor::getSize() + ADDRESS_HASH_SIZE,
+                                  hashed_key2.begin(), hashed_key2.end());
 
-      picosha2::hash256(addressBytes.cbegin(), addressBytes.cbegin()+QRLDescriptor::getSize()+ADDRESS_HASH_SIZE,
-                        hashed_key2.begin(), hashed_key2.end());
-
-      if (addressBytes[35]==hashed_key2[28] &&
-                        addressBytes[36]==hashed_key2[29] &&
-                        addressBytes[37]==hashed_key2[30] &&
-                        addressBytes[38]==hashed_key2[31]) {
-         return "valid";
-      } else {
-        return "invalid";
-      }
+                if (addressBytes[35] == hashed_key2[28] &&
+                    addressBytes[36] == hashed_key2[29] &&
+                    addressBytes[37] == hashed_key2[30] &&
+                    addressBytes[38] == hashed_key2[31]) {
+                    result = "valid";
+                } else {
+                    result = "invalid";
+                }
+            }
+        }
     } catch (...) {
-      return "invalid";
-   }
+        result = "invalid";
+    }
+
+    char* result_cstr = new char[result.length() + 1];
+    std::strcpy(result_cstr, result.c_str());
+    return result_cstr;
 }
 
 extern "C" __attribute__((visibility("default"))) __attribute((used))

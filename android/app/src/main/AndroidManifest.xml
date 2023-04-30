@@ -3,6 +3,19 @@
     <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
     <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <supports-screens
+            android:smallScreens="true"
+            android:normalScreens="true"
+            android:largeScreens="true"
+            android:xlargeScreens="false"
+            android:requiresSmallestWidthDp="320"
+            android:compatibleWidthLimitDp="600"
+            android:largestWidthLimitDp="720" />
+
     <application
             android:label="QRL Mobile"
             android:name="${applicationName}"
