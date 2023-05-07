@@ -11,6 +11,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:wakelock/wakelock.dart';
 
 part 'settings_event.dart';
+
 part 'settings_state.dart';
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
@@ -131,6 +132,10 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       if (currentAppSettings.usePriceNotification !=
           state.usePriceNotification) {
         await _usePriceNotificationChanged(emit);
+      } else if (state.usePriceNotification &&
+          currentAppSettings.appLanguage != state.appLanguage) {
+        await _notificationService.cancelPriceNotification();
+        await _usePriceNotificationChanged(emit);
       }
       if (currentAppSettings.useTransactionNotification !=
           state.useTransactionNotification) {
@@ -171,9 +176,10 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   Future<void> _usePriceNotificationChanged(Emitter<SettingsState> emit) async {
     if (await _checkAndRequestPermission(Permission.notification)) {
       if (state.usePriceNotification) {
-        _notificationService.schedulePriceNotification();
+        await _notificationService
+            .schedulePriceNotification(state.appLanguage.name);
       } else {
-        _notificationService.cancelPriceNotification();
+        await _notificationService.cancelPriceNotification();
       }
     } else {
       emit(state.copyWith(
@@ -186,9 +192,9 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       Emitter<SettingsState> emit) async {
     if (await _checkAndRequestPermission(Permission.notification)) {
       if (state.useTransactionNotification) {
-        _notificationService.scheduleTransactionNotification();
+        await _notificationService.scheduleTransactionNotification();
       } else {
-        _notificationService.cancelTransactionNotification();
+        await _notificationService.cancelTransactionNotification();
       }
     } else {
       emit(state.copyWith(

@@ -1,14 +1,17 @@
 import 'dart:io';
 
+import 'package:decimal/decimal.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart' as foundation;
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:mobile_wallet/model/app_language.dart';
 import 'package:mobile_wallet/model/app_settings.dart';
-import 'package:mobile_wallet/model/market_data.dart';
 import 'package:mobile_wallet/model/wallet.dart';
 import 'package:mobile_wallet/service/ffi_wallet_service.dart';
 import 'package:mobile_wallet/service/grpc_service.dart';
-import 'package:mobile_wallet/service/market_service.dart';
 import 'package:mobile_wallet/service/secured_storage_service.dart';
 import 'package:mobile_wallet/service/service_locator.dart';
 import 'package:mobile_wallet/service/settings_service.dart';
@@ -16,148 +19,190 @@ import 'package:mobile_wallet/service/shared_preference_service.dart';
 import 'package:mobile_wallet/service/wallet_service.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:workmanager/workmanager.dart';
-import 'package:flutter/foundation.dart' as foundation;
+
+import '../firebase_options.dart';
 
 class NotificationService {
-  static const _priceNotificationTaskName = "priceNotificationTask";
+  static final Map<String, String> _priceNotificationChannels =
+      <String, String>{
+    AppLanguage.en.name: "priceNotificationsEn",
+    AppLanguage.zh.name: "priceNotificationsZh",
+    AppLanguage.ja.name: "priceNotificationsJa",
+    AppLanguage.nl.name: "priceNotificationsNl",
+    AppLanguage.ko.name: "priceNotificationsKo",
+  };
+  static const _notificationTaskName = "notificationTask";
   static const _transactionNotificationTaskName = "transactionNotificationTask";
+  static const _transactionNotificationTopicName = "transactionNotifications";
 
-  static void initNotifications() async {
-    Workmanager().initialize(
-      _callbackDispatcher,
-      isInDebugMode: false,
-    );
+  static Future<void> initNotifications() async {
+    SharedPreferenceService sharedPreferenceService =
+        getIt<SharedPreferenceService>();
+    SettingsService settingsService = getIt<SettingsService>();
     if (Platform.isIOS) {
-      SettingsService settingsService = getIt<SettingsService>();
-      AppSettings appSettings = await settingsService.getAppSettings();
-      if (appSettings.useTransactionNotification) {
-        NotificationService().scheduleTransactionNotification();
-      }
-      if (appSettings.usePriceNotification) {
-        NotificationService().schedulePriceNotification();
-      }
-    }
-  }
-
-  void schedulePriceNotification() {
-    if (Platform.isAndroid) {
-      Workmanager().registerPeriodicTask(
-        _priceNotificationTaskName,
-        _priceNotificationTaskName,
-        existingWorkPolicy: ExistingWorkPolicy.replace,
-        frequency: const Duration(minutes: 60),
+      await FirebaseMessaging.instance
+          .setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
       );
     } else {
-      Workmanager().registerOneOffTask(
-        _priceNotificationTaskName,
-        _priceNotificationTaskName,
-        existingWorkPolicy: ExistingWorkPolicy.replace,
+      const AndroidNotificationChannel channel = AndroidNotificationChannel(
+        'fb_high_importance_channel',
+        'High Importance Notifications Firebase',
+        importance: Importance.max,
+      );
+      final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+          FlutterLocalNotificationsPlugin();
+      await flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>()
+          ?.createNotificationChannel(channel);
+    }
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+      _handleRemoteDataMessage(
+          message, sharedPreferenceService, settingsService);
+    });
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+      if (message.notification != null && Platform.isAndroid) {
+        await _showNotification(
+            message.notification!.title ?? "",
+            message.notification!.body ?? "",
+            'fb_high_importance_channel',
+            'High Importance Notifications Firebase',
+            3,
+            tag: message.notification!.android?.tag);
+      } else {
+        await _handleRemoteDataMessage(
+            message, sharedPreferenceService, settingsService);
+      }
+    });
+    AppSettings appSettings = await settingsService.getAppSettings();
+    if (appSettings.useTransactionNotification ||
+        appSettings.usePriceNotification) {
+      await FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: false,
+        provisional: true,
+        sound: true,
       );
     }
   }
 
-  void cancelPriceNotification() {
-    Workmanager().cancelByUniqueName(_priceNotificationTaskName);
-  }
-
-  void scheduleTransactionNotification() {
-    if (Platform.isAndroid) {
-      Workmanager().registerPeriodicTask(
-        _transactionNotificationTaskName,
-        _transactionNotificationTaskName,
-        existingWorkPolicy: ExistingWorkPolicy.replace,
-        frequency: const Duration(minutes: 15),
-      );
-    } else {
-      Workmanager().registerOneOffTask(
-        _transactionNotificationTaskName,
-        _transactionNotificationTaskName,
-        existingWorkPolicy: ExistingWorkPolicy.replace,
-      );
+  Future<void> schedulePriceNotification(String languageCode) async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    if ((await messaging.requestPermission(
+          alert: true,
+          announcement: false,
+          badge: true,
+          carPlay: false,
+          criticalAlert: false,
+          provisional: true,
+          sound: true,
+        ))
+            .authorizationStatus !=
+        AuthorizationStatus.denied) {
+      String? channel = _priceNotificationChannels[languageCode];
+      if (channel != null) {
+        await messaging.subscribeToTopic(channel);
+      }
     }
   }
 
-  void cancelTransactionNotification() {
-    Workmanager().cancelByUniqueName(_transactionNotificationTaskName);
+  Future<void> cancelPriceNotification() async {
+    for (var channel in _priceNotificationChannels.values) {
+      await FirebaseMessaging.instance.unsubscribeFromTopic(channel);
+    }
+  }
+
+  Future<void> scheduleTransactionNotification() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    if ((await messaging.requestPermission(
+          alert: true,
+          announcement: false,
+          badge: true,
+          carPlay: false,
+          criticalAlert: false,
+          provisional: true,
+          sound: true,
+        ))
+            .authorizationStatus !=
+        AuthorizationStatus.denied) {
+      await messaging.subscribeToTopic(_transactionNotificationTopicName);
+    }
+  }
+
+  Future<void> cancelTransactionNotification() async {
+    await FirebaseMessaging.instance
+        .unsubscribeFromTopic(_transactionNotificationTopicName);
   }
 }
 
 @pragma('vm:entry-point')
-void _callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) async {
-    try {
-      SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
-      SharedPreferenceService sharedPreferenceService =
-          SharedPreferenceService(sharedPreferences);
-      SettingsService settingsService =
-          SettingsService(sharedPreferenceService);
-      AppSettings appSettings = await settingsService.getAppSettings();
-      AppLocalizations localizations =
-          await AppLocalizations.delegate.load(appSettings.appLanguage.locale);
-      if (task.contains(Workmanager.iOSBackgroundTask)) {
-        if (appSettings.useTransactionNotification) {
-          await _handleTransactionNotificationTask(
-              settingsService, sharedPreferenceService, localizations);
-        }
-        if (appSettings.usePriceNotification) {
-          await _handlePriceNotificationTask(localizations);
-        }
-      } else if (task.contains("priceNotificationTask") &&
-          appSettings.usePriceNotification) {
-        await _handlePriceNotificationTask(localizations);
-        if (Platform.isIOS) {
-          Workmanager().registerOneOffTask(
-            "priceNotificationTask",
-            "priceNotificationTask",
-            existingWorkPolicy: ExistingWorkPolicy.append,
-          );
-        }
-      } else if (task.contains("transactionNotificationTask") &&
-          appSettings.useTransactionNotification) {
-        await _handleTransactionNotificationTask(
-            settingsService, sharedPreferenceService, localizations);
-        if (Platform.isIOS) {
-          Workmanager().registerOneOffTask(
-            "transactionNotificationTask",
-            "transactionNotificationTask",
-            existingWorkPolicy: ExistingWorkPolicy.append,
-          );
-        }
-      }
-    } on Exception catch (e, stacktrace) {
-      foundation.debugPrintStack(stackTrace: stacktrace, label: e.toString());
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  try {
+    await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform);
+    if (Platform.isIOS) {
+      await FirebaseMessaging.instance
+          .setForegroundNotificationPresentationOptions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
     }
-    return Future.value(true);
-  });
-}
-
-Future<void> _handlePriceNotificationTask(
-    AppLocalizations localizations) async {
-  MarketData? marketData = await MarketService().getMarketData();
-  if (marketData != null) {
-    await _showNotification(
-      localizations.priceNotificationHeader,
-      localizations.priceNotificationMessage(
-          marketData.change24Hr, marketData.price.toStringAsFixed(2)),
-      "price_channel",
-      "Price Changed",
-      0,
-    );
+    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+    SharedPreferenceService sharedPreferenceService =
+        SharedPreferenceService(sharedPreferences);
+    SettingsService settingsService = SettingsService(sharedPreferenceService);
+    await _handleRemoteDataMessage(
+        message, sharedPreferenceService, settingsService);
+  } on Exception catch (e, stacktrace) {
+    foundation.debugPrintStack(stackTrace: stacktrace, label: e.toString());
   }
 }
 
-Future<void> _showNotification(String title, String body, String channel,
-    String channelName, int id) async {
+Future<void> _handleRemoteDataMessage(
+    RemoteMessage message,
+    SharedPreferenceService sharedPreferenceService,
+    SettingsService settingsService) async {
+  if (message.data.isNotEmpty) {
+    String? type = message.data["type"];
+    if (type != null) {
+      AppSettings appSettings = await settingsService.getAppSettings();
+      if (type == NotificationService._transactionNotificationTaskName &&
+          appSettings.useTransactionNotification) {
+        await _handleTransactionNotificationTask(
+            settingsService,
+            sharedPreferenceService,
+            await AppLocalizations.delegate
+                .load(appSettings.appLanguage.locale));
+      } else if (type == NotificationService._notificationTaskName) {
+        await _showNotification(
+          message.data["header"] ?? "QRL notification",
+          message.data["body"] ?? "QRL",
+          "notification_channel",
+          "Notification Received",
+          2,
+        );
+      }
+    }
+  }
+}
+
+Future<void> _showNotification(
+    String title, String body, String channel, String channelName, int id,
+    {String? tag}) async {
   AndroidNotificationDetails androidChannelSpecifics =
-      AndroidNotificationDetails(
-    channel,
-    channelName,
-    importance: Importance.high,
-    color: CustomColors.qrlDarkBlueMaterial,
-    icon: "ic_notification",
-  );
+      AndroidNotificationDetails(channel, channelName,
+          importance: Importance.max,
+          color: CustomColors.qrlDarkBlueMaterial,
+          icon: "ic_notification",
+          tag: tag);
   DarwinNotificationDetails iOSPlatformChannelSpecifics =
       DarwinNotificationDetails(threadIdentifier: channel);
   NotificationDetails platformChannelSpecifics = NotificationDetails(
@@ -218,7 +263,7 @@ Future<DateTime> _getAndUpdateLastCheckDateTime(
   DateTime lastCheckDateTime = DateTime.fromMillisecondsSinceEpoch(
       await sharedPreferenceService
               .getIntValue("transaction-last-check-date-time") ??
-          now.subtract(const Duration(minutes: 5)).millisecondsSinceEpoch);
+          now.subtract(const Duration(minutes: 20)).millisecondsSinceEpoch);
   await sharedPreferenceService.setIntValue(
       "transaction-last-check-date-time", now.millisecondsSinceEpoch);
   return lastCheckDateTime;
