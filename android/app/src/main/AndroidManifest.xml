@@ -14,12 +14,21 @@
             android:xlargeScreens="false"
             android:requiresSmallestWidthDp="320"
             android:compatibleWidthLimitDp="600"
-            android:largestWidthLimitDp="720" />
+            android:largestWidthLimitDp="720"/>
 
     <application
             android:label="QRL Mobile"
             android:name="${applicationName}"
             android:icon="@mipmap/ic_launcher">
+        <meta-data
+                android:name="com.google.firebase.messaging.default_notification_icon"
+                android:resource="@drawable/ic_notification" />
+        <meta-data
+                android:name="com.google.firebase.messaging.default_notification_color"
+                android:resource="@color/qrl_dark_blue" />
+        <meta-data
+                android:name="com.google.firebase.messaging.default_notification_channel_id"
+                android:value="fb_high_importance_channel"/>
         <activity
                 android:name=".MainActivity"
                 android:screenOrientation="portrait"
@@ -29,6 +38,7 @@
                 android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
                 android:hardwareAccelerated="true"
                 android:windowSoftInputMode="adjustResize">
+
             <!-- Specifies an Android theme to apply to this Activity as soon as
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues

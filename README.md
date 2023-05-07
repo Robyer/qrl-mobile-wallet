@@ -2,9 +2,7 @@
 
 Flutter implementation of qrl wallet for android and IOS
 
-
-![Screenshot](docs/qrl-mobile-wallet.png)  
-
+![Screenshot](docs/qrl-mobile-wallet.png)
 
 ## Resources
 
@@ -66,9 +64,12 @@ For more information on building and releasing for
 IOS [click here](https://docs.flutter.dev/deployment/ios)
 
 ### Building xcframework
-run [build_xcframework.sh](build_xcframework.sh) to generate xcframeworks for iphone and iphonesimulator in Frameworks folder.
+
+run [build_xcframework.sh](build_xcframework.sh) to generate xcframeworks for
+iphone and iphonesimulator in Frameworks folder.
 
 In case you run into erros like cmake/xcode/etc not found run command:
+
 ```
 export PATH="/opt/homebrew/bin:$PATH"
 ```
@@ -95,24 +96,32 @@ This is often the best option while writing tests because it provides the
 fastest feedback loop as well as the ability to set breakpoints.
 
 #### IntelliJ
+
 - Open the <your-class>_test.dart file
 - Select the Run menu
 - Click the Run 'tests in <your-class>_test.dart' option
 - Alternatively, use the appropriate keyboard shortcut for your platform.
 
 #### VSCode
+
 - Open the <your-class>_test.dart file
 - Select the Run menu
 - Click the Start Debugging option
 - Alternatively, use the appropriate keyboard shortcut for your platform.
 
 ### Run tests in a terminal
+
 You can also use a terminal to run the tests by executing the following command
 from the root of the project:
+
 ```
 flutter test test/<your-class>_test.dart
 ```
+
 For more options regarding unit tests, you can execute this command:
+
 ```
 flutter test --help
 ```
+
+
