@@ -1,4 +1,5 @@
 {
+  "addMessage": "BERICHT TOEVOEGEN",
   "addressBook": "Contactenlijst",
   "authenticationFailed": "Authenticatie fout!",
   "addRecipient": "ONTVANGER TOEVOEGEN",
@@ -45,6 +46,7 @@
   "loadingSettings": "Ophalen settings",
   "loadingWallets": "Ophalen wallets",
   "marketCap": "Market CAP",
+  "message": "Bericht",
   "mnemonic": "Mnemonic",
   "no": "NEE",
   "nodeUrl": "Node URL",
@@ -92,6 +94,7 @@
   "settings": "Instellingen",
   "showKeys": "Geef sleutels weer",
   "supportRequest": "Support verzoek",
+  "transaction": "Transactie",
   "transactionDetails": "Transactie Details",
   "transactionHash": "Transactie Hash",
   "transactionNotificationHeader": "Transactie ontvangen",

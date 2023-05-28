@@ -1,4 +1,5 @@
 {
+  "addMessage": "メッセージを追加する",
   "addressBook": "アドレス帳",
   "authenticationFailed": "認証に失敗しました",
   "addRecipient": "受信者を追加する",
@@ -45,6 +46,7 @@
   "loadingSettings": "設定を読み込んでいます",
   "loadingWallets": "ウォレットを読み込んでいます",
   "marketCap": "時価総額",
+  "message": "メッセージ",
   "mnemonic": "ニーモニック",
   "no": "いいえ",
   "nodeUrl": "ノード URL",
@@ -92,6 +94,7 @@
   "settings": "設定",
   "showKeys": "キーを表示",
   "supportRequest": "サポートリクエスト",
+  "transaction": "取引",
   "transactionDetails": "トランザクションの詳細",
   "transactionHash": "トランザクションハッシュ",
   "transactionNotificationHeader": "取引を受け取りました",

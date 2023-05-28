@@ -1,4 +1,5 @@
 {
+  "addMessage": "메시지 추가",
   "addressBook": "주소록",
   "authenticationFailed": "인증 실패!",
   "addRecipient": "수신자 추가",
@@ -45,6 +46,7 @@
   "loadingSettings": "설정 불러오는 중",
   "loadingWallets": "지갑을 불러오는 중",
   "marketCap": "시가 총액",
+  "message": "메시지",
   "mnemonic": "니모닉(Mnemonic)",
   "no": "아니오",
   "nodeUrl": "노드 URL",
@@ -92,6 +94,7 @@
   "settings": "설정",
   "showKeys": "열쇠 보기",
   "supportRequest": "지원 요청",
+  "transaction": "거래",
   "transactionDetails": "거래 상세",
   "transactionHash": "거래 해시",
   "transactionNotificationHeader": "가격 통지",

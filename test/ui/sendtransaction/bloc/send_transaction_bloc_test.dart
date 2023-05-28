@@ -244,6 +244,8 @@ void main() {
     blocTest(
       'emits [hasMessageUpdated and initial] when HasMessageChangedEvent',
       build: () => sendTransactionBloc,
+      seed: () => SendTransactionState(wallet, extendedWalletData,
+          status: SendTransactionStatus.initial),
       act: (bloc) =>
           sendTransactionBloc.add(const HasMessageChangedEvent(true)),
       wait: const Duration(seconds: 1),

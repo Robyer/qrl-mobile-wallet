@@ -1,4 +1,5 @@
 {
+  "addMessage": "添加消息",
   "addressBook": "地址簿",
   "authenticationFailed": "验证失败!",
   "addRecipient": "添加收件人",
@@ -45,6 +46,7 @@
   "loadingSettings": "加载设置",
   "loadingWallets": "加载钱包",
   "marketCap": "市值",
+  "message": "消息",
   "mnemonic": "助记符",
   "no": "没",
   "noAuthenticationFound": "在设备上找不到身份验证方法!",
@@ -93,6 +95,7 @@
   "showKeys": "显示键",
   "supportRequest": "支持请求",
   "treeHeight": "树高",
+  "transaction": "交易",
   "transactionDetails": "交易明细",
   "transactionHash": "交易哈希",
   "transactionNotificationHeader": "价格通知",
