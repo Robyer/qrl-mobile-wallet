@@ -30,76 +30,82 @@ class _BackupWalletView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: QrlAppBar(),
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(AppLocalizations.of(context)!.recoverySeeds,
-                  style: const TextStyle(
-                    color: CustomColors.qrlLightBlueColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  )),
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: CustomColors.qrlDarkBlueLinearGradient,
+        image: DecorationImage(
+          image: const AssetImage('assets/images/orange-dots-4.png'),
+          alignment: Alignment.bottomCenter,
+          colorFilter: ColorFilter.mode(
+            CustomColors.qrlDarkBlueMaterial.withOpacity(0.15),
+            BlendMode.dstATop,
           ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
-              child: SelectableText(
-                "Q$address",
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-          _buildMnemonicBlocBuilder(),
-          _buildHexSeedBlocBuilder(),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 24, right: 24, bottom: 8),
-              child: Text(AppLocalizations.of(context)!.warning,
-                  style: const TextStyle(
-                    color: CustomColors.qrlLightBlueColor,
-                    fontWeight: FontWeight.bold,
-                  )),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
-              child: Text(
-                AppLocalizations.of(context)!.recoveryWarning,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Align(
-              alignment: Alignment.bottomCenter,
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: QrlTitleAppBar(
+          titleText: AppLocalizations.of(context)!.recoverySeeds,
+        ),
+        body: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Center(
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 24),
-                child: SizedBox(
-                  width: 256,
-                  child: QrlButton(
-                    () {
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MainPage()),
-                          (route) => false);
-                    },
-                    text: AppLocalizations.of(context)!.done,
-                    baseColor: CustomColors.qrlLightBlueColor,
-                  ),
+                padding: const EdgeInsets.only(
+                    left: 32, right: 32, bottom: 24, top: 24),
+                child: SelectableText(
+                  "Q$address",
+                  textAlign: TextAlign.center,
                 ),
               ),
             ),
-          )
-        ],
+            _buildMnemonicBlocBuilder(),
+            _buildHexSeedBlocBuilder(),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 32, right: 32, bottom: 8),
+                child: Text(AppLocalizations.of(context)!.warning,
+                    style: const TextStyle(
+                      color: CustomColors.qrlLightBlueColor,
+                    )),
+              ),
+            ),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.only(left: 32, right: 32, bottom: 24),
+                child: Text(
+                  AppLocalizations.of(context)!.recoveryWarning,
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 24),
+                  child: SizedBox(
+                    width: 256,
+                    child: QrlButton(
+                      () {
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MainPage()),
+                            (route) => false);
+                      },
+                      text: AppLocalizations.of(context)!.done,
+                      baseColor: CustomColors.qrlLightBlueColor,
+                      backgroundColor: CustomColors.qrlLightBlueColorBackground,
+                    ),
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -144,7 +150,6 @@ class _BackupWalletView extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: CustomColors.qrlYellowColor,
-                      fontWeight: FontWeight.bold,
                     )),
               )),
               SizedBox(
@@ -172,7 +177,9 @@ class _BackupWalletView extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const CircularProgressIndicator(),
+                      const CircularProgressIndicator(
+                        color: CustomColors.qrlYellowColor,
+                      ),
                       const SizedBox(
                         height: 15,
                       ),

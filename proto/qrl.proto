@@ -413,6 +413,7 @@ message Transaction {
     message Transfer {
         repeated bytes addrs_to = 1;
         repeated uint64 amounts = 2;
+        bytes message_data = 3;
     }
 
     message CoinBase {
@@ -427,6 +428,7 @@ message Transaction {
 
     message Message {
         bytes message_hash = 1;
+        bytes addr_to = 2;
     }
 
     message Token {

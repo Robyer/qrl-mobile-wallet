@@ -162,15 +162,31 @@ const char* isAddressValid(char *address) {
 }
 
 extern "C" __attribute__((visibility("default"))) __attribute((used))
-const char* createTransaction(char *hexSeed, int64_t* amounts, char** receiverWalletAddresses, int transactionCount, int64_t otsIndex, int64_t fee) {
+const char* createTransaction(char *hexSeed, int64_t* amounts, char** receiverWalletAddresses, int transactionCount, int64_t otsIndex, int64_t fee, char *message) {
     string hexSeedStr(hexSeed);
 
-    std::vector<unsigned char> concatenatedVector(8 + (47 * transactionCount));
+    string messageStr;
+    int messageSize = 0;
+    if (message != nullptr) {
+        messageStr = string(message);
+        messageSize = messageStr.length();
+    }
+    std::vector<unsigned char> concatenatedVector((8 + messageSize) + (47 * transactionCount));
     for (int i = 0; i < 8; i++) {
         concatenatedVector[7 - i] = (fee >> (i * 8));
     }
 
     int vectorPos = 8;
+
+    if (messageSize > 0) {
+        char messageBytes[messageSize];
+        strcpy(messageBytes, messageStr.c_str());
+        for (int count = 0; count < sizeof(messageBytes); count++) {
+            concatenatedVector[vectorPos] = messageBytes[count];
+            vectorPos++;
+        }
+    }
+
     for (int t = 0; t < transactionCount; t++) {
         string receiverWalletAddressStr(receiverWalletAddresses[t]);
 
@@ -187,7 +203,7 @@ const char* createTransaction(char *hexSeed, int64_t* amounts, char** receiverWa
             vectorPos++;
         }
 
-        int vectorPos2 = 46 + (8 + (t * 47));
+        int vectorPos2 = 46 + ((8 + messageSize) + (t * 47));
         for (int i = 0; i < 8; i++){
             concatenatedVector[vectorPos2 - i] = (amounts[t] >> (i * 8));
         }

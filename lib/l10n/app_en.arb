@@ -1,4 +1,8 @@
 {
+  "@addMessage": {
+    "description": "add a message to the transaction"
+  },
+  "addMessage": "ADD MESSAGE",
   "@addressBook": {
     "description": "a description to use the address book"
   },
@@ -183,6 +187,10 @@
     "description": "a label for the market cap field"
   },
   "marketCap": "Market CAP",
+  "@message": {
+    "description": "a label for the message label"
+  },
+  "message": "Message",
   "@mnemonic": {
     "description": "a label for the mnemonic field"
   },
@@ -371,6 +379,10 @@
     "description": "link text to the QRL teams support e-mail."
   },
   "supportRequest": "Support request",
+  "@transaction": {
+    "description": "Label for transaction header."
+  },
+  "transaction": "Transaction",
   "@transactionDetails": {
     "description": "Label for a page or section of the wallet app used to display the details of a specific transaction."
   },
@@ -379,9 +391,6 @@
     "description": "Label for a field that displays the unique identifier for a transaction, known as its transaction hash."
   },
   "transactionHash": "Transaction Hash",
-  "@transfer": {
-    "description": "Button or link text to initiate a transfer"
-  },
   "@transactionNotificationHeader": {
     "description": "Header label of transaction notification."
   },
@@ -390,6 +399,9 @@
     "description": "Message of transaction notification."
   },
   "transactionNotificationMessage": "A new transaction has been received",
+  "@transfer": {
+    "description": "Button or link text to initiate a transfer"
+  },
   "transfer": "Transfer",
   "@treeHeight": {
     "description": "Tree Height"

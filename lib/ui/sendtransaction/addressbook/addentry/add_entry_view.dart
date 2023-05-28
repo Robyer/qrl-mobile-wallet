@@ -13,63 +13,70 @@ class AddEntryView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
+    return Dialog(
       shape: RoundedRectangleBorder(
-          side: const BorderSide(color: CustomColors.qrlYellowColor),
-          borderRadius: BorderRadius.circular(8)),
-      backgroundColor: CustomColors.qrlDarkBlueColor,
-      insetPadding: const EdgeInsets.all(24),
-      title: Text(
-        AppLocalizations.of(context)!.addressBook,
-        style: const TextStyle(
-          color: CustomColors.qrlLightBlueColor,
-          fontWeight: FontWeight.bold,
-          fontSize: 18,
-        ),
-        textAlign: TextAlign.center,
+        borderRadius: BorderRadius.circular(5),
+        side: const BorderSide(color: CustomColors.qrlYellowColor),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
+      backgroundColor: CustomColors.qrlDarkBlueColor,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: CustomColors.qrlDarkBlueLinearGradient,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Container(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              AppLocalizations.of(context)!.addressBook,
+              style: const TextStyle(
+                color: CustomColors.qrlLightBlueColor,
+                fontSize: 16,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
           Center(
               child: Padding(
-            padding: const EdgeInsets.only(bottom: 32),
+            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
             child: Text(
               _address,
               textAlign: TextAlign.center,
             ),
           )),
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: QrlTextFormField(
-              (value) => BlocProvider.of<AddEntryBloc>(context)
-                  .add(ChangedEvent(value)),
-              text: AppLocalizations.of(context)!.walletName,
-              autoFocus: true,
+          Padding(
+            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: QrlTextFormField(
+                (value) => BlocProvider.of<AddEntryBloc>(context)
+                    .add(ChangedEvent(value)),
+                text: AppLocalizations.of(context)!.walletName,
+                autoFocus: true,
+              ),
             ),
-          )
-        ],
-      ),
-      contentPadding: const EdgeInsets.only(left: 24, right: 24, top: 36),
-      actionsPadding:
-          const EdgeInsets.only(left: 24, right: 24, bottom: 8, top: 24),
-      actionsAlignment: MainAxisAlignment.spaceBetween,
-      actions: [
-        SizedBox(
-          width: 120,
-          child: _buildButtonBlocBuilder(),
-        ),
-        SizedBox(
-          width: 120,
-          child: QrlButton(
-            () {
-              Navigator.of(context).pop(false);
-            },
-            text: AppLocalizations.of(context)!.cancel,
-            baseColor: CustomColors.qrlLightBlueColor,
           ),
-        )
-      ],
+          Padding(
+            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: QrlButton(
+                    () {
+                      Navigator.of(context).pop();
+                    },
+                    text: AppLocalizations.of(context)!.cancel,
+                  ),
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                Expanded(child: _buildButtonBlocBuilder()),
+              ],
+            ),
+          ),
+        ]),
+      ),
     );
   }
 
@@ -89,6 +96,7 @@ class AddEntryView extends StatelessWidget {
               : null,
           text: AppLocalizations.of(context)!.confirm,
           baseColor: CustomColors.qrlLightBlueColor,
+          backgroundColor: CustomColors.qrlLightBlueColorBackground,
         );
       },
     );

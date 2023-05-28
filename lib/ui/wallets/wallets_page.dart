@@ -13,6 +13,8 @@ import 'package:mobile_wallet/ui/wallets/changewalletname/change_wallet_name_blo
 import 'package:mobile_wallet/ui/wallets/changewalletname/change_wallet_name_view.dart';
 import 'package:mobile_wallet/ui/wallets/wallets_bloc.dart';
 
+import '../component/qrl_app_bar.dart';
+
 class WalletsPage extends StatelessWidget {
   const WalletsPage({super.key});
 
@@ -29,42 +31,49 @@ class _WalletsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Center(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(AppLocalizations.of(context)!.wallets,
-                style: const TextStyle(
-                  color: CustomColors.qrlLightBlueColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                )),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: CustomColors.qrlDarkBlueLinearGradient,
+        image: DecorationImage(
+          image: const AssetImage('assets/images/orange-dots-2.png'),
+          alignment: Alignment.bottomCenter,
+          colorFilter: ColorFilter.mode(
+            CustomColors.qrlDarkBlueMaterial.withOpacity(0.15),
+            BlendMode.dstATop,
           ),
         ),
-        Expanded(
-          child: _buildWalletsBlocConsumer(),
-        ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 24, top: 16),
-            child: SizedBox(
-              width: 256,
-              child: QrlButton(
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const AddWalletPage()),
+      ),
+      child: Scaffold(
+        appBar:
+            QrlTitleAppBar(titleText: AppLocalizations.of(context)!.wallets),
+        body: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              child: _buildWalletsBlocConsumer(),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 24, top: 16),
+                child: SizedBox(
+                  width: 256,
+                  child: QrlButton(
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AddWalletPage()),
+                    ),
+                    text: AppLocalizations.of(context)!.addWallet,
+                    baseColor: CustomColors.qrlLightBlueColor,
+                    backgroundColor: CustomColors.qrlLightBlueColorBackground,
+                  ),
                 ),
-                text: AppLocalizations.of(context)!.addWallet,
-                baseColor: CustomColors.qrlLightBlueColor,
               ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -134,8 +143,7 @@ class _WalletsView extends StatelessWidget {
                                   wallet.name,
                                   style: const TextStyle(
                                       color: CustomColors.qrlLightBlueColor,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.bold),
+                                      fontSize: 14),
                                 ),
                               ),
                               MiddleEllipsisText(
@@ -191,7 +199,9 @@ class _WalletsView extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const CircularProgressIndicator(),
+                  const CircularProgressIndicator(
+                    color: CustomColors.qrlYellowColor,
+                  ),
                   const SizedBox(
                     height: 15,
                   ),

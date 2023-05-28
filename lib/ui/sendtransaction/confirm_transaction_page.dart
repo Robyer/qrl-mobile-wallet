@@ -49,97 +49,119 @@ class ConfirmTransactionPage extends StatelessWidget {
         builder: (context, state) => _buildScaffold(context, state));
   }
 
-  Scaffold _buildScaffold(BuildContext context, SendTransactionState state) {
-    return Scaffold(
-        appBar: QrlAppBar(),
-        body: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(AppLocalizations.of(context)!.sendTitle,
-                      style: const TextStyle(
-                        color: CustomColors.qrlLightBlueColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      )),
-                ),
-              ),
-              Center(
-                  child: Padding(
-                      padding: const EdgeInsets.only(bottom: 48),
-                      child: Text(
-                        AppLocalizations.of(context)!.confirmTransaction,
-                      ))),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: state.transactionLines.length,
-                  itemBuilder: (context, index) {
-                    final TransactionLine transactionLine =
-                        state.transactionLines[index];
-                    return Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Center(
-                              child: Text(
-                            AppLocalizations.of(context)!.amount,
+  Container _buildScaffold(BuildContext context, SendTransactionState state) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: CustomColors.qrlDarkBlueLinearGradient,
+        image: DecorationImage(
+          image: const AssetImage('assets/images/orange-dots-4.png'),
+          alignment: Alignment.bottomCenter,
+          colorFilter: ColorFilter.mode(
+            CustomColors.qrlDarkBlueMaterial.withOpacity(0.15),
+            BlendMode.dstATop,
+          ),
+        ),
+      ),
+      child: Scaffold(
+          appBar: QrlTitleAppBar(
+              titleText: AppLocalizations.of(context)!.sendTitle),
+          body: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (state.message != null && state.message!.isNotEmpty)
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(AppLocalizations.of(context)!.message,
+                            textAlign: TextAlign.center,
                             style: const TextStyle(
                               color: CustomColors.qrlYellowColor,
-                            ),
-                          )),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 36),
-                          child: Center(
-                              child: Text(
-                            "${StringUtil.formatAmount(transactionLine.amount!)} QRL",
-                          )),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Center(
-                              child: Text(
-                            AppLocalizations.of(context)!
-                                .sendingToWalletAddress,
-                            style: const TextStyle(
-                              color: CustomColors.qrlYellowColor,
-                            ),
-                          )),
-                        ),
-                        Center(
-                            child: Padding(
-                          padding: const EdgeInsets.only(
-                              left: 24, right: 24, bottom: 48),
+                            )),
+                      ),
+                    ),
+                  if (state.message != null && state.message!.isNotEmpty)
+                    Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 24),
                           child: SelectableText(
-                            transactionLine.address!,
+                            state.message!,
                             textAlign: TextAlign.center,
                           ),
                         )),
-                      ],
-                    );
-                  },
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 36),
-                  child: SizedBox(
-                    width: 256,
-                    child: QrlButton(
-                      () {
-                        _onPressConfirmTransaction(context);
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: state.transactionLines.length,
+                      itemBuilder: (context, index) {
+                        final TransactionLine transactionLine =
+                            state.transactionLines[index];
+                        return Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Center(
+                                  child: Text(
+                                AppLocalizations.of(context)!.amount,
+                                style: const TextStyle(
+                                  color: CustomColors.qrlYellowColor,
+                                ),
+                              )),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 36),
+                              child: Center(
+                                  child: Text(
+                                "${StringUtil.formatAmount(transactionLine.amount!)} QRL",
+                              )),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Center(
+                                  child: Text(
+                                AppLocalizations.of(context)!
+                                    .sendingToWalletAddress,
+                                style: const TextStyle(
+                                  color: CustomColors.qrlYellowColor,
+                                ),
+                              )),
+                            ),
+                            Center(
+                                child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 24, right: 24, bottom: 48),
+                              child: SelectableText(
+                                transactionLine.address!,
+                                textAlign: TextAlign.center,
+                              ),
+                            )),
+                          ],
+                        );
                       },
-                      text: AppLocalizations.of(context)!.confirm,
-                      baseColor: CustomColors.qrlLightBlueColor,
                     ),
                   ),
-                ),
-              ),
-            ]));
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: SizedBox(
+                        width: 256,
+                        child: QrlButton(
+                          () {
+                            _onPressConfirmTransaction(context);
+                          },
+                          text: AppLocalizations.of(context)!.confirm,
+                          baseColor: CustomColors.qrlLightBlueColor,
+                          backgroundColor:
+                              CustomColors.qrlLightBlueColorBackground,
+                        ),
+                      ),
+                    ),
+                  ),
+                ]),
+          )),
+    );
   }
 
   void _onPressConfirmTransaction(BuildContext context) async {

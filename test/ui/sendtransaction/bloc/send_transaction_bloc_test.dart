@@ -240,5 +240,72 @@ void main() {
         ];
       },
     );
+
+    blocTest(
+      'emits [hasMessageUpdated and initial] when HasMessageChangedEvent',
+      build: () => sendTransactionBloc,
+      act: (bloc) =>
+          sendTransactionBloc.add(const HasMessageChangedEvent(true)),
+      wait: const Duration(seconds: 1),
+      expect: () {
+        return [
+          isA<SendTransactionState>()
+              .having((state) => state.status, "status",
+                  SendTransactionStatus.hasMessageUpdated)
+              .having((state) => state.hasMessage, "hasMessage", true),
+          isA<SendTransactionState>()
+              .having((state) => state.status, "status",
+                  SendTransactionStatus.initial)
+              .having((state) => state.hasMessage, "hasMessage", true),
+        ];
+      },
+    );
+
+    blocTest(
+      'emits [hasMessageUpdated and initial + clearing message] when HasMessageChangedEvent',
+      build: () => sendTransactionBloc,
+      seed: () => SendTransactionState(wallet, extendedWalletData,
+          status: SendTransactionStatus.initial,
+          hasMessage: true,
+          message: "test-message"),
+      act: (bloc) =>
+          sendTransactionBloc.add(const HasMessageChangedEvent(false)),
+      wait: const Duration(seconds: 1),
+      expect: () {
+        return [
+          isA<SendTransactionState>()
+              .having((state) => state.status, "status",
+                  SendTransactionStatus.hasMessageUpdated)
+              .having((state) => state.hasMessage, "hasMessage", false)
+              .having((state) => state.message, "message", ""),
+          isA<SendTransactionState>()
+              .having((state) => state.status, "status",
+                  SendTransactionStatus.initial)
+              .having((state) => state.hasMessage, "hasMessage", false)
+              .having((state) => state.message, "message", ""),
+        ];
+      },
+    );
+
+    blocTest(
+      'emits [initial + message] when MessageChangedEvent',
+      build: () => sendTransactionBloc,
+      seed: () => SendTransactionState(wallet, extendedWalletData,
+          status: SendTransactionStatus.initial,
+          hasMessage: true,
+          message: "test-message"),
+      act: (bloc) =>
+          sendTransactionBloc.add(const MessageChangedEvent("changed-message")),
+      wait: const Duration(seconds: 1),
+      expect: () {
+        return [
+          isA<SendTransactionState>()
+              .having((state) => state.status, "status",
+                  SendTransactionStatus.initial)
+              .having((state) => state.hasMessage, "hasMessage", true)
+              .having((state) => state.message, "message", "changed-message"),
+        ];
+      },
+    );
   });
 }

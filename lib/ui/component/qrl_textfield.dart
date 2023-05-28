@@ -47,19 +47,21 @@ class QrlTextFormField extends TextFormField {
   final ValueChanged<String> _onChanged;
   static const Color _defaultColor = CustomColors.qrlYellowColor;
 
-  QrlTextFormField(this._onChanged,
-      {super.key,
-      String? initialValue,
-      String? text,
-      bool? autoFocus,
-      Color? baseColor,
-      FocusNode? focusNode,
-      TextInputType? keyboardType,
-      int? minLines,
-      int? maxLines,
-      Widget? suffixIcon,
-      List<TextInputFormatter>? inputFormatters})
-      : super(
+  QrlTextFormField(
+    this._onChanged, {
+    super.key,
+    String? initialValue,
+    String? text,
+    bool? autoFocus,
+    Color? baseColor,
+    FocusNode? focusNode,
+    TextInputType? keyboardType,
+    int? minLines,
+    int? maxLines,
+    Widget? suffixIcon,
+    List<TextInputFormatter>? inputFormatters,
+    int? maxLength,
+  }) : super(
             onChanged: _onChanged,
             initialValue: initialValue,
             autofocus: autoFocus ?? false,
@@ -81,5 +83,6 @@ class QrlTextFormField extends TextFormField {
               floatingLabelBehavior: FloatingLabelBehavior.always,
               suffixIcon: suffixIcon,
             ),
+            maxLength: maxLength,
             cursorColor: baseColor ?? _defaultColor);
 }

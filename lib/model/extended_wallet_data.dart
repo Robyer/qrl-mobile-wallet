@@ -14,17 +14,29 @@ class ExtendedWalletData {
 
 class TransactionData {
   final String _hash;
+  final String _type;
   final String _senderAddress;
   final String _receiverAddress;
   final int _amount;
   final DateTime _dateTime;
   final bool _incoming;
   final bool _unconfirmed;
+  final String? _message;
 
-  TransactionData(this._hash, this._senderAddress, this._receiverAddress,
-      this._amount, this._dateTime, this._incoming, this._unconfirmed);
+  TransactionData(
+      this._hash,
+      this._type,
+      this._senderAddress,
+      this._receiverAddress,
+      this._amount,
+      this._dateTime,
+      this._incoming,
+      this._unconfirmed,
+      this._message);
 
   String get hash => _hash;
+
+  String get type => _type;
 
   String get senderAddress => _senderAddress;
 
@@ -37,6 +49,8 @@ class TransactionData {
   bool get incoming => _incoming;
 
   bool get unconfirmed => _unconfirmed;
+
+  String? get message => _message;
 
   @override
   bool operator ==(Object other) =>

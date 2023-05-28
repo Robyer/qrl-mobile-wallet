@@ -49,8 +49,19 @@ class CustomColors {
     },
   );
 
-
   static const Color qrlDarkBlueColor = Color(0xff0b181e);
   static const Color qrlYellowColor = Color(0xffffa729);
+  static const Color qrlYellowColorBackground = Color(0xff242720);
   static const Color qrlLightBlueColor = Color(0xff4AAFFF);
+  static const Color qrlLightBlueColorBackground = Color(0xff132936);
+
+  static const LinearGradient qrlDarkBlueLinearGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      Color(0xff163246),
+      CustomColors.qrlDarkBlueMaterial,
+    ],
+    stops: [0.1, 0.4],
+  );
 }

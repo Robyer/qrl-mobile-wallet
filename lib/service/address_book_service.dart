@@ -35,4 +35,12 @@ class AddressBookService {
         .where((addressBookEntry) => addressBookEntry.address == address)
         .isNotEmpty;
   }
+
+  Future<void> saveEntry(AddressBookEntry addressBookEntry) async {
+    List<AddressBookEntry> addressBook = await getAddressBook();
+    addressBook[addressBook.indexWhere(
+            (element) => element.address == addressBookEntry.address)] =
+        addressBookEntry;
+    await saveAddressBook(addressBook);
+  }
 }

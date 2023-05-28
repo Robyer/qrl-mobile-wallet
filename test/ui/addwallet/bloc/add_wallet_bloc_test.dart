@@ -27,9 +27,9 @@ void main() {
     });
 
     test("test initial state", () {
-      expect(addWalletBlocCreate.state, const AddWalletState());
-      expect(addWalletBlocHex.state, const AddWalletState());
-      expect(addWalletBlocMnemonic.state, const AddWalletState());
+      expect(addWalletBlocCreate.state, const AddWalletState(AddWalletMode.create));
+      expect(addWalletBlocHex.state, const AddWalletState(AddWalletMode.hexSeed));
+      expect(addWalletBlocMnemonic.state, const AddWalletState(AddWalletMode.mnemonic));
     });
 
     blocTest(

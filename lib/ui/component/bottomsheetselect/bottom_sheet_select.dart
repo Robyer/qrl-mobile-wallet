@@ -90,22 +90,35 @@ class _BottomSheetSelectWidget<T> extends StatelessWidget {
             builder: (modal) {
               return BlocProvider<BottomSheetSelectBloc<T>>.value(
                 value: BlocProvider.of<BottomSheetSelectBloc<T>>(context),
-                child: ListView.separated(
-                    padding: EdgeInsets.zero,
-                    shrinkWrap: true,
-                    separatorBuilder: (context, index) => Divider(
-                          height: 1,
-                          color: Colors.grey[500],
-                        ),
-                    itemCount: items.length,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                          child: _buildValue(context, items[index]),
-                          onTap: () {
-                            BlocProvider.of<BottomSheetSelectBloc<T>>(context)
-                                .add(SelectedEvent(items[index]));
-                          });
-                    }),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0xff163246),
+                        CustomColors.qrlDarkBlueMaterial,
+                      ],
+                      stops: [0.1, 0.8],
+                    ),
+                  ),
+                  child: ListView.separated(
+                      padding: EdgeInsets.zero,
+                      shrinkWrap: true,
+                      separatorBuilder: (context, index) => Divider(
+                            height: 1,
+                            color: Colors.grey[500],
+                          ),
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                            child: _buildValue(context, items[index]),
+                            onTap: () {
+                              BlocProvider.of<BottomSheetSelectBloc<T>>(context)
+                                  .add(SelectedEvent(items[index]));
+                            });
+                      }),
+                ),
               );
             })
         .whenComplete(() => BlocProvider.of<BottomSheetSelectBloc<T>>(context)
@@ -124,7 +137,7 @@ class _BottomSheetSelectWidget<T> extends StatelessWidget {
     Center center = Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           InkWell(
             child: selectWidget,

@@ -14,6 +14,8 @@ import 'package:mobile_wallet/ui/settings/community_page.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
 import 'package:mobile_wallet/ui/util/util.dart';
 
+import '../component/qrl_app_bar.dart';
+
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
@@ -67,16 +69,19 @@ class _SettingsView extends StatelessWidget {
       },
       buildWhen: (previous, current) => current.status == SettingsStatus.ready,
       builder: (context, state) {
+        Widget widget;
         if (state.status == SettingsStatus.ready) {
-          return _buildWidget(context);
+          widget = _buildWidget(context);
         } else {
-          return Center(
+          widget = Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const CircularProgressIndicator(),
+                  const CircularProgressIndicator(
+                    color: CustomColors.qrlYellowColor,
+                  ),
                   const SizedBox(
                     height: 15,
                   ),
@@ -86,6 +91,23 @@ class _SettingsView extends StatelessWidget {
             ),
           );
         }
+        return Container(
+            decoration: BoxDecoration(
+              gradient: CustomColors.qrlDarkBlueLinearGradient,
+              image: DecorationImage(
+                image: const AssetImage('assets/images/orange-dots-5.png'),
+                alignment: Alignment.bottomCenter,
+                colorFilter: ColorFilter.mode(
+                  CustomColors.qrlDarkBlueMaterial.withOpacity(0.15),
+                  BlendMode.dstATop,
+                ),
+              ),
+            ),
+            child: Scaffold(
+              appBar: QrlTitleAppBar(
+                  titleText: AppLocalizations.of(context)!.settings),
+              body: widget,
+            ));
       },
     );
   }
@@ -93,17 +115,9 @@ class _SettingsView extends StatelessWidget {
   Column _buildWidget(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(AppLocalizations.of(context)!.settings,
-              style: const TextStyle(
-                color: CustomColors.qrlLightBlueColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              )),
-        ),
         Expanded(
           child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -117,8 +131,7 @@ class _SettingsView extends StatelessWidget {
                     child: Text(AppLocalizations.of(context)!.warning,
                         style: const TextStyle(
                           color: CustomColors.qrlLightBlueColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                          fontSize: 16,
                         )),
                   ),
                 ),
@@ -151,7 +164,6 @@ class _SettingsView extends StatelessWidget {
                   );
                 },
                 text: AppLocalizations.of(context)!.join,
-                baseColor: CustomColors.qrlLightBlueColor,
               ),
             ),
             _buildConfirmBuilder(),
@@ -313,6 +325,7 @@ class _SettingsView extends StatelessWidget {
                       : null,
                   text: AppLocalizations.of(context)!.confirm,
                   baseColor: CustomColors.qrlLightBlueColor,
+                  backgroundColor: CustomColors.qrlLightBlueColorBackground,
                 ),
               ),
             ),

@@ -31,7 +31,6 @@ class _MainView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MainCubit, int>(builder: (context, index) {
       return Scaffold(
-        appBar: QrlAppBar(),
         body: _widgetOptions.elementAt(index),
         bottomNavigationBar: BottomNavigationBar(
           items: <BottomNavigationBarItem>[

@@ -3138,6 +3138,7 @@ class Transaction_Transfer extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Transaction.Transfer', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'qrl'), createEmptyInstance: create)
     ..p<$core.List<$core.int>>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'addrsTo', $pb.PbFieldType.PY)
     ..p<$fixnum.Int64>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'amounts', $pb.PbFieldType.KU6)
+    ..a<$core.List<$core.int>>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'messageData', $pb.PbFieldType.OY)
     ..hasRequiredFields = false
   ;
 
@@ -3145,6 +3146,7 @@ class Transaction_Transfer extends $pb.GeneratedMessage {
   factory Transaction_Transfer({
     $core.Iterable<$core.List<$core.int>>? addrsTo,
     $core.Iterable<$fixnum.Int64>? amounts,
+    $core.List<$core.int>? messageData,
   }) {
     final _result = create();
     if (addrsTo != null) {
@@ -3152,6 +3154,9 @@ class Transaction_Transfer extends $pb.GeneratedMessage {
     }
     if (amounts != null) {
       _result.amounts.addAll(amounts);
+    }
+    if (messageData != null) {
+      _result.messageData = messageData;
     }
     return _result;
   }
@@ -3181,6 +3186,15 @@ class Transaction_Transfer extends $pb.GeneratedMessage {
 
   @$pb.TagNumber(2)
   $core.List<$fixnum.Int64> get amounts => $_getList(1);
+
+  @$pb.TagNumber(3)
+  $core.List<$core.int> get messageData => $_getN(2);
+  @$pb.TagNumber(3)
+  set messageData($core.List<$core.int> v) { $_setBytes(2, v); }
+  @$pb.TagNumber(3)
+  $core.bool hasMessageData() => $_has(2);
+  @$pb.TagNumber(3)
+  void clearMessageData() => clearField(3);
 }
 
 class Transaction_CoinBase extends $pb.GeneratedMessage {
@@ -3308,16 +3322,21 @@ class Transaction_LatticePublicKey extends $pb.GeneratedMessage {
 class Transaction_Message extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'Transaction.Message', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'qrl'), createEmptyInstance: create)
     ..a<$core.List<$core.int>>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'messageHash', $pb.PbFieldType.OY)
+    ..a<$core.List<$core.int>>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'addrTo', $pb.PbFieldType.OY)
     ..hasRequiredFields = false
   ;
 
   Transaction_Message._() : super();
   factory Transaction_Message({
     $core.List<$core.int>? messageHash,
+    $core.List<$core.int>? addrTo,
   }) {
     final _result = create();
     if (messageHash != null) {
       _result.messageHash = messageHash;
+    }
+    if (addrTo != null) {
+      _result.addrTo = addrTo;
     }
     return _result;
   }
@@ -3350,6 +3369,15 @@ class Transaction_Message extends $pb.GeneratedMessage {
   $core.bool hasMessageHash() => $_has(0);
   @$pb.TagNumber(1)
   void clearMessageHash() => clearField(1);
+
+  @$pb.TagNumber(2)
+  $core.List<$core.int> get addrTo => $_getN(1);
+  @$pb.TagNumber(2)
+  set addrTo($core.List<$core.int> v) { $_setBytes(1, v); }
+  @$pb.TagNumber(2)
+  $core.bool hasAddrTo() => $_has(1);
+  @$pb.TagNumber(2)
+  void clearAddrTo() => clearField(2);
 }
 
 class Transaction_Token extends $pb.GeneratedMessage {

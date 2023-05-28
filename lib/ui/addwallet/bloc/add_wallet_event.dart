@@ -53,3 +53,12 @@ class MnemonicChangedEvent extends AddWalletEvent {
 }
 
 class ConfirmEvent extends AddWalletEvent {}
+
+class WalletModeChangedEvent extends AddWalletEvent {
+  final AddWalletMode value;
+
+  const WalletModeChangedEvent(this.value);
+
+  @override
+  List<Object?> get props => [value];
+}

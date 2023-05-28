@@ -38,10 +38,10 @@ DynamicLibrary _openWalletLib() {
 
 String _ffiCreateWalletFromParams(List<int> params) {
   Pointer<Utf8> Function(int treeHeight, int hashFunction) nativeCreateWallet =
-  _openWalletLib()
-      .lookup<NativeFunction<Pointer<Utf8> Function(Int64, Int64)>>(
-      "createWallet")
-      .asFunction();
+      _openWalletLib()
+          .lookup<NativeFunction<Pointer<Utf8> Function(Int64, Int64)>>(
+              "createWallet")
+          .asFunction();
   Pointer<Utf8> resultPtr = nativeCreateWallet(params[0], params[1]);
   String result = resultPtr.toDartString();
   calloc.free(resultPtr);
@@ -111,6 +111,7 @@ String _ffiCreateTransaction(List<Object> params) {
   int otsIndex = params[3] as int;
   int fee = params[4] as int;
   int transactionCount = amounts.length;
+  Pointer<Utf8> nativeMessage = (params[5] as String).toNativeUtf8();
 
   Pointer<Utf8> Function(
           Pointer<Utf8> hexSeed,
@@ -118,7 +119,8 @@ String _ffiCreateTransaction(List<Object> params) {
           Pointer<Pointer<Utf8>> receiverWalletAddresses,
           int transactionCount,
           int otsIndex,
-          int fee) nativeCreateTransaction =
+          int fee,
+          Pointer<Utf8> message) nativeCreateTransaction =
       _openWalletLib()
           .lookup<
               NativeFunction<
@@ -128,7 +130,8 @@ String _ffiCreateTransaction(List<Object> params) {
                       Pointer<Pointer<Utf8>>,
                       Int32,
                       Int64,
-                      Int64)>>("createTransaction")
+                      Int64,
+                      Pointer<Utf8>)>>("createTransaction")
           .asFunction();
 
   final amountsPtr = malloc<Int64>(transactionCount);
@@ -141,12 +144,19 @@ String _ffiCreateTransaction(List<Object> params) {
     receiverWalletAddressesPtr[i] = receiverWalletAddresses[i].toNativeUtf8();
   }
 
-  Pointer<Utf8> resultPtr = nativeCreateTransaction(nativeHexSeed, amountsPtr,
-      receiverWalletAddressesPtr, transactionCount, otsIndex, fee);
+  Pointer<Utf8> resultPtr = nativeCreateTransaction(
+      nativeHexSeed,
+      amountsPtr,
+      receiverWalletAddressesPtr,
+      transactionCount,
+      otsIndex,
+      fee,
+      nativeMessage);
 
   String result = resultPtr.toDartString();
 
   malloc.free(nativeHexSeed);
+  malloc.free(nativeMessage);
   for (int i = 0; i < transactionCount; i++) {
     malloc.free(receiverWalletAddressesPtr[i]);
   }

@@ -43,7 +43,9 @@ class _AppView extends StatelessWidget {
             color: CustomColors.qrlDarkBlueColor,
             child: SizedBox(
               child: Center(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  color: CustomColors.qrlYellowColor,
+                ),
               ),
             ),
           );
@@ -59,12 +61,12 @@ class _AppView extends StatelessWidget {
           supportedLocales: AppLanguage.availableLocales(),
           title: 'QRL Mobile Wallet',
           theme: ThemeData(
-            canvasColor: CustomColors.qrlDarkBlueMaterial,
+            canvasColor: Colors.transparent,
             appBarTheme: const AppBarTheme(
                 iconTheme: IconThemeData(
                   color: Colors.white,
                 ),
-                color: CustomColors.qrlDarkBlueMaterial),
+                color: Colors.transparent),
             textTheme: Theme.of(context).textTheme.apply(
                   bodyColor: Colors.white,
                   displayColor: Colors.white,

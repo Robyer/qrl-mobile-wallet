@@ -71,19 +71,33 @@ class _AddWalletDataView extends StatelessWidget {
                 "${AppLocalizations.of(context)!.errorWalletCreation} ${state.errorMessage}");
           }
         },
-        child: Scaffold(
-          appBar: QrlAppBar(),
-          body: LayoutBuilder(
-            builder: (context, constraints) => SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight,
-                ),
-                child: IntrinsicHeight(
-                  child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: _buildWidgets(context)),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: CustomColors.qrlDarkBlueLinearGradient,
+            image: DecorationImage(
+              image: const AssetImage('assets/images/orange-dots-3.png'),
+              alignment: Alignment.bottomCenter,
+              colorFilter: ColorFilter.mode(
+                CustomColors.qrlDarkBlueMaterial.withOpacity(0.15),
+                BlendMode.dstATop,
+              ),
+            ),
+          ),
+          child: Scaffold(
+            appBar: QrlTitleAppBar(
+                titleText: AppLocalizations.of(context)!.walletSetup),
+            body: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
+                  ),
+                  child: IntrinsicHeight(
+                    child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: _buildWidgets(context)),
+                  ),
                 ),
               ),
             ),
@@ -93,82 +107,98 @@ class _AddWalletDataView extends StatelessWidget {
 
   List<Widget> _buildWidgets(BuildContext context) {
     List<Widget> widgets = <Widget>[];
-    widgets.add(Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Text(AppLocalizations.of(context)!.walletSetup,
-            style: const TextStyle(
-              color: CustomColors.qrlLightBlueColor,
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            )),
-      ),
-    ));
-    widgets.add(Center(
-        child: Padding(
-      padding: const EdgeInsets.only(bottom: 32),
-      child: Text(_getHeader(context)),
-    )));
-    widgets.add(Padding(
-      padding: const EdgeInsets.only(top: 8, bottom: 8, left: 32, right: 32),
-      child: QrlTextFormField(
-        (value) => BlocProvider.of<AddWalletBloc>(context)
-            .add(NameChangedEvent(value)),
-        text: AppLocalizations.of(context)!.walletName,
-        autoFocus: true,
-      ),
-    ));
-    if (_addWalletMode == AddWalletMode.mnemonic) {
+    if (_addWalletMode == AddWalletMode.mnemonic ||
+        _addWalletMode == AddWalletMode.hexSeed) {
       widgets.add(Padding(
-        padding: const EdgeInsets.only(top: 8, bottom: 8, left: 32, right: 32),
-        child: QrlTextFormField(
-          (value) => BlocProvider.of<AddWalletBloc>(context)
-              .add(MnemonicChangedEvent(value)),
-          text: AppLocalizations.of(context)!.mnemonic,
-          keyboardType: TextInputType.multiline,
-          minLines: 1,
-          maxLines: 10,
+        padding: const EdgeInsets.only(top: 24),
+        child: BottomSheetSelect<AddWalletMode>(
+          selectedItem: AddWalletMode.mnemonic,
+          items: const [AddWalletMode.mnemonic, AddWalletMode.hexSeed],
+          floatingLabelValue: "",
+          valueChanged: (AddWalletMode? value) {
+            if (value != null) {
+              BlocProvider.of<AddWalletBloc>(context)
+                  .add(WalletModeChangedEvent(value));
+            }
+          },
+          labelConverter: (value) {
+            if (value == AddWalletMode.mnemonic) {
+              return AppLocalizations.of(context)!.openWithMnemonics;
+            }
+            return AppLocalizations.of(context)!.openWithHexseed;
+          },
+          itemConverter: (value) {
+            if (value == AddWalletMode.mnemonic) {
+              return AppLocalizations.of(context)!.openWithMnemonics;
+            }
+            return AppLocalizations.of(context)!.openWithHexseed;
+          },
         ),
       ));
-    } else if (_addWalletMode == AddWalletMode.hexSeed) {
-      widgets.add(const Padding(
-        padding: EdgeInsets.only(top: 8, bottom: 8, left: 32, right: 32),
-        child: HexSeedField(),
+      widgets.add(Padding(
+        padding: const EdgeInsets.only(top: 24, left: 32, right: 32),
+        child: QrlTextFormField(
+          (value) => BlocProvider.of<AddWalletBloc>(context)
+              .add(NameChangedEvent(value)),
+          text: AppLocalizations.of(context)!.walletName,
+          autoFocus: true,
+        ),
       ));
-    } else {
-      widgets.add(BottomSheetSelect<int>(
-        selectedItem: 10,
-        items: _treeHeightMap.keys.toList(),
-        floatingLabelValue: AppLocalizations.of(context)!.treeHeight,
-        valueChanged: (int? value) {
-          if (value != null) {
-            BlocProvider.of<AddWalletBloc>(context)
-                .add(TreeHeightChangedEvent(value));
-          }
-        },
-        labelConverter: (value) {
-          return _treeHeightMap[value]!;
-        },
-        itemConverter: (value) {
-          return _treeHeightMap[value]!;
-        },
+      widgets.add(Padding(
+        padding:
+            const EdgeInsets.only(top: 32, left: 32, right: 32, bottom: 16),
+        child: _buildMnemonicHexFieldBuilder(),
       ));
-      widgets.add(BottomSheetSelect<int>(
-        selectedItem: 1,
-        items: _hashFunctionMap.keys.toList(),
-        floatingLabelValue: AppLocalizations.of(context)!.hashFunction,
-        valueChanged: (int? value) {
-          if (value != null) {
-            BlocProvider.of<AddWalletBloc>(context)
-                .add(HashFunctionChangedEvent(value));
-          }
-        },
-        labelConverter: (value) {
-          return _hashFunctionMap[value]!;
-        },
-        itemConverter: (value) {
-          return _hashFunctionMap[value]!;
-        },
+    }
+    if (_addWalletMode == AddWalletMode.create) {
+      widgets.add(Padding(
+        padding: const EdgeInsets.only(top: 32, left: 32, right: 32),
+        child: QrlTextFormField(
+          (value) => BlocProvider.of<AddWalletBloc>(context)
+              .add(NameChangedEvent(value)),
+          text: AppLocalizations.of(context)!.walletName,
+          autoFocus: true,
+        ),
+      ));
+      widgets.add(Padding(
+        padding: const EdgeInsets.only(top: 24),
+        child: BottomSheetSelect<int>(
+          selectedItem: 10,
+          items: _treeHeightMap.keys.toList(),
+          floatingLabelValue: AppLocalizations.of(context)!.treeHeight,
+          valueChanged: (int? value) {
+            if (value != null) {
+              BlocProvider.of<AddWalletBloc>(context)
+                  .add(TreeHeightChangedEvent(value));
+            }
+          },
+          labelConverter: (value) {
+            return _treeHeightMap[value]!;
+          },
+          itemConverter: (value) {
+            return _treeHeightMap[value]!;
+          },
+        ),
+      ));
+      widgets.add(Padding(
+        padding: const EdgeInsets.only(top: 16,bottom: 8),
+        child: BottomSheetSelect<int>(
+          selectedItem: 1,
+          items: _hashFunctionMap.keys.toList(),
+          floatingLabelValue: AppLocalizations.of(context)!.hashFunction,
+          valueChanged: (int? value) {
+            if (value != null) {
+              BlocProvider.of<AddWalletBloc>(context)
+                  .add(HashFunctionChangedEvent(value));
+            }
+          },
+          labelConverter: (value) {
+            return _hashFunctionMap[value]!;
+          },
+          itemConverter: (value) {
+            return _hashFunctionMap[value]!;
+          },
+        ),
       ));
     }
     widgets.add(Expanded(
@@ -186,14 +216,25 @@ class _AddWalletDataView extends StatelessWidget {
     return widgets;
   }
 
-  String _getHeader(BuildContext context) {
-    if (_addWalletMode == AddWalletMode.mnemonic) {
-      return AppLocalizations.of(context)!.openWithMnemonics;
-    } else if (_addWalletMode == AddWalletMode.hexSeed) {
-      return AppLocalizations.of(context)!.openWithHexseed;
-    } else {
-      return AppLocalizations.of(context)!.createWalletTitle;
-    }
+  BlocBuilder<AddWalletBloc, AddWalletState> _buildMnemonicHexFieldBuilder() {
+    return BlocBuilder<AddWalletBloc, AddWalletState>(
+      buildWhen: (previous, current) =>
+          previous.addWalletMode != current.addWalletMode,
+      builder: (context, state) {
+        if (state.addWalletMode == AddWalletMode.mnemonic) {
+          return QrlTextFormField(
+            (value) => BlocProvider.of<AddWalletBloc>(context)
+                .add(MnemonicChangedEvent(value)),
+            text: AppLocalizations.of(context)!.mnemonic,
+            keyboardType: TextInputType.multiline,
+            minLines: 1,
+            maxLines: 10,
+          );
+        } else {
+          return const HexSeedField();
+        }
+      },
+    );
   }
 
   BlocBuilder<AddWalletBloc, AddWalletState> _buildButtonBlocBuilder() {
@@ -222,6 +263,7 @@ class _AddWalletDataView extends StatelessWidget {
             : null,
         text: AppLocalizations.of(context)!.confirm,
         baseColor: CustomColors.qrlLightBlueColor,
+        backgroundColor: CustomColors.qrlLightBlueColorBackground,
       ),
     );
   }

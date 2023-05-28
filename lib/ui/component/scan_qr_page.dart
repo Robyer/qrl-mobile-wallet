@@ -50,6 +50,7 @@ class _ScanQrPageState extends State<ScanQrPage> {
   Widget build(BuildContext context) {
     readQr();
     return Scaffold(
+      backgroundColor: CustomColors.qrlLightBlueColorBackground,
       appBar: QrlAppBar(),
       body: QRView(
         key: qrKey,

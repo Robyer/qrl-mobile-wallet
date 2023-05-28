@@ -157,17 +157,37 @@ class WalletService {
             : address);
   }
 
-  Future<void> sendTransaction(int id, List<int> amounts, List<String> receiverWalletAddresses,
-      int otsIndex, int fee) async {
+  Future<void> sendTransaction(
+      int id,
+      List<int> amounts,
+      List<String> receiverWalletAddresses,
+      int otsIndex,
+      int fee,
+      String? message) async {
     Wallet wallet = await getWallet(id);
-    receiverWalletAddresses = receiverWalletAddresses.map((receiverWalletAddress) => receiverWalletAddress.startsWith("Q")
-        ? receiverWalletAddress.substring(1, receiverWalletAddress.length)
-        : receiverWalletAddress).toList();
+    receiverWalletAddresses = receiverWalletAddresses
+        .map((receiverWalletAddress) => receiverWalletAddress.startsWith("Q")
+            ? receiverWalletAddress.substring(1, receiverWalletAddress.length)
+            : receiverWalletAddress)
+        .toList();
     String transactionData = await compute<List<Object>, String>(
-        _ffiWalletService.ffiCreateTransaction,
-        [await getHexSeed(id), amounts, receiverWalletAddresses, otsIndex, fee]);
-    await _grpcService.sendTransaction(wallet.address, await _getXmsspk(id),
-        amounts, receiverWalletAddresses, otsIndex, fee, transactionData);
+        _ffiWalletService.ffiCreateTransaction, [
+      await getHexSeed(id),
+      amounts,
+      receiverWalletAddresses,
+      otsIndex,
+      fee,
+      message ?? ""
+    ]);
+    await _grpcService.sendTransaction(
+        wallet.address,
+        await _getXmsspk(id),
+        amounts,
+        receiverWalletAddresses,
+        otsIndex,
+        fee,
+        transactionData,
+        message ?? "");
   }
 
   updateWalletName(int id, String name) async {

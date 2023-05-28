@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:fixnum/fixnum.dart';
 import 'package:grpc/grpc.dart';
 import 'package:mobile_wallet/model/app_settings.dart';
@@ -83,23 +86,30 @@ class GrpcService {
             .join();
         bool incoming = senderAddress != walletAddress;
         Transaction tx = transactionExtended.tx;
-        Transaction_Transfer transfer = tx.transfer;
-        for (int i = 0; i < transfer.addrsTo.length; i++) {
-          String receiverAddress = transfer.addrsTo[i]
-              .map((e) => e.toRadixString(16).padLeft(2, '0'))
-              .join();
-          if (!incoming || receiverAddress == walletAddress) {
-            transactions.add(TransactionData(
-                tx.transactionHash
-                    .map((e) => e.toRadixString(16).padLeft(2, '0'))
-                    .join(),
-                senderAddress,
-                receiverAddress,
-                transfer.amounts[i].toInt(),
-                DateTime.fromMillisecondsSinceEpoch(
-                    transactionExtended.timestampSeconds.toInt() * 1000),
-                incoming,
-                true));
+        if ("transfer" == tx.whichTransactionType().name.toLowerCase()) {
+          Transaction_Transfer transfer = tx.transfer;
+          String? message = tx.transfer.messageData.isNotEmpty
+              ? utf8.decode(tx.transfer.messageData)
+              : null;
+          for (int i = 0; i < transfer.addrsTo.length; i++) {
+            String receiverAddress = transfer.addrsTo[i]
+                .map((e) => e.toRadixString(16).padLeft(2, '0'))
+                .join();
+            if (!incoming || receiverAddress == walletAddress) {
+              transactions.add(TransactionData(
+                  tx.transactionHash
+                      .map((e) => e.toRadixString(16).padLeft(2, '0'))
+                      .join(),
+                  "transfer",
+                  senderAddress,
+                  receiverAddress,
+                  transfer.amounts[i].toInt(),
+                  DateTime.fromMillisecondsSinceEpoch(
+                      transactionExtended.timestampSeconds.toInt() * 1000),
+                  incoming,
+                  true,
+                  message));
+            }
           }
         }
       }
@@ -137,6 +147,9 @@ class GrpcService {
         bool incoming = senderAddress != walletAddress;
         DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
             transaction.timestampSeconds.toInt() * 1000);
+        String? message = tx.transfer.messageData.isNotEmpty
+            ? utf8.decode(tx.transfer.messageData)
+            : null;
         for (int j = 0; j < tx.transfer.addrsTo.length; j++) {
           String receiverAddress = tx.transfer.addrsTo[j]
               .map((e) => e.toRadixString(16).padLeft(2, '0'))
@@ -144,12 +157,14 @@ class GrpcService {
           if (!incoming || receiverAddress == walletAddress) {
             transactions.add(TransactionData(
                 transactionHash,
+                "transfer",
                 senderAddress,
                 receiverAddress,
                 tx.transfer.amounts[j].toInt(),
                 dateTime,
                 incoming,
-                false));
+                false,
+                message));
           }
         }
       }
@@ -163,7 +178,8 @@ class GrpcService {
       List<String> receiverWalletAddresses,
       int otsIndex,
       int fee,
-      String transactionData) async {
+      String transactionData,
+      String message) async {
     List<List<int>> receiverWalletBytesList = receiverWalletAddresses
         .map((address) => StringUtil.toBytes(address))
         .toList();
@@ -174,11 +190,13 @@ class GrpcService {
     List<int> txSignature = StringUtil.toBytes(signature);
     String hash = transactionData.substring(
         (transactionData.length - 64), transactionData.length);
+    List<int> messageData = Uint8List.fromList(utf8.encode(message));
     List<int> txHash = StringUtil.toBytes(hash);
     ClientChannel clientChannel = await getClientChannel();
     try {
       PublicAPIClient publicAPIClient = PublicAPIClient(clientChannel);
       var transferCoinsReq = TransferCoinsReq(
+          messageData: messageData,
           addressesTo: receiverWalletBytesList,
           amounts: int64Amounts,
           fee: int64Fee,
@@ -188,7 +206,9 @@ class GrpcService {
       await publicAPIClient.pushTransaction(PushTransactionReq(
           transactionSigned: Transaction(
               transfer: Transaction_Transfer(
-                  addrsTo: receiverWalletBytesList, amounts: int64Amounts),
+                  addrsTo: receiverWalletBytesList,
+                  amounts: int64Amounts,
+                  messageData: messageData),
               signature: txSignature,
               transactionHash: txHash,
               fee: int64Fee,
