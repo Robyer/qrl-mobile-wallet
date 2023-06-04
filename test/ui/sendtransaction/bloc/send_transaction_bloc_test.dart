@@ -16,7 +16,7 @@ void main() {
   group('SendTransactionBloc', () {
     late SendTransactionBloc sendTransactionBloc;
     Wallet wallet = Wallet(1, "name", "address", 1000);
-    ExtendedWalletData extendedWalletData = ExtendedWalletData(5000000, [], 1);
+    ExtendedWalletData extendedWalletData = ExtendedWalletData(5000000, 1);
     setUpAll(() async {
       SettingsService settingsService = MockSettingsService();
       WalletService walletService = MockWalletService();

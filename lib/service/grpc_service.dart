@@ -5,6 +5,7 @@ import 'package:fixnum/fixnum.dart';
 import 'package:grpc/grpc.dart';
 import 'package:mobile_wallet/model/app_settings.dart';
 import 'package:mobile_wallet/model/extended_wallet_data.dart';
+import 'package:mobile_wallet/model/transaction.dart';
 import 'package:mobile_wallet/service/settings_service.dart';
 import 'package:mobile_wallet/util/string_util.dart';
 
@@ -24,19 +25,9 @@ class GrpcService {
           .getAddressState(GetAddressStateReq(address: addressBytes));
       var state = getAddressStateResp.state;
       List<TransactionData> transactions =
-          await _getTransactions(walletAddress, state, publicAPIClient);
-      int unconfirmedSendCounter = 0;
-      for (TransactionData transactionData in transactions) {
-        if (transactionData.unconfirmed) {
-          if (!transactionData.incoming) {
-            unconfirmedSendCounter = unconfirmedSendCounter + 1;
-          }
-        } else {
-          break;
-        }
-      }
-      return ExtendedWalletData(state.balance.toInt(), transactions,
-          _getOtsIndex(state) + unconfirmedSendCounter);
+          await _findUnconfirmedTransactions(publicAPIClient, walletAddress);
+      return ExtendedWalletData(
+          state.balance.toInt(), _getOtsIndex(state) + transactions.length);
     } finally {
       clientChannel.shutdown();
     }
@@ -59,18 +50,34 @@ class GrpcService {
     return -1;
   }
 
-  Future<List<TransactionData>> _getTransactions(String walletAddress,
-      AddressState state, PublicAPIClient publicAPIClient) async {
-    List<TransactionData> transactions = <TransactionData>[];
-    await _addUnconfirmedTransactions(
-        publicAPIClient, walletAddress, transactions);
-    await _addTransactions(state, publicAPIClient, walletAddress, transactions);
-    return transactions;
+  Future<List<TransactionData>> findTransactions(
+      String walletAddress, int batchCount,
+      {int skip = -1}) async {
+    List<int> addressBytes = StringUtil.toBytes(walletAddress);
+    ClientChannel clientChannel = await getClientChannel();
+    try {
+      PublicAPIClient publicAPIClient = PublicAPIClient(clientChannel);
+      GetAddressStateResp getAddressStateResp = await publicAPIClient
+          .getAddressState(GetAddressStateReq(address: addressBytes));
+      var state = getAddressStateResp.state;
+      List<TransactionData> transactions = <TransactionData>[];
+      if (skip == -1) {
+        transactions.addAll(
+            await _findUnconfirmedTransactions(publicAPIClient, walletAddress));
+      }
+      transactions.addAll(await _findTransactions(
+          state, publicAPIClient, walletAddress, transactions, batchCount,
+          skip: skip == -1 ? 0 : skip));
+      return transactions;
+    } finally {
+      clientChannel.shutdown();
+    }
   }
 
-  Future<void> _addUnconfirmedTransactions(PublicAPIClient publicAPIClient,
-      String walletAddress, List<TransactionData> transactions,
+  Future<List<TransactionData>> _findUnconfirmedTransactions(
+      PublicAPIClient publicAPIClient, String walletAddress,
       {int offset = 0}) async {
+    List<TransactionData> transactions = <TransactionData>[];
     int batchQuantity = 5;
     GetLatestDataResp getLatestDataResp = await publicAPIClient.getLatestData(
         GetLatestDataReq(
@@ -114,23 +121,30 @@ class GrpcService {
         }
       }
       if (quantityFound == batchQuantity) {
-        await _addUnconfirmedTransactions(
-            publicAPIClient, walletAddress, transactions,
-            offset: offset + batchQuantity);
+        transactions.addAll(await _findUnconfirmedTransactions(
+            publicAPIClient, walletAddress,
+            offset: offset + batchQuantity));
       }
     }
+    return transactions;
   }
 
-  Future<void> _addTransactions(
+  Future<List<TransactionData>> _findTransactions(
       AddressState state,
       PublicAPIClient publicAPIClient,
       String walletAddress,
-      List<TransactionData> transactions) async {
+      List<TransactionData> transactions,
+      int batchCount,
+      {int skip = 0}) async {
+    List<TransactionData> transactions = <TransactionData>[];
     List<List<int>> transactionsHashes = state.transactionHashes;
     int totalTransactions = transactionsHashes.length;
+    if (totalTransactions <= skip) {
+      return transactions;
+    }
     int lastTransactionToGet = 0;
-    if (totalTransactions > 10) {
-      lastTransactionToGet = totalTransactions - 10;
+    if (totalTransactions > (batchCount + skip)) {
+      lastTransactionToGet = totalTransactions - batchCount - skip;
     }
     for (int i = totalTransactions - 1; i >= lastTransactionToGet; i--) {
       GetObjectResp getObjectResp = await publicAPIClient
@@ -169,6 +183,7 @@ class GrpcService {
         }
       }
     }
+    return transactions;
   }
 
   Future<void> sendTransaction(

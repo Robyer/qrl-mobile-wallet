@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:mobile_wallet/model/extended_wallet_data.dart';
 import 'package:mobile_wallet/model/wallet.dart';
 import 'package:mobile_wallet/service/ffi_wallet_service.dart';
 import 'package:mobile_wallet/service/grpc_service.dart';
@@ -141,7 +142,7 @@ class WalletService {
     return hexSeed;
   }
 
-  Future<String> _getXmsspk(int id) async {
+  Future<String> getXmsspk(int id) async {
     String? xmsspk = await _securedStorageService.getValue("xmsspk-$id");
     if (xmsspk == null) {
       throw Exception("No xmsspk found for wallet id: $id");
@@ -157,43 +158,14 @@ class WalletService {
             : address);
   }
 
-  Future<void> sendTransaction(
-      int id,
-      List<int> amounts,
-      List<String> receiverWalletAddresses,
-      int otsIndex,
-      int fee,
-      String? message) async {
-    Wallet wallet = await getWallet(id);
-    receiverWalletAddresses = receiverWalletAddresses
-        .map((receiverWalletAddress) => receiverWalletAddress.startsWith("Q")
-            ? receiverWalletAddress.substring(1, receiverWalletAddress.length)
-            : receiverWalletAddress)
-        .toList();
-    String transactionData = await compute<List<Object>, String>(
-        _ffiWalletService.ffiCreateTransaction, [
-      await getHexSeed(id),
-      amounts,
-      receiverWalletAddresses,
-      otsIndex,
-      fee,
-      message ?? ""
-    ]);
-    await _grpcService.sendTransaction(
-        wallet.address,
-        await _getXmsspk(id),
-        amounts,
-        receiverWalletAddresses,
-        otsIndex,
-        fee,
-        transactionData,
-        message ?? "");
-  }
-
   updateWalletName(int id, String name) async {
     Wallet wallet = await getWallet(id);
     wallet.name = name;
     await _securedStorageService.setValue(
         "wallet-$id", jsonEncode(wallet.toJson()));
+  }
+
+  Future<ExtendedWalletData> getExtendedWalletData(String walletAddress) async {
+    return await _grpcService.getExtendedWalletData(walletAddress);
   }
 }

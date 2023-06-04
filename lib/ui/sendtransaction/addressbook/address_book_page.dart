@@ -75,12 +75,8 @@ class _AddressBookPageState extends State<AddressBookPage> {
                             _addressBook != null ? _addressBook?.length : 0,
                         shrinkWrap: true,
                         itemBuilder: (BuildContext context, int index) {
-                          return Container(
-                            color: (_currentSelectedIndex != null &&
-                                    _currentSelectedIndex == index)
-                                ? CustomColors.qrlLightBlueColor
-                                    .withOpacity(0.1)
-                                : null,
+                          return Padding(
+                            padding: const EdgeInsets.only(left: 8, right: 8),
                             child: InkWell(
                               onTap: () => {
                                 if (mounted)
@@ -90,60 +86,69 @@ class _AddressBookPageState extends State<AddressBookPage> {
                                     })
                                   }
                               },
-                              child: Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 32, right: 16, top: 8, bottom: 8),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 4),
-                                            child: Text(
-                                              "${_addressBook?[index].name}",
-                                              style: const TextStyle(
-                                                  color: CustomColors
-                                                      .qrlLightBlueColor,
-                                                  fontSize: 14),
+                              child: Card(
+                                elevation: 1,
+                                color: (_currentSelectedIndex != null &&
+                                        _currentSelectedIndex == index)
+                                    ? CustomColors.qrlLightBlueColor
+                                        .withOpacity(0.2)
+                                    : CustomColors.qrlLightBlueColor
+                                        .withOpacity(0.1),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 16, right: 16, top: 8, bottom: 8),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 4),
+                                              child: Text(
+                                                "${_addressBook?[index].name}",
+                                                style: const TextStyle(
+                                                    color: CustomColors
+                                                        .qrlLightBlueColor,
+                                                    fontSize: 14),
+                                              ),
                                             ),
-                                          ),
-                                          MiddleEllipsisText(
-                                            "Q${_addressBook?[index].address}",
-                                            style: TextStyle(
-                                              fontStyle: FontStyle.italic,
-                                              color: Colors.grey[500],
-                                            ),
-                                          )
-                                        ],
+                                            MiddleEllipsisText(
+                                              "Q${_addressBook?[index].address}",
+                                              style: TextStyle(
+                                                fontStyle: FontStyle.italic,
+                                                color: Colors.grey[500],
+                                              ),
+                                            )
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                    InkWell(
-                                        child: const Padding(
-                                          padding: EdgeInsets.only(
-                                              left: 4, right: 4),
-                                          child: Icon(
-                                              color:
-                                                  CustomColors.qrlYellowColor,
-                                              Icons.edit),
-                                        ),
-                                        onTap: () => _showUpdateWalletName(
-                                            context, _addressBook![index])),
-                                    InkWell(
-                                        child: const Padding(
-                                          padding: EdgeInsets.only(left: 4),
-                                          child: Icon(
-                                              color:
-                                                  CustomColors.qrlYellowColor,
-                                              Icons.delete_outline_sharp),
-                                        ),
-                                        onTap: () => _onPressedDelete(index)),
-                                  ],
+                                      InkWell(
+                                          child: const Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 4, right: 4),
+                                            child: Icon(
+                                                color:
+                                                    CustomColors.qrlYellowColor,
+                                                Icons.edit),
+                                          ),
+                                          onTap: () => _showUpdateWalletName(
+                                              context, _addressBook![index])),
+                                      InkWell(
+                                          child: const Padding(
+                                            padding: EdgeInsets.only(left: 4),
+                                            child: Icon(
+                                                color:
+                                                    CustomColors.qrlYellowColor,
+                                                Icons.delete_outline_sharp),
+                                          ),
+                                          onTap: () => _onPressedDelete(index)),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

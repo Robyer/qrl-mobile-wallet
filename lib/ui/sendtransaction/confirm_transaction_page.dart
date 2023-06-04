@@ -66,79 +66,97 @@ class ConfirmTransactionPage extends StatelessWidget {
           appBar: QrlTitleAppBar(
               titleText: AppLocalizations.of(context)!.sendTitle),
           body: Padding(
-            padding: const EdgeInsets.all(14),
+            padding: const EdgeInsets.all(8),
             child: Column(
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   if (state.message != null && state.message!.isNotEmpty)
-                    Center(
+                    Card(
+                      elevation: 1,
+                      color: CustomColors.qrlLightBlueColor.withOpacity(0.1),
                       child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(AppLocalizations.of(context)!.message,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: CustomColors.qrlYellowColor,
-                            )),
-                      ),
-                    ),
-                  if (state.message != null && state.message!.isNotEmpty)
-                    Center(
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 24),
-                          child: SelectableText(
-                            state.message!,
-                            textAlign: TextAlign.center,
-                          ),
-                        )),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: state.transactionLines.length,
-                      itemBuilder: (context, index) {
-                        final TransactionLine transactionLine =
-                            state.transactionLines[index];
-                        return Column(
+                        padding: const EdgeInsets.only(
+                            left: 16, right: 16, top: 8, bottom: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(bottom: 8),
-                              child: Center(
-                                  child: Text(
-                                AppLocalizations.of(context)!.amount,
-                                style: const TextStyle(
-                                  color: CustomColors.qrlYellowColor,
-                                ),
-                              )),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 36),
-                              child: Center(
-                                  child: Text(
-                                "${StringUtil.formatAmount(transactionLine.amount!)} QRL",
-                              )),
+                              child: Text(AppLocalizations.of(context)!.message,
+                                  style: const TextStyle(
+                                    color: CustomColors.qrlYellowColor,
+                                  )),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(bottom: 8),
-                              child: Center(
-                                  child: Text(
-                                AppLocalizations.of(context)!
-                                    .sendingToWalletAddress,
-                                style: const TextStyle(
-                                  color: CustomColors.qrlYellowColor,
-                                ),
-                              )),
-                            ),
-                            Center(
-                                child: Padding(
-                              padding: const EdgeInsets.only(
-                                  left: 24, right: 24, bottom: 48),
                               child: SelectableText(
-                                transactionLine.address!,
-                                textAlign: TextAlign.center,
+                                state.message!,
                               ),
-                            )),
+                            ),
                           ],
-                        );
+                        ),
+                      ),
+                    ),
+                  Expanded(
+                    child: NotificationListener(
+                      onNotification:
+                          (OverscrollIndicatorNotification overscroll) {
+                        overscroll.disallowIndicator();
+                        return true;
                       },
+                      child: ListView.builder(
+                        itemCount: state.transactionLines.length,
+                        itemBuilder: (context, index) {
+                          final TransactionLine transactionLine =
+                              state.transactionLines[index];
+                          return Card(
+                            elevation: 1,
+                            color:
+                                CustomColors.qrlLightBlueColor.withOpacity(0.1),
+                            child: Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 16, right: 16, top: 8, bottom: 8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: Text(
+                                      AppLocalizations.of(context)!.amount,
+                                      style: const TextStyle(
+                                        color: CustomColors.qrlYellowColor,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: Text(
+                                      "${StringUtil.formatAmount(transactionLine.amount!)} QRL",
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: Text(
+                                      AppLocalizations.of(context)!
+                                          .sendingToWalletAddress,
+                                      style: const TextStyle(
+                                        color: CustomColors.qrlYellowColor,
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: SelectableText(
+                                      transactionLine.address!,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                     ),
                   ),
                   Align(

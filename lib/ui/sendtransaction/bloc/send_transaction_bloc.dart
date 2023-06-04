@@ -9,6 +9,7 @@ import 'package:mobile_wallet/model/wallet.dart';
 import 'package:mobile_wallet/service/address_book_service.dart';
 import 'package:mobile_wallet/service/service_locator.dart';
 import 'package:mobile_wallet/service/settings_service.dart';
+import 'package:mobile_wallet/service/transaction_service.dart';
 import 'package:mobile_wallet/service/wallet_service.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -18,12 +19,12 @@ part 'send_transaction_state.dart';
 class SendTransactionBloc
     extends Bloc<SendTransactionEvent, SendTransactionState> {
   final SettingsService _settingsService;
-  final WalletService _walletService;
+  final TransactionService _transactionService;
   final AddressBookService _addressBookService;
 
   SendTransactionBloc(Wallet wallet, ExtendedWalletData extendedWalletData)
       : _settingsService = getIt<SettingsService>(),
-        _walletService = getIt<WalletService>(),
+        _transactionService = getIt<TransactionService>(),
         _addressBookService = getIt<AddressBookService>(),
         super(SendTransactionState(wallet, extendedWalletData,
             transactionLines: [TransactionLine()])) {
@@ -203,7 +204,7 @@ class SendTransactionBloc
     try {
       Wakelock.enable();
       emit(state.copyWith(status: SendTransactionStatus.sending));
-      await _walletService.sendTransaction(
+      await _transactionService.sendTransaction(
           state.wallet.id,
           state.transactionLines.map((line) => line.amount!).toList(),
           state.transactionLines.map((line) => line.address!).toList(),

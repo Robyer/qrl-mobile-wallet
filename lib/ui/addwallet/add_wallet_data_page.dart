@@ -136,7 +136,7 @@ class _AddWalletDataView extends StatelessWidget {
         ),
       ));
       widgets.add(Padding(
-        padding: const EdgeInsets.only(top: 24, left: 32, right: 32),
+        padding: const EdgeInsets.only(top: 24, left: 24, right: 24),
         child: QrlTextFormField(
           (value) => BlocProvider.of<AddWalletBloc>(context)
               .add(NameChangedEvent(value)),
@@ -146,13 +146,13 @@ class _AddWalletDataView extends StatelessWidget {
       ));
       widgets.add(Padding(
         padding:
-            const EdgeInsets.only(top: 32, left: 32, right: 32, bottom: 16),
+            const EdgeInsets.only(top: 32, left: 24, right: 24, bottom: 16),
         child: _buildMnemonicHexFieldBuilder(),
       ));
     }
     if (_addWalletMode == AddWalletMode.create) {
       widgets.add(Padding(
-        padding: const EdgeInsets.only(top: 32, left: 32, right: 32),
+        padding: const EdgeInsets.only(top: 32, left: 24, right: 24),
         child: QrlTextFormField(
           (value) => BlocProvider.of<AddWalletBloc>(context)
               .add(NameChangedEvent(value)),

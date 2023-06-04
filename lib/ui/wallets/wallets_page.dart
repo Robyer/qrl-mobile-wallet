@@ -128,67 +128,75 @@ class _WalletsView extends StatelessWidget {
                 itemBuilder: (BuildContext context, int index) {
                   Wallet wallet = state.wallets![index];
                   return Padding(
-                    padding: const EdgeInsets.only(
-                        left: 24, right: 24, top: 8, bottom: 8),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 4),
-                                child: Text(
-                                  wallet.name,
-                                  style: const TextStyle(
-                                      color: CustomColors.qrlLightBlueColor,
-                                      fontSize: 14),
-                                ),
+                    padding: const EdgeInsets.only(left: 8, right: 8),
+                    child: Card(
+                      elevation: 1,
+                      color: CustomColors.qrlLightBlueColor.withOpacity(0.1),
+                      child: Padding(
+                        padding: const EdgeInsets.only(
+                            left: 16, right: 16, top: 8, bottom: 8),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 4),
+                                    child: Text(
+                                      wallet.name,
+                                      style: const TextStyle(
+                                          color: CustomColors.qrlLightBlueColor,
+                                          fontSize: 14),
+                                    ),
+                                  ),
+                                  MiddleEllipsisText(
+                                    "Q${wallet.address}",
+                                    style: TextStyle(
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.grey[500],
+                                    ),
+                                  )
+                                ],
                               ),
-                              MiddleEllipsisText(
-                                "Q${wallet.address}",
-                                style: TextStyle(
-                                  fontStyle: FontStyle.italic,
-                                  color: Colors.grey[500],
+                            ),
+                            InkWell(
+                                child: const Padding(
+                                  padding: EdgeInsets.only(left: 4, right: 4),
+                                  child: Icon(
+                                      color: CustomColors.qrlYellowColor,
+                                      Icons.edit),
                                 ),
-                              )
-                            ],
-                          ),
+                                onTap: () =>
+                                    _showUpdateWalletName(context, wallet)),
+                            InkWell(
+                                child: const Padding(
+                                  padding: EdgeInsets.only(left: 4, right: 4),
+                                  child: Icon(
+                                      color: CustomColors.qrlYellowColor,
+                                      Icons.remove_red_eye),
+                                ),
+                                onTap: () =>
+                                    BlocProvider.of<WalletsBloc>(context)
+                                        .add(BackupWalletEvent(wallet))),
+                            InkWell(
+                                child: const Padding(
+                                  padding: EdgeInsets.only(left: 4),
+                                  child: Icon(
+                                      color: CustomColors.qrlYellowColor,
+                                      Icons.delete_outline_sharp),
+                                ),
+                                onTap: () => Dialogs.showConfirmDialog(
+                                        context,
+                                        AppLocalizations.of(context)!
+                                            .confirmRemoveWallet, () {
+                                      BlocProvider.of<WalletsBloc>(context)
+                                          .add(DeleteWalletEvent(wallet));
+                                    })),
+                          ],
                         ),
-                        InkWell(
-                            child: const Padding(
-                              padding: EdgeInsets.only(left: 4, right: 4),
-                              child: Icon(
-                                  color: CustomColors.qrlYellowColor,
-                                  Icons.edit),
-                            ),
-                            onTap: () =>
-                                _showUpdateWalletName(context, wallet)),
-                        InkWell(
-                            child: const Padding(
-                              padding: EdgeInsets.only(left: 4, right: 4),
-                              child: Icon(
-                                  color: CustomColors.qrlYellowColor,
-                                  Icons.remove_red_eye),
-                            ),
-                            onTap: () => BlocProvider.of<WalletsBloc>(context)
-                                .add(BackupWalletEvent(wallet))),
-                        InkWell(
-                            child: const Padding(
-                              padding: EdgeInsets.only(left: 4),
-                              child: Icon(
-                                  color: CustomColors.qrlYellowColor,
-                                  Icons.delete_outline_sharp),
-                            ),
-                            onTap: () => Dialogs.showConfirmDialog(
-                                    context,
-                                    AppLocalizations.of(context)!
-                                        .confirmRemoveWallet, () {
-                                  BlocProvider.of<WalletsBloc>(context)
-                                      .add(DeleteWalletEvent(wallet));
-                                })),
-                      ],
+                      ),
                     ),
                   );
                 });

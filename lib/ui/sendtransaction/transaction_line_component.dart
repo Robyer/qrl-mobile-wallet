@@ -33,7 +33,7 @@ class TransactionLineComponent extends StatelessWidget {
                           alignment: Alignment.topRight,
                           child: InkWell(
                               child: const Padding(
-                                padding: EdgeInsets.only(top: 4, right: 32),
+                                padding: EdgeInsets.only(top: 4, right: 24),
                                 child: Icon(
                                     size: 18,
                                     color: CustomColors.qrlYellowColor,
@@ -46,18 +46,18 @@ class TransactionLineComponent extends StatelessWidget {
                       : const SizedBox.shrink(),
                   Padding(
                     padding:
-                        const EdgeInsets.only(top: 16, left: 32, right: 32),
+                        const EdgeInsets.only(top: 8, left: 24, right: 24),
                     child: AddressField(
                         index, state.transactionLines[index].address),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
-                        left: 16, right: 8, bottom: 16, top: 4),
+                        left: 8, bottom: 16, top: 4),
                     child: _buildSaveToAddressBookBlocBuilder(index),
                   ),
                   Padding(
                     padding:
-                        const EdgeInsets.only(left: 32, right: 32, bottom: 8),
+                        const EdgeInsets.only(left: 24, right: 24, bottom: 8),
                     child: _buildAmountBlocBuilder(index),
                   ),
                 ],

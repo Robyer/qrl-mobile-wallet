@@ -1,164 +1,217 @@
-import 'dart:developer';
-
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
-import 'package:mobile_wallet/model/extended_wallet_data.dart';
-import 'package:mobile_wallet/model/market_data.dart';
 import 'package:mobile_wallet/model/wallet.dart';
-import 'package:mobile_wallet/service/grpc_service.dart';
-import 'package:mobile_wallet/service/market_service.dart';
-import 'package:mobile_wallet/service/service_locator.dart';
-import 'package:mobile_wallet/service/wallet_service.dart';
 import 'package:mobile_wallet/ui/addwallet/add_wallet_page.dart';
+import 'package:mobile_wallet/ui/balance/community_list.dart';
 import 'package:mobile_wallet/ui/balance/receive_amount_page.dart';
-import 'package:mobile_wallet/ui/sendtransaction/send_transaction_page.dart';
-import 'package:mobile_wallet/ui/balance/transaction_data_page.dart';
+import 'package:mobile_wallet/ui/balance/transactions/transactions_page.dart';
 import 'package:mobile_wallet/ui/component/bottomsheetselect/bottom_sheet_select.dart';
 import 'package:mobile_wallet/ui/component/qrl_button.dart';
 import 'package:mobile_wallet/ui/component/snack_bars.dart';
+import 'package:mobile_wallet/ui/sendtransaction/send_transaction_page.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
 import 'package:mobile_wallet/util/string_util.dart';
 
-class BalancePage extends StatefulWidget {
-  const BalancePage({Key? key}) : super(key: key);
+import 'bloc/balance_bloc.dart';
 
-  @override
-  State<BalancePage> createState() => _BalancePageState();
-}
-
-class _BalancePageState extends State<BalancePage> {
-  List<Wallet>? _wallets;
-  Wallet? _currentWallet;
-  ExtendedWalletData? _extendedWalletData;
-  MarketData? _marketData;
-
-  @override
-  void initState() {
-    super.initState();
-    _init();
-  }
+class BalancePage extends StatelessWidget {
+  const BalancePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        decoration: BoxDecoration(
-          gradient: CustomColors.qrlDarkBlueLinearGradient,
-          image: DecorationImage(
-            image: const AssetImage('assets/images/orange-dots-3.png'),
-            alignment: Alignment.bottomCenter,
-            colorFilter: ColorFilter.mode(
-              CustomColors.qrlDarkBlueMaterial.withOpacity(0.15),
-              BlendMode.dstATop,
+    return BlocProvider<BalanceBloc>(
+        create: (_) => BalanceBloc()..add(InitEvent()),
+        child: const _BalanceView());
+  }
+}
+
+class _BalanceView extends StatelessWidget {
+  const _BalanceView();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<BalanceBloc, BalanceState>(
+      listenWhen: (previous, current) =>
+          current.status == BalanceStatus.noWallets ||
+          current.status == BalanceStatus.error,
+      listener: (context, state) {
+        if (state.status == BalanceStatus.noWallets) {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const AddWalletPage()),
+              (route) => false);
+        } else if (state.status == BalanceStatus.error) {
+          SnackBars.showSnackBar(context,
+              "${AppLocalizations.of(context)!.errorDuringBalanceRetrieval} ${state.errorMessage}",
+              duration: const Duration(seconds: 6, milliseconds: 1500));
+        }
+      },
+      child: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: CustomColors.qrlDarkBlueLinearGradient,
+            ),
+            child: Scaffold(
+              appBar: _buildAppBar(),
+              body: _buildBalanceBox(context),
             ),
           ),
-        ),
-        child: Scaffold(
-          appBar: AppBar(
-            elevation: 0,
-            centerTitle: true,
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                _wallets != null
-                    ? BottomSheetSelect<Wallet>(
-                        selectedItem: _currentWallet!,
-                        items: _wallets!,
-                        valueChanged: (value) {
-                          getIt<WalletService>().setCurrentWalletId(value.id);
-                          _setCurrentWallets(value, _wallets!);
-                        },
-                        labelWidgetConverter: (value) {
-                          return Row(
-                            children: [
-                              Text(value.name,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                  )),
-                              const Icon(
-                                Icons.arrow_drop_down,
-                                color: Colors.white,
-                                size: 24,
-                              ),
-                            ],
-                          );
-                        },
-                        itemWidgetConverter: (value) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                                bottom: 8, top: 8, right: 16, left: 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      IntrinsicWidth(
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(bottom: 4),
-                                          child: Text(
-                                            value.name,
-                                            overflow: TextOverflow.visible,
-                                            style: const TextStyle(
-                                              color: CustomColors
-                                                  .qrlLightBlueColor,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Text(
-                                        "Q${value.address}",
-                                        overflow: TextOverflow.visible,
-                                        style: TextStyle(
-                                          fontStyle: FontStyle.italic,
-                                          color: Colors.grey[500],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      )
-                    : Container(),
-              ],
+          NotificationListener<DraggableScrollableNotification>(
+            onNotification: (DraggableScrollableNotification notification) {
+              BalanceBloc balanceBloc = BlocProvider.of<BalanceBloc>(context);
+              if (!balanceBloc.state.expanded && notification.extent >= 0.70) {
+                balanceBloc.add(const ExpandedChangedEvent(true));
+              } else if (balanceBloc.state.expanded &&
+                  notification.extent < 0.70) {
+                balanceBloc.add(const ExpandedChangedEvent(false));
+              }
+              return true;
+            },
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.5,
+              minChildSize: 0.5,
+              maxChildSize: 1,
+              expand: true,
+              snap: true,
+              snapSizes: const [0.5, 1],
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                return SafeArea(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      return Container(
+                        decoration: const BoxDecoration(
+                          color: CustomColors.qrlDarkBlueMaterial,
+                        ),
+                        child: Column(
+                          children: [
+                            _buildBalanceBoxSmall(),
+                            CommunityList(scrollController)
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 4.0),
-                child: Image.asset(
-                  'assets/images/qrl-logo.png',
-                  fit: BoxFit.contain,
-                  height: 60,
-                ),
-              ),
-            ],
           ),
-          body: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [buildBalanceBox(context), buildTransactionList(context)],
-          ),
-        ));
+        ],
+      ),
+    );
   }
 
-  Padding buildBalanceBox(BuildContext context) {
+  AppBar _buildAppBar() {
+    return AppBar(
+      elevation: 0,
+      centerTitle: true,
+      title: _buildWalletsBlocBuilder(),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 4.0),
+          child: Image.asset(
+            'assets/images/qrl-logo.png',
+            fit: BoxFit.contain,
+            height: 60,
+          ),
+        ),
+      ],
+    );
+  }
+
+  BlocBuilder<BalanceBloc, BalanceState> _buildWalletsBlocBuilder() {
+    return BlocBuilder<BalanceBloc, BalanceState>(
+        buildWhen: (previous, current) =>
+            previous.status == BalanceStatus.loadingWallets ||
+            current.status == BalanceStatus.loadingWallets,
+        builder: (context, state) {
+          if (state.status != BalanceStatus.loadingWallets &&
+              state.currentWallet != null &&
+              state.wallets.isNotEmpty) {
+            return BottomSheetSelect<Wallet>(
+              selectedItem: state.currentWallet!,
+              items: state.wallets,
+              valueChanged: (value) {
+                BlocProvider.of<BalanceBloc>(context)
+                    .add(WalletChangedEvent(value));
+              },
+              labelWidgetConverter: (value) {
+                return Row(
+                  children: [
+                    Text(value.name,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          fontSize: 18,
+                        )),
+                    const Icon(
+                      Icons.arrow_drop_down,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ],
+                );
+              },
+              itemWidgetConverter: (value) {
+                return Padding(
+                  padding: const EdgeInsets.only(
+                      bottom: 8, top: 8, right: 16, left: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            IntrinsicWidth(
+                              child: Padding(
+                                padding: const EdgeInsets.only(bottom: 4),
+                                child: Text(
+                                  value.name,
+                                  overflow: TextOverflow.visible,
+                                  style: const TextStyle(
+                                    color: CustomColors.qrlLightBlueColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Text(
+                              "Q${value.address}",
+                              overflow: TextOverflow.visible,
+                              style: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                color: Colors.grey[500],
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            );
+          }
+          return Container();
+        });
+  }
+
+  Padding _buildBalanceBox(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Stack(
-        alignment: Alignment.bottomCenter,
+        alignment: Alignment.topCenter,
         children: [
           Opacity(
             opacity: 0.1,
-            child: Image.asset(
-              'assets/images/background-wallet.png',
-              fit: BoxFit.fill,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 36),
+              child: Image.asset(
+                'assets/images/background-wallet.png',
+                fit: BoxFit.fill,
+              ),
             ),
           ),
           Column(
@@ -166,27 +219,15 @@ class _BalancePageState extends State<BalancePage> {
               Center(
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      top: 24, left: 24, right: 24, bottom: 8),
-                  child: Text(
-                    "${StringUtil.formatAmount(_extendedWalletData?.balance ?? 0)} QRL",
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: CustomColors.qrlLightBlueColor,
-                      fontSize: 16,
-                    ),
-                  ),
+                      top: 12, left: 24, right: 24, bottom: 8),
+                  child: _buildBalanceBlocBuilder(),
                 ),
               ),
               Center(
                 child: Padding(
                   padding:
                       const EdgeInsets.only(left: 24, right: 24, bottom: 16),
-                  child: Text(
-                    _extendedWalletData != null && _marketData != null
-                        ? "\$ ${_getConvertedBalance()}"
-                        : "\$ 00.00",
-                    textAlign: TextAlign.center,
-                  ),
+                  child: _buildConvertedBalanceBlocBuilder(),
                 ),
               ),
               Center(
@@ -207,10 +248,16 @@ class _BalancePageState extends State<BalancePage> {
                 child: Padding(
                   padding:
                       const EdgeInsets.only(left: 24, right: 24, bottom: 16),
-                  child: Text(
-                    "${_marketData?.change24Hr ?? "0.0"}%",
-                    textAlign: TextAlign.center,
-                  ),
+                  child: BlocBuilder<BalanceBloc, BalanceState>(
+                      buildWhen: (previous, current) =>
+                          (previous.marketData?.change24Hr ?? 0) !=
+                          (current.marketData?.change24Hr ?? 0),
+                      builder: (context, state) {
+                        return Text(
+                          "${state.marketData?.change24Hr ?? "0.0"}%",
+                          textAlign: TextAlign.center,
+                        );
+                      }),
                 ),
               ),
               Padding(
@@ -223,23 +270,37 @@ class _BalancePageState extends State<BalancePage> {
                       Expanded(
                         child: Column(children: [
                           Text(AppLocalizations.of(context)!.marketCap),
-                          Text(
-                            _marketData != null ? _getMarketCap() : "0.00 USD",
-                          )
+                          BlocBuilder<BalanceBloc, BalanceState>(
+                              buildWhen: (previous, current) =>
+                                  (previous.marketData?.marketCap ?? 0) !=
+                                  (current.marketData?.marketCap ?? 0),
+                              builder: (context, state) {
+                                return Text(
+                                  state.marketData != null
+                                      ? "\$ ${(state.marketData!.marketCap / Decimal.fromInt(1000000)).toDecimal().toStringAsFixed(2)}M USD"
+                                      : "0.00 USD",
+                                );
+                              }),
                         ]),
                       ),
                       Expanded(
                         child: Column(children: [
                           Text(AppLocalizations.of(context)!.price),
-                          Text(
-                              "\$ ${_marketData?.price.toStringAsFixed(2) ?? "0.00"} USD"),
+                          BlocBuilder<BalanceBloc, BalanceState>(
+                              buildWhen: (previous, current) =>
+                                  (previous.marketData?.price ?? 0) !=
+                                  (current.marketData?.price ?? 0),
+                              builder: (context, state) {
+                                return Text(
+                                    "\$ ${state.marketData?.price.toStringAsFixed(2) ?? "0.00"} USD");
+                              }),
                         ]),
                       ),
                     ],
                   ),
                 ),
               ),
-              buildButtonBar(context)
+              _buildButtonBar(context)
             ],
           )
         ],
@@ -247,11 +308,64 @@ class _BalancePageState extends State<BalancePage> {
     );
   }
 
-  Stack buildButtonBar(BuildContext context) {
+  BlocBuilder<BalanceBloc, BalanceState> _buildBalanceBlocBuilder(
+      {bool small = false}) {
+    return BlocBuilder<BalanceBloc, BalanceState>(
+        buildWhen: (previous, current) =>
+            (previous.extendedWalletData?.balance ?? 0) !=
+            (current.extendedWalletData?.balance ?? 0),
+        builder: (context, state) {
+          TextStyle textStyle;
+          if (small) {
+            textStyle = const TextStyle(
+              fontSize: 16,
+            );
+          } else {
+            textStyle = const TextStyle(
+              color: CustomColors.qrlLightBlueColor,
+              fontSize: 16,
+            );
+          }
+          return Text(
+            "${StringUtil.formatAmount(state.extendedWalletData?.balance ?? 0)} QRL",
+            textAlign: TextAlign.center,
+            style: textStyle,
+          );
+        });
+  }
+
+  BlocBuilder<BalanceBloc, BalanceState> _buildConvertedBalanceBlocBuilder() {
+    return BlocBuilder<BalanceBloc, BalanceState>(
+        buildWhen: (previous, current) =>
+            ((previous.extendedWalletData?.balance ?? 0) !=
+                    (current.extendedWalletData?.balance ?? 0) &&
+                current.marketData != null) ||
+            (previous.marketData != current.marketData &&
+                current.extendedWalletData != null),
+        builder: (context, state) {
+          if (state.extendedWalletData != null && state.marketData != null) {
+            Decimal balance =
+                (Decimal.fromInt(state.extendedWalletData!.balance) /
+                        Decimal.fromInt(1000000000))
+                    .toDecimal();
+            Decimal result = balance * state.marketData!.price;
+            return Text(
+              "\$ ${result.toStringAsFixed(2)}",
+              textAlign: TextAlign.center,
+            );
+          }
+          return const Text(
+            "\$ 00.00",
+            textAlign: TextAlign.center,
+          );
+        });
+  }
+
+  Stack _buildButtonBar(BuildContext context) {
     return Stack(children: [
       Center(
         child: Padding(
-          padding: const EdgeInsets.only(left: 16, right: 16, bottom: 24),
+          padding: const EdgeInsets.only(left: 8, right: 8, bottom: 24),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -259,20 +373,10 @@ class _BalancePageState extends State<BalancePage> {
                 child: Container(
                   padding: const EdgeInsets.all(8.0),
                   child: QrlButton(
-                    () {
-                      if (_currentWallet != null &&
-                          _extendedWalletData != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => SendTransactionPage(
-                                  _currentWallet!, _extendedWalletData!)),
-                        );
-                      }
-                    },
+                    () => _onClickSend(context),
                     text: AppLocalizations.of(context)!.send,
                     baseColor: CustomColors.qrlLightBlueColor,
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: CustomColors.qrlLightBlueColorBackground,
                   ),
                 ),
               ),
@@ -280,19 +384,10 @@ class _BalancePageState extends State<BalancePage> {
                 child: Container(
                   padding: const EdgeInsets.all(8.0),
                   child: QrlButton(
-                    () {
-                      if (_currentWallet != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  ReceiveAmountPage(_currentWallet!)),
-                        );
-                      }
-                    },
+                    () => _onClickReceive(context),
                     text: AppLocalizations.of(context)!.receive,
                     baseColor: CustomColors.qrlLightBlueColor,
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: CustomColors.qrlLightBlueColorBackground,
                   ),
                 ),
               ),
@@ -306,208 +401,121 @@ class _BalancePageState extends State<BalancePage> {
           shape: const StadiumBorder(
               side: BorderSide(
                   color: CustomColors.qrlLightBlueMaterial, width: 1)),
-          onPressed: () {
-            _refresh();
-          },
+          onPressed: () => _onClickTransactions(context),
           backgroundColor: CustomColors.qrlLightBlueColorBackground,
-          child: const Icon(Icons.refresh),
+          child: const Icon(Icons.import_export),
         ),
       )
     ]);
   }
 
-  Expanded buildTransactionList(BuildContext context) {
-    return Expanded(
-      child: (_extendedWalletData?.transactions.length ?? 0) > 0
-          ? ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: _extendedWalletData?.transactions.length ?? 0,
-              shrinkWrap: true,
-              itemBuilder: (BuildContext context, int index) {
-                return InkWell(
-                  onTap: () => _onTapTransaction(index),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                    color: CustomColors.qrlYellowColor)),
-                            child: Icon(
-                              _extendedWalletData!.transactions[index].incoming
-                                  ? Icons.arrow_back
-                                  : Icons.arrow_forward,
-                              color: CustomColors.qrlYellowColor,
-                              size: 28,
+  void _onClickSend(BuildContext context) {
+    BalanceState state = BlocProvider.of<BalanceBloc>(context).state;
+    if (state.currentWallet != null && state.extendedWalletData != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SendTransactionPage(
+              state.currentWallet!, state.extendedWalletData!),
+        ),
+      );
+    }
+  }
+
+  void _onClickReceive(BuildContext context) {
+    BalanceState state = BlocProvider.of<BalanceBloc>(context).state;
+    if (state.currentWallet != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ReceiveAmountPage(state.currentWallet!)),
+      );
+    }
+  }
+
+  void _onClickTransactions(BuildContext context) {
+    BalanceState state = BlocProvider.of<BalanceBloc>(context).state;
+    if (state.currentWallet != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => TransactionsPage(state.currentWallet!)),
+      );
+    }
+  }
+
+  BlocBuilder<BalanceBloc, BalanceState> _buildBalanceBoxSmall() {
+    return BlocBuilder<BalanceBloc, BalanceState>(
+        buildWhen: (previous, current) => previous.expanded != current.expanded,
+        builder: (context, state) {
+          if (state.expanded) {
+            return Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xff163246),
+                    CustomColors.qrlDarkBlueMaterial,
+                  ],
+                  stops: [0.4, 0.9],
+                ),
+              ),
+              child: Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildBalanceBlocBuilder(small: true),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 4.0),
+                            child: Image.asset(
+                              'assets/images/qrl-logo.png',
+                              fit: BoxFit.contain,
+                              height: 56,
                             ),
                           ),
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 16,bottom: 4),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Padding(
-                              padding:
-                                  const EdgeInsets.only(right: 8, bottom: 4),
-                              child: Row(
-                                children: [
-                                  Text(
-                                    _extendedWalletData!
-                                            .transactions[index].incoming
-                                        ? AppLocalizations.of(context)!.received
-                                        : AppLocalizations.of(context)!.sent,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 8),
-                                    child: Text(
-                                      _extendedWalletData!
-                                              .transactions[index].unconfirmed
-                                          ? AppLocalizations.of(context)!
-                                              .unconfirmed
-                                          : "",
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                        color: CustomColors.qrlYellowMaterial
-                                            .withOpacity(0.5),
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
+                            QrlButton(
+                              () => _onClickSend(context),
+                              text: AppLocalizations.of(context)!.send,
+                              baseColor: CustomColors.qrlLightBlueColor,
+                              backgroundColor:
+                                  CustomColors.qrlLightBlueColorBackground,
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: Text(
-                                DateFormat("HH:mm, MMM d yyyy").format(
-                                    _extendedWalletData!
-                                        .transactions[index].dateTime),
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontStyle: FontStyle.italic,
-                                  color: Colors.grey[500],
-                                ),
-                              ),
+                            QrlButton(
+                              () => _onClickReceive(context),
+                              text: AppLocalizations.of(context)!.receive,
+                              baseColor: CustomColors.qrlLightBlueColor,
+                              backgroundColor:
+                                  CustomColors.qrlLightBlueColorBackground,
+                            ),
+                            QrlButton(
+                              () => _onClickTransactions(context),
+                              text: AppLocalizations.of(context)!
+                                  .transactions
+                                  .toUpperCase(),
+                              baseColor: CustomColors.qrlLightBlueColor,
+                              backgroundColor:
+                                  CustomColors.qrlLightBlueColorBackground,
                             ),
                           ],
                         ),
-                        Expanded(
-                          child: Align(
-                            alignment: Alignment.centerRight,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                "${_extendedWalletData!.transactions[index].incoming ? "+" : "-"} ${StringUtil.formatAmount(_extendedWalletData!.transactions[index].amount)} QRL",
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              })
-          : Text(AppLocalizations.of(context)!.noTransactionsFound),
-    );
-  }
-
-  _init() async {
-    WalletService walletService = getIt<WalletService>();
-    List<Wallet> wallets = await walletService.getWallets();
-    if (wallets.isEmpty) {
-      if (mounted) {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const AddWalletPage()),
-            (route) => false);
-      }
-    } else {
-      int? currentWalletId = await walletService.getCurrentWalletId();
-      Wallet currentWallet = wallets.firstWhere(
-          (wallet) => wallet.id == currentWalletId,
-          orElse: () => wallets.first);
-      await _setCurrentWallets(currentWallet, wallets);
-      MarketService marketService = getIt<MarketService>();
-      MarketData? marketData = await marketService.getMarketData();
-      if (mounted) {
-        setState(() {
-          _marketData = marketData;
+                      ),
+                    ],
+                  )),
+            );
+          }
+          return Container();
         });
-      }
-    }
-  }
-
-  Future<void> _setCurrentWallets(
-      Wallet currentWallet, List<Wallet> wallets) async {
-    try {
-      ExtendedWalletData extendedWalletData = await getIt<GrpcService>()
-          .getExtendedWalletData(currentWallet.address);
-      if (mounted) {
-        setState(() {
-          _wallets = wallets;
-          _currentWallet = currentWallet;
-          _extendedWalletData = extendedWalletData;
-        });
-      }
-    } on Exception catch (e, stacktrace) {
-      var errorMessage = e.toString();
-      log(errorMessage, stackTrace: stacktrace);
-      if (mounted) {
-        SnackBars.showSnackBar(context,
-            "${AppLocalizations.of(context)!.errorDuringBalanceRetrieval} $errorMessage",
-            duration: const Duration(seconds: 6, milliseconds: 1500));
-      }
-    }
-  }
-
-  void _refresh() async {
-    WalletService walletService = getIt<WalletService>();
-    List<Wallet> wallets = await walletService.getWallets();
-    int? currentWalletId = await walletService.getCurrentWalletId();
-    Wallet currentWallet = wallets.firstWhere(
-        (wallet) => wallet.id == currentWalletId,
-        orElse: () => wallets.first);
-    await _setCurrentWallets(currentWallet, wallets);
-    MarketService marketService = getIt<MarketService>();
-    MarketData? marketData = await marketService.getMarketData();
-    if (mounted) {
-      setState(() {
-        _marketData = marketData;
-      });
-    }
-  }
-
-  _onTapTransaction(int index) {
-    if (_extendedWalletData != null) {
-      TransactionData transactionData =
-          _extendedWalletData!.transactions[index];
-      if (mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => TransactionDetailPage(transactionData)),
-        );
-      }
-    }
-  }
-
-  String _getConvertedBalance() {
-    Decimal balance = (Decimal.fromInt(_extendedWalletData!.balance) /
-            Decimal.fromInt(1000000000))
-        .toDecimal();
-    Decimal result = balance * _marketData!.price;
-    return result.toStringAsFixed(2);
-  }
-
-  String _getMarketCap() {
-    return "\$ ${(_marketData!.marketCap / Decimal.fromInt(1000000)).toDecimal().toStringAsFixed(2)}M USD";
   }
 }

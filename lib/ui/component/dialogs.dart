@@ -10,6 +10,7 @@ class Dialogs {
         context: context,
         builder: (_) {
           return Dialog(
+            insetPadding: const EdgeInsets.all(16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5),
               side: const BorderSide(color: CustomColors.qrlYellowColor),
@@ -51,6 +52,7 @@ class Dialogs {
       context: context,
       builder: (BuildContext ctx) {
         return Dialog(
+          insetPadding: const EdgeInsets.all(16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
             side: const BorderSide(color: CustomColors.qrlYellowColor),

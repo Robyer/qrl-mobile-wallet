@@ -201,7 +201,7 @@ class _BottomSheetSelectWidget<T> extends StatelessWidget {
         width: 512,
         child: Padding(
           padding:
-              const EdgeInsets.only(top: 8, bottom: 8, left: 32, right: 32),
+              const EdgeInsets.only(top: 8, bottom: 8, left: 24, right: 24),
           child: InputDecorator(
             decoration: InputDecoration(
               enabledBorder: OutlineInputBorder(

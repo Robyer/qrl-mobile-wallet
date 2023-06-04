@@ -114,35 +114,41 @@ class _SendTransactionView extends StatelessWidget {
             Center(
                 child: Padding(
               padding: const EdgeInsets.only(
-                  left: 32, right: 32, bottom: 16, top: 24),
+                  left: 24, right: 24, bottom: 16, top: 24),
               child: Text(
                 "Q${_wallet.address}",
                 textAlign: TextAlign.center,
               ),
             )),
             Expanded(
-              child: ListView(
-                shrinkWrap: true,
-                children: [
-                  const TransactionLineComponent(),
-                  _buildFeeOtsRow(context),
-                  _buildAddMessageComponent(context),
-                  Center(
-                      child: Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Text(AppLocalizations.of(context)!.balance),
-                  )),
-                  Center(
-                      child: Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 24, left: 32, right: 32),
-                          child: Text(
-                              "${StringUtil.formatAmount(_extendedWalletData.balance)} QRL",
-                              style: const TextStyle(
-                                color: CustomColors.qrlLightBlueColor,
-                                fontSize: 18,
-                              )))),
-                ],
+              child: NotificationListener(
+                onNotification: (OverscrollIndicatorNotification overscroll) {
+                  overscroll.disallowIndicator();
+                  return true;
+                },
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    const TransactionLineComponent(),
+                    _buildFeeOtsRow(context),
+                    _buildAddMessageComponent(context),
+                    Center(
+                        child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(AppLocalizations.of(context)!.balance),
+                    )),
+                    Center(
+                        child: Padding(
+                            padding: const EdgeInsets.only(
+                                bottom: 24, left: 24, right: 24),
+                            child: Text(
+                                "${StringUtil.formatAmount(_extendedWalletData.balance)} QRL",
+                                style: const TextStyle(
+                                  color: CustomColors.qrlLightBlueColor,
+                                  fontSize: 18,
+                                )))),
+                  ],
+                ),
               ),
             ),
             Align(
@@ -176,7 +182,7 @@ class _SendTransactionView extends StatelessWidget {
                 alignment: Alignment.topRight,
                 child: InkWell(
                     child: const Padding(
-                      padding: EdgeInsets.only(bottom: 4, right: 32),
+                      padding: EdgeInsets.only(bottom: 4, right: 24),
                       child: Icon(
                           size: 18,
                           color: CustomColors.qrlYellowColor,
@@ -186,7 +192,7 @@ class _SendTransactionView extends StatelessWidget {
                         .add(const HasMessageChangedEvent(false))),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 32, right: 32, bottom: 8),
+                padding: const EdgeInsets.only(left: 24, right: 24, bottom: 8),
                 child: QrlTextFormField(
                   (value) => BlocProvider.of<SendTransactionBloc>(context)
                       .add(MessageChangedEvent(value)),
@@ -257,7 +263,7 @@ class _SendTransactionView extends StatelessWidget {
           widget = row;
         }
         return Padding(
-          padding: const EdgeInsets.only(left: 32, right: 32, bottom: 16),
+          padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
           child: widget,
         );
       },
