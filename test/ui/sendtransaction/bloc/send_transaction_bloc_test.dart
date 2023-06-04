@@ -5,12 +5,12 @@ import 'package:mobile_wallet/model/wallet.dart';
 import 'package:mobile_wallet/service/address_book_service.dart';
 import 'package:mobile_wallet/service/service_locator.dart';
 import 'package:mobile_wallet/service/settings_service.dart';
-import 'package:mobile_wallet/service/wallet_service.dart';
+import 'package:mobile_wallet/service/transaction_service.dart';
 import 'package:mobile_wallet/ui/sendtransaction/bloc/send_transaction_bloc.dart';
 
 import '../../../testutil/mock_address_book_service.dart';
 import '../../../testutil/mock_settings_service.dart';
-import '../../../testutil/mock_wallet_service.dart';
+import '../../../testutil/mock_transaction_service.dart';
 
 void main() {
   group('SendTransactionBloc', () {
@@ -19,9 +19,10 @@ void main() {
     ExtendedWalletData extendedWalletData = ExtendedWalletData(5000000, 1);
     setUpAll(() async {
       SettingsService settingsService = MockSettingsService();
-      WalletService walletService = MockWalletService();
+      TransactionService transactionsService = MockTransactionService();
       AddressBookService addressBookService = MockAddressBookService();
-      getIt.registerLazySingleton<WalletService>(() => walletService);
+      getIt
+          .registerLazySingleton<TransactionService>(() => transactionsService);
       getIt.registerLazySingleton<SettingsService>(() => settingsService);
       getIt.registerLazySingleton<AddressBookService>(() => addressBookService);
     });
