@@ -115,7 +115,8 @@ class GrpcService {
                       transactionExtended.timestampSeconds.toInt() * 1000),
                   incoming,
                   true,
-                  message));
+                  message,
+                  tx.fee.toInt()));
             }
           }
         }
@@ -178,7 +179,8 @@ class GrpcService {
                 dateTime,
                 incoming,
                 false,
-                message));
+                message,
+                tx.fee.toInt()));
           }
         }
       }

@@ -8,6 +8,7 @@ class TransactionData {
   final bool _incoming;
   final bool _unconfirmed;
   final String? _message;
+  final int _fee;
 
   TransactionData(
       this._hash,
@@ -18,7 +19,8 @@ class TransactionData {
       this._dateTime,
       this._incoming,
       this._unconfirmed,
-      this._message);
+      this._message,
+      this._fee);
 
   String get hash => _hash;
 
@@ -37,6 +39,8 @@ class TransactionData {
   bool get unconfirmed => _unconfirmed;
 
   String? get message => _message;
+
+  int get fee => _fee;
 
   @override
   bool operator ==(Object other) =>

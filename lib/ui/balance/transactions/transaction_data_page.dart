@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile_wallet/model/transaction.dart';
 import 'package:mobile_wallet/ui/component/qrl_app_bar.dart';
 import 'package:mobile_wallet/ui/component/qrl_button.dart';
@@ -44,6 +45,126 @@ class TransactionDetailPage extends StatelessWidget {
                     Card(
                       elevation: 1,
                       color: CustomColors.qrlLightBlueColor.withOpacity(0.1),
+                      child: ListTile(
+                        isThreeLine: true,
+                        horizontalTitleGap: 10,
+                        leading: SizedBox(
+                          height: double.infinity,
+                          child: Container(
+                            decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                    color: CustomColors.qrlYellowColor)),
+                            child: Icon(
+                              _transactionData.incoming
+                                  ? Icons.arrow_back
+                                  : Icons.arrow_forward,
+                              color: CustomColors.qrlYellowColor,
+                              size: 28,
+                            ),
+                          ),
+                        ),
+                        subtitle: Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8, top: 8),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                          _transactionData.incoming
+                                              ? AppLocalizations.of(context)!
+                                                  .received
+                                              : AppLocalizations.of(context)!
+                                                  .sent,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            color:
+                                                CustomColors.qrlLightBlueColor,
+                                          )),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 8),
+                                        child: Text(
+                                          _transactionData.unconfirmed
+                                              ? AppLocalizations.of(context)!
+                                                  .unconfirmed
+                                              : "",
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontStyle: FontStyle.italic,
+                                            color: CustomColors
+                                                .qrlYellowMaterial
+                                                .withOpacity(0.5),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Text(
+                                    DateFormat("HH:mm, MMM d yyyy")
+                                        .format(_transactionData.dateTime),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.grey[500],
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Text(
+                                    "${_transactionData.incoming ? "+" : "-"} ${StringUtil.formatAmount(_transactionData.amount)} QRL",
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    _transactionData.type.toUpperCase(),
+                                    style: TextStyle(
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "${AppLocalizations.of(context)!.fee} ",
+                                    style: TextStyle(
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                  Text(
+                                    "${StringUtil.formatAmount(_transactionData.fee)} QRL",
+                                    style: TextStyle(
+                                      fontStyle: FontStyle.italic,
+                                      color: Colors.grey[500],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Card(
+                      elevation: 1,
+                      color: CustomColors.qrlLightBlueColor.withOpacity(0.1),
                       child: Padding(
                         padding:
                             const EdgeInsets.only(left: 16, right: 16, top: 8),
@@ -53,18 +174,16 @@ class TransactionDetailPage extends StatelessWidget {
                             Padding(
                               padding: const EdgeInsets.only(top: 8, bottom: 8),
                               child: Text(
-                                _transactionData.type,
+                                AppLocalizations.of(context)!.transactionHash,
+                                style: const TextStyle(
+                                  color: CustomColors.qrlYellowColor,
+                                ),
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.only(bottom: 16),
-                              child: Text(
-                                "${StringUtil.formatAmount(_transactionData.amount)} QRL",
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                  color: CustomColors.qrlLightBlueColor,
-                                  fontSize: 18,
-                                ),
+                              child: SelectableText(
+                                _transactionData.hash,
                               ),
                             ),
                           ],
@@ -151,34 +270,6 @@ class TransactionDetailPage extends StatelessWidget {
                               padding: const EdgeInsets.only(bottom: 16),
                               child: SelectableText(
                                 "Q${_transactionData.receiverAddress}",
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Card(
-                      elevation: 1,
-                      color: CustomColors.qrlLightBlueColor.withOpacity(0.1),
-                      child: Padding(
-                        padding:
-                        const EdgeInsets.only(left: 16, right: 16, top: 8),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8, bottom: 8),
-                              child: Text(
-                                AppLocalizations.of(context)!.transactionHash,
-                                style: const TextStyle(
-                                  color: CustomColors.qrlYellowColor,
-                                ),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: SelectableText(
-                                _transactionData.hash,
                               ),
                             ),
                           ],
