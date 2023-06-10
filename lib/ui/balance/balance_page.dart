@@ -409,7 +409,7 @@ class _BalanceView extends StatelessWidget {
       _buildNotificationListener(BuildContext context) {
     double height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top + kToolbarHeight);
-    double childHeight = 1 - (320 / height);
+    double childHeight = 1 - (325 / height);
     if (childHeight > 0.65) {
       childHeight = 0.65;
     }

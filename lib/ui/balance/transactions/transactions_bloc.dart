@@ -24,8 +24,15 @@ class TransactionsBloc extends Bloc<TransactionsEvent, TransactionsState> {
       if (transactions.isEmpty) {
         emit(state.copyWith(status: TransactionsStatus.noTransactions));
       } else {
-        emit(state.copyWith(
-            status: TransactionsStatus.ready, transactions: transactions));
+        if (transactions.length < batchCount) {
+          emit(state.copyWith(
+              status: TransactionsStatus.ready,
+              transactions: transactions,
+              hasReachedMax: true));
+        } else {
+          emit(state.copyWith(
+              status: TransactionsStatus.ready, transactions: transactions));
+        }
       }
     });
     on<FindTransactionsEvent>((event, emit) async {
