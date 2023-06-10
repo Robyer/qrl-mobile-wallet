@@ -59,46 +59,7 @@ class _BalanceView extends StatelessWidget {
               body: _buildBalanceBox(context),
             ),
           ),
-          NotificationListener<DraggableScrollableNotification>(
-            onNotification: (DraggableScrollableNotification notification) {
-              BalanceBloc balanceBloc = BlocProvider.of<BalanceBloc>(context);
-              if (!balanceBloc.state.expanded && notification.extent >= 0.70) {
-                balanceBloc.add(const ExpandedChangedEvent(true));
-              } else if (balanceBloc.state.expanded &&
-                  notification.extent < 0.70) {
-                balanceBloc.add(const ExpandedChangedEvent(false));
-              }
-              return true;
-            },
-            child: DraggableScrollableSheet(
-              initialChildSize: 0.5,
-              minChildSize: 0.5,
-              maxChildSize: 1,
-              expand: true,
-              snap: true,
-              snapSizes: const [0.5, 1],
-              builder:
-                  (BuildContext context, ScrollController scrollController) {
-                return SafeArea(
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
-                      return Container(
-                        decoration: const BoxDecoration(
-                          color: CustomColors.qrlDarkBlueMaterial,
-                        ),
-                        child: Column(
-                          children: [
-                            _buildBalanceBoxSmall(),
-                            CommunityList(scrollController)
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
-          ),
+          _buildNotificationListener(context),
         ],
       ),
     );
@@ -444,6 +405,57 @@ class _BalanceView extends StatelessWidget {
     }
   }
 
+  NotificationListener<DraggableScrollableNotification>
+      _buildNotificationListener(BuildContext context) {
+    double height = MediaQuery.of(context).size.height -
+        (MediaQuery.of(context).padding.top + kToolbarHeight);
+    double childHeight = 1 - (320 / height);
+    if (childHeight > 0.65) {
+      childHeight = 0.65;
+    }
+    if (childHeight < 0.1) {
+      childHeight = 0.1;
+    }
+    return NotificationListener<DraggableScrollableNotification>(
+      onNotification: (DraggableScrollableNotification notification) {
+        BalanceBloc balanceBloc = BlocProvider.of<BalanceBloc>(context);
+        if (!balanceBloc.state.expanded && notification.extent >= 0.70) {
+          balanceBloc.add(const ExpandedChangedEvent(true));
+        } else if (balanceBloc.state.expanded && notification.extent < 0.70) {
+          balanceBloc.add(const ExpandedChangedEvent(false));
+        }
+        return true;
+      },
+      child: DraggableScrollableSheet(
+        initialChildSize: childHeight,
+        minChildSize: childHeight,
+        maxChildSize: 1,
+        expand: true,
+        snap: true,
+        snapSizes: [childHeight, 1],
+        builder: (BuildContext context, ScrollController scrollController) {
+          return SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return Container(
+                  decoration: const BoxDecoration(
+                    color: CustomColors.qrlDarkBlueMaterial,
+                  ),
+                  child: Column(
+                    children: [
+                      _buildBalanceBoxSmall(),
+                      CommunityList(scrollController)
+                    ],
+                  ),
+                );
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   BlocBuilder<BalanceBloc, BalanceState> _buildBalanceBoxSmall() {
     return BlocBuilder<BalanceBloc, BalanceState>(
         buildWhen: (previous, current) => previous.expanded != current.expanded,
@@ -481,7 +493,7 @@ class _BalanceView extends StatelessWidget {
                         ],
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(right: 16,bottom: 4),
+                        padding: const EdgeInsets.only(right: 16, bottom: 4),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
