@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mobile_wallet/ui/balance/balance_page.dart';
-import 'package:mobile_wallet/ui/component/qrl_app_bar.dart';
 import 'package:mobile_wallet/ui/main/main_cubit.dart';
 import 'package:mobile_wallet/ui/settings/settings_page.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
@@ -31,27 +30,50 @@ class _MainView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<MainCubit, int>(builder: (context, index) {
       return Scaffold(
-        appBar: QrlAppBar(),
         body: _widgetOptions.elementAt(index),
-        bottomNavigationBar: BottomNavigationBar(
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.account_balance_wallet),
-              label: AppLocalizations.of(context)!.balance,
+        bottomNavigationBar: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xff163246),
+                CustomColors.qrlDarkBlueMaterial,
+              ],
+              stops: [0.3, 1],
             ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.wallet),
-              label: AppLocalizations.of(context)!.wallets,
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.settings),
-              label: AppLocalizations.of(context)!.settings,
-            ),
-          ],
-          currentIndex: index,
-          selectedItemColor: CustomColors.qrlDarkBlueColor,
-          backgroundColor: CustomColors.qrlYellowColor,
-          onTap: BlocProvider.of<MainCubit>(context).updateSelectedIndex,
+          ),
+          child: BottomNavigationBar(
+            items: <BottomNavigationBarItem>[
+              BottomNavigationBarItem(
+                icon: const Icon(
+                  Icons.account_balance_wallet,
+                  size: 22,
+                ),
+                label: AppLocalizations.of(context)!.balance,
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(
+                  Icons.wallet,
+                  size: 22,
+                ),
+                label: AppLocalizations.of(context)!.wallets,
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(
+                  Icons.settings,
+                  size: 22,
+                ),
+                label: AppLocalizations.of(context)!.settings,
+              ),
+            ],
+            currentIndex: index,
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Colors.transparent,
+            selectedItemColor: CustomColors.qrlYellowColor,
+            unselectedItemColor: Colors.grey,
+            onTap: BlocProvider.of<MainCubit>(context).updateSelectedIndex,
+          ),
         ),
       );
     });

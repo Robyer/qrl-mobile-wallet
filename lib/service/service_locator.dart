@@ -8,6 +8,7 @@ import 'package:mobile_wallet/service/market_service.dart';
 import 'package:mobile_wallet/service/notification_service.dart';
 import 'package:mobile_wallet/service/secured_storage_service.dart';
 import 'package:mobile_wallet/service/settings_service.dart';
+import 'package:mobile_wallet/service/transaction_service.dart';
 import 'package:mobile_wallet/service/wallet_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -30,11 +31,11 @@ setupServiceLocator(SharedPreferences sharedPreferences) {
   getIt.registerLazySingleton<GrpcService>(() => grpcService);
   FfiWalletService ffiWalletService = FfiWalletService();
   getIt.registerLazySingleton<FfiWalletService>(() => ffiWalletService);
-  getIt.registerLazySingleton<WalletService>(() => WalletService(
-      sharedPreferenceService,
-      securedStorageService,
-      grpcService,
-      ffiWalletService));
+  WalletService walletService = WalletService(sharedPreferenceService,
+      securedStorageService, grpcService, ffiWalletService);
+  getIt.registerLazySingleton<WalletService>(() => walletService);
+  getIt.registerLazySingleton<TransactionService>(
+      () => TransactionService(walletService, grpcService, ffiWalletService));
   getIt.registerLazySingleton<MarketService>(() => MarketService());
   getIt.registerLazySingleton<AuthenticationService>(
       () => AuthenticationService(settingsService));

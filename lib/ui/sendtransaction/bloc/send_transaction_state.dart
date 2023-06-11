@@ -16,6 +16,7 @@ enum SendTransactionStatus {
   sending,
   sendError,
   send,
+  hasMessageUpdated,
 }
 
 class SendTransactionState extends Equatable {
@@ -24,18 +25,24 @@ class SendTransactionState extends Equatable {
   final SendTransactionStatus status;
   final List<TransactionLine> transactionLines;
   final int fee;
+  final String? message;
+  final bool hasMessage;
   final String? errorMessage;
 
   const SendTransactionState(this.wallet, this.extendedWalletData,
       {this.status = SendTransactionStatus.initializing,
       this.transactionLines = const [],
       this.fee = 1000000,
+      this.message,
+      this.hasMessage = false,
       this.errorMessage});
 
   SendTransactionState copyWith({
     SendTransactionStatus? status,
     List<TransactionLine>? transactionLines,
     int? fee,
+    String? message,
+    bool? hasMessage,
     String? errorMessage,
   }) {
     return SendTransactionState(
@@ -44,6 +51,8 @@ class SendTransactionState extends Equatable {
       status: status ?? this.status,
       transactionLines: transactionLines ?? this.transactionLines,
       fee: fee ?? this.fee,
+      message: message ?? this.message,
+      hasMessage: hasMessage ?? this.hasMessage,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
@@ -53,6 +62,8 @@ class SendTransactionState extends Equatable {
         status,
         transactionLines,
         fee,
+        message ?? "",
+        hasMessage,
       ];
 }
 

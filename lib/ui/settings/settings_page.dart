@@ -10,9 +10,10 @@ import 'package:mobile_wallet/ui/component/qrl_button.dart';
 import 'package:mobile_wallet/ui/component/qrl_textfield.dart';
 import 'package:mobile_wallet/ui/component/snack_bars.dart';
 import 'package:mobile_wallet/ui/settings/bloc/settings_bloc.dart';
-import 'package:mobile_wallet/ui/settings/community_page.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
 import 'package:mobile_wallet/ui/util/util.dart';
+
+import '../component/qrl_app_bar.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -67,16 +68,19 @@ class _SettingsView extends StatelessWidget {
       },
       buildWhen: (previous, current) => current.status == SettingsStatus.ready,
       builder: (context, state) {
+        Widget widget;
         if (state.status == SettingsStatus.ready) {
-          return _buildWidget(context);
+          widget = _buildWidget(context);
         } else {
-          return Center(
+          widget = Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const CircularProgressIndicator(),
+                  const CircularProgressIndicator(
+                    color: CustomColors.qrlYellowColor,
+                  ),
                   const SizedBox(
                     height: 15,
                   ),
@@ -86,6 +90,23 @@ class _SettingsView extends StatelessWidget {
             ),
           );
         }
+        return Container(
+            decoration: BoxDecoration(
+              gradient: CustomColors.qrlDarkBlueLinearGradient,
+              image: DecorationImage(
+                image: const AssetImage('assets/images/orange-dots-5.png'),
+                alignment: Alignment.bottomCenter,
+                colorFilter: ColorFilter.mode(
+                  CustomColors.qrlDarkBlueMaterial.withOpacity(0.15),
+                  BlendMode.dstATop,
+                ),
+              ),
+            ),
+            child: Scaffold(
+              appBar: QrlTitleAppBar(
+                  titleText: AppLocalizations.of(context)!.settings),
+              body: widget,
+            ));
       },
     );
   }
@@ -93,70 +114,44 @@ class _SettingsView extends StatelessWidget {
   Column _buildWidget(BuildContext context) {
     return Column(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(AppLocalizations.of(context)!.settings,
-              style: const TextStyle(
-                color: CustomColors.qrlLightBlueColor,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-              )),
-        ),
         Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildUseDeviceLoginBuilder(),
-                _buildUseTransactionNotificationBuilder(),
-                _buildUsePriceNotificationBuilder(),
-                _buildAppLanguageBuilder(),
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
+          child: NotificationListener(
+            onNotification: (OverscrollIndicatorNotification overscroll) {
+              overscroll.disallowIndicator();
+              return true;
+            },
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildUseDeviceLoginBuilder(),
+                  _buildUseTransactionNotificationBuilder(),
+                  _buildUsePriceNotificationBuilder(),
+                  _buildAppLanguageBuilder(),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 24, top: 8, right: 8),
                     child: Text(AppLocalizations.of(context)!.warning,
                         style: const TextStyle(
                           color: CustomColors.qrlLightBlueColor,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                          fontSize: 16,
                         )),
                   ),
-                ),
-                Center(
-                    child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Text(
-                    AppLocalizations.of(context)!.deviatingDefault,
-                    textAlign: TextAlign.center,
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 24, top: 8, bottom: 8, right: 8),
+                    child: Text(
+                      AppLocalizations.of(context)!.deviatingDefault,
+                    ),
                   ),
-                )),
-                _buildNodeUrlBuilder(),
-                _buildPortBuilder(),
-              ],
+                  _buildNodeUrlBuilder(),
+                  _buildPortBuilder(),
+                ],
+              ),
             ),
           ),
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            SizedBox(
-              width: 256,
-              child: QrlButton(
-                () {
-                  Util.dismissKeyboard(context);
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const CommunityPage()),
-                  );
-                },
-                text: AppLocalizations.of(context)!.join,
-                baseColor: CustomColors.qrlLightBlueColor,
-              ),
-            ),
-            _buildConfirmBuilder(),
-          ],
-        ),
+        _buildConfirmBuilder(),
       ],
     );
   }
@@ -170,7 +165,7 @@ class _SettingsView extends StatelessWidget {
             current.status == SettingsStatus.authenticationFailed,
         builder: (context, state) {
           return Padding(
-            padding: const EdgeInsets.only(top: 8, left: 16, right: 8),
+            padding: const EdgeInsets.only(left: 8),
             child: SwitchListTile(
                 activeColor: CustomColors.qrlLightBlueColor,
                 title: Text(AppLocalizations.of(context)!.useDeviceLogin),
@@ -194,7 +189,7 @@ class _SettingsView extends StatelessWidget {
             current.status == SettingsStatus.permissionNotGranted,
         builder: (context, state) {
           return Padding(
-            padding: const EdgeInsets.only(left: 16, right: 8),
+            padding: const EdgeInsets.only(left: 8),
             child: SwitchListTile(
                 activeColor: CustomColors.qrlLightBlueColor,
                 title: Text(
@@ -214,7 +209,7 @@ class _SettingsView extends StatelessWidget {
             current.status == SettingsStatus.permissionNotGranted,
         builder: (context, state) {
           return Padding(
-            padding: const EdgeInsets.only(bottom: 8, left: 16, right: 8),
+            padding: const EdgeInsets.only(bottom: 8, left: 8),
             child: SwitchListTile(
                 activeColor: CustomColors.qrlLightBlueColor,
                 title: Text(AppLocalizations.of(context)!.usePriceNotification),
@@ -258,7 +253,7 @@ class _SettingsView extends StatelessWidget {
         builder: (context, state) {
           return Padding(
             padding:
-                const EdgeInsets.only(top: 16, bottom: 8, left: 32, right: 32),
+                const EdgeInsets.only(top: 16, bottom: 8, left: 24, right: 24),
             child: QrlTextFormField(
               (value) => BlocProvider.of<SettingsBloc>(context)
                   .add(NodeUrlChanged(value)),
@@ -276,7 +271,7 @@ class _SettingsView extends StatelessWidget {
         builder: (context, state) {
           return Padding(
             padding:
-                const EdgeInsets.only(top: 8, bottom: 16, left: 32, right: 32),
+                const EdgeInsets.only(top: 8, bottom: 16, left: 24, right: 24),
             child: QrlTextFormField(
               (value) => BlocProvider.of<SettingsBloc>(context)
                   .add(PortChanged(value.isNotEmpty ? int.parse(value) : 0)),
@@ -300,7 +295,7 @@ class _SettingsView extends StatelessWidget {
           return Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 8),
+              padding: const EdgeInsets.only(bottom: 24),
               child: SizedBox(
                 width: 256,
                 child: QrlButton(
@@ -313,6 +308,7 @@ class _SettingsView extends StatelessWidget {
                       : null,
                   text: AppLocalizations.of(context)!.confirm,
                   baseColor: CustomColors.qrlLightBlueColor,
+                  backgroundColor: CustomColors.qrlLightBlueColorBackground,
                 ),
               ),
             ),

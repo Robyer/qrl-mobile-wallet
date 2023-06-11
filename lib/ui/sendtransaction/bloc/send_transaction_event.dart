@@ -62,3 +62,21 @@ class RemoveTransactionLineEvent extends SendTransactionEvent {
 class ReviewEvent extends SendTransactionEvent {}
 
 class SendEvent extends SendTransactionEvent {}
+
+class HasMessageChangedEvent extends SendTransactionEvent {
+  final bool hasMessage;
+
+  const HasMessageChangedEvent(this.hasMessage);
+
+  @override
+  List<Object?> get props => [hasMessage];
+}
+
+class MessageChangedEvent extends SendTransactionEvent {
+  final String message;
+
+  const MessageChangedEvent(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

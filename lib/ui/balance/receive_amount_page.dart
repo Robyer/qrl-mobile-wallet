@@ -15,76 +15,79 @@ class ReceiveAmountPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: QrlAppBar(),
-      body: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(AppLocalizations.of(context)!.receiveTitle,
-                    style: const TextStyle(
-                      color: CustomColors.qrlLightBlueColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    )),
-              ),
-            ),
-            Center(
-                child: Padding(
-              padding: const EdgeInsets.only(bottom: 48),
-              child:
-                  Text(AppLocalizations.of(context)!.yourPublicWalletAddress),
-            )),
-            Center(
-                child: Padding(
-              padding: const EdgeInsets.only(left: 24, right: 24, bottom: 32),
-              child: SelectableText(
-                "Q${_currentWallet.address}",
-                textAlign: TextAlign.center,
-              ),
-            )),
-            Center(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                      color: CustomColors.qrlYellowColor,
-                      width: 1,
-                    )),
-                child: QrImage(
-                  data: "Q${_currentWallet.address}",
-                  version: QrVersions.auto,
-                  size: 200.0,
+    return Container(
+      decoration: BoxDecoration(
+        gradient: CustomColors.qrlDarkBlueLinearGradient,
+        image: DecorationImage(
+          image: const AssetImage('assets/images/orange-dots-2.png'),
+          alignment: Alignment.bottomCenter,
+          colorFilter: ColorFilter.mode(
+            CustomColors.qrlDarkBlueMaterial.withOpacity(0.15),
+            BlendMode.dstATop,
+          ),
+        ),
+      ),
+      child: Scaffold(
+        appBar: QrlTitleAppBar(
+          titleText: AppLocalizations.of(context)!.receiveTitle,
+        ),
+        body: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                  child: Padding(
+                padding: const EdgeInsets.only(
+                    top: 24, left: 24, right: 24, bottom: 32),
+                child: SelectableText(
+                  "Q${_currentWallet.address}",
+                  textAlign: TextAlign.center,
+                ),
+              )),
+              Center(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: CustomColors.qrlYellowColor,
+                        width: 1,
+                      )),
+                  child: QrImage(
+                    data: "Q${_currentWallet.address}",
+                    version: QrVersions.auto,
+                    size: 200.0,
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 36),
-                  child: SizedBox(
-                    width: 256,
-                    child: QrlButton(
-                      () async {
-                        Clipboard.setData(ClipboardData(
-                                text: "Q${_currentWallet.address}"))
-                            .then((value) {
-                          SnackBars.showSnackBar(context,
-                              AppLocalizations.of(context)!.copiedToClipboard);
-                        });
-                      },
-                      text: AppLocalizations.of(context)!.copy,
-                      baseColor: CustomColors.qrlLightBlueColor,
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 36),
+                    child: SizedBox(
+                      width: 256,
+                      child: QrlButton(
+                        () async {
+                          Clipboard.setData(ClipboardData(
+                                  text: "Q${_currentWallet.address}"))
+                              .then((value) {
+                            SnackBars.showSnackBar(
+                                context,
+                                AppLocalizations.of(context)!
+                                    .copiedToClipboard);
+                          });
+                        },
+                        text: AppLocalizations.of(context)!.copy,
+                        baseColor: CustomColors.qrlLightBlueColor,
+                        backgroundColor:
+                            CustomColors.qrlLightBlueColorBackground,
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ]),
+            ]),
+      ),
     );
   }
 }

@@ -4,6 +4,7 @@ enum AddWalletStatus { initial, valid, creating, created, error }
 
 class AddWalletState extends Equatable {
   final AddWalletStatus status;
+  final AddWalletMode addWalletMode;
   final String? name;
   final int treeHeight;
   final int hashFunction;
@@ -12,7 +13,7 @@ class AddWalletState extends Equatable {
   final Wallet? createdWallet;
   final String? errorMessage;
 
-  const AddWalletState(
+  const AddWalletState(this.addWalletMode,
       {this.status = AddWalletStatus.initial,
       this.name,
       this.treeHeight = 10,
@@ -23,6 +24,7 @@ class AddWalletState extends Equatable {
       this.errorMessage});
 
   AddWalletState copyWith({
+    AddWalletMode? addWalletMode,
     AddWalletStatus? status,
     String? name,
     int? treeHeight,
@@ -33,6 +35,7 @@ class AddWalletState extends Equatable {
     String? errorMessage,
   }) {
     return AddWalletState(
+      addWalletMode ?? this.addWalletMode,
       status: status ?? this.status,
       name: name ?? this.name,
       treeHeight: treeHeight ?? this.treeHeight,
@@ -46,6 +49,7 @@ class AddWalletState extends Equatable {
 
   @override
   List<Object> get props => [
+        addWalletMode,
         status,
         name ?? "",
         treeHeight,

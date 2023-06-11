@@ -30,58 +30,111 @@ class _BackupWalletView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: QrlAppBar(),
-      body: Column(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Text(AppLocalizations.of(context)!.recoverySeeds,
-                  style: const TextStyle(
-                    color: CustomColors.qrlLightBlueColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  )),
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: CustomColors.qrlDarkBlueLinearGradient,
+        image: DecorationImage(
+          image: const AssetImage('assets/images/orange-dots-4.png'),
+          alignment: Alignment.bottomCenter,
+          colorFilter: ColorFilter.mode(
+            CustomColors.qrlDarkBlueMaterial.withOpacity(0.15),
+            BlendMode.dstATop,
           ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
-              child: SelectableText(
-                "Q$address",
-                textAlign: TextAlign.center,
+        ),
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: QrlTitleAppBar(
+          titleText: AppLocalizations.of(context)!.recoverySeeds,
+        ),
+        body: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Expanded(
+              child: NotificationListener(
+                onNotification: (OverscrollIndicatorNotification overscroll) {
+                  overscroll.disallowIndicator();
+                  return true;
+                },
+                child: ListView(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8, right: 8),
+                      child: Card(
+                        elevation: 1,
+                        color: CustomColors.qrlLightBlueColor.withOpacity(0.1),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16, right: 16, top: 8, bottom: 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(bottom: 8, top: 8),
+                                child: Text(
+                                    AppLocalizations.of(context)!.walletAddress,
+                                    style: const TextStyle(
+                                      color: CustomColors.qrlYellowColor,
+                                    )),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Center(
+                                  child: SelectableText(
+                                    "Q$address",
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8, right: 8),
+                      child: Card(
+                        elevation: 1,
+                        color: CustomColors.qrlLightBlueColor.withOpacity(0.1),
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                              left: 16, right: 16, top: 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(top: 8),
+                                child:
+                                    Text(AppLocalizations.of(context)!.warning,
+                                        style: const TextStyle(
+                                          color: CustomColors.qrlLightBlueColor,
+                                        )),
+                              ),
+                              Center(
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.only(top: 8, bottom: 16),
+                                  child: Text(
+                                    AppLocalizations.of(context)!
+                                        .recoveryWarning,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    _buildMnemonicBlocBuilder(),
+                    _buildHexSeedBlocBuilder(),
+                  ],
+                ),
               ),
             ),
-          ),
-          _buildMnemonicBlocBuilder(),
-          _buildHexSeedBlocBuilder(),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 24, right: 24, bottom: 8),
-              child: Text(AppLocalizations.of(context)!.warning,
-                  style: const TextStyle(
-                    color: CustomColors.qrlLightBlueColor,
-                    fontWeight: FontWeight.bold,
-                  )),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
-              child: Text(
-                AppLocalizations.of(context)!.recoveryWarning,
-                textAlign: TextAlign.center,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Align(
+            Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 24),
+                padding: const EdgeInsets.only(bottom: 24, top: 8),
                 child: SizedBox(
                   width: 256,
                   child: QrlButton(
@@ -94,12 +147,13 @@ class _BackupWalletView extends StatelessWidget {
                     },
                     text: AppLocalizations.of(context)!.done,
                     baseColor: CustomColors.qrlLightBlueColor,
+                    backgroundColor: CustomColors.qrlLightBlueColorBackground,
                   ),
                 ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }
@@ -128,70 +182,68 @@ class _BackupWalletView extends StatelessWidget {
     );
   }
 
-  Column _buildCopyColumn(BuildContext context, String header, String? value,
+  Widget _buildCopyColumn(BuildContext context, String header, String? value,
       String loadingMessage) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 24, right: 24),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                  child: Padding(
-                padding: const EdgeInsets.only(left: 32),
-                child: Text(header,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: CustomColors.qrlYellowColor,
-                      fontWeight: FontWeight.bold,
-                    )),
-              )),
-              SizedBox(
-                width: 32,
-                child: IconButton(
-                  icon: const Icon(
-                    Icons.copy_all,
-                  ),
-                  tooltip: AppLocalizations.of(context)!.copy,
-                  color: CustomColors.qrlYellowColor,
-                  onPressed: value != null
-                      ? () {
-                          _copy(value, context);
-                        }
-                      : null,
-                ),
-              ),
-            ],
-          ),
-        ),
-        value == null
-            ? Center(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const CircularProgressIndicator(),
-                      const SizedBox(
-                        height: 15,
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, right: 8),
+      child: Card(
+        elevation: 1,
+        color: CustomColors.qrlLightBlueColor.withOpacity(0.1),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(header,
+                      style: const TextStyle(
+                        color: CustomColors.qrlYellowColor,
+                      )),
+                  SizedBox(
+                    width: 32,
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.copy_all,
                       ),
-                      Text(loadingMessage),
-                    ],
+                      tooltip: AppLocalizations.of(context)!.copy,
+                      color: CustomColors.qrlYellowColor,
+                      onPressed: value != null
+                          ? () {
+                              _copy(value, context);
+                            }
+                          : null,
+                    ),
                   ),
-                ),
-              )
-            : Center(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.only(left: 24, right: 24, bottom: 24),
-                  child: SelectableText(
-                    value,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+                ],
               ),
-      ],
+            ),
+            value == null
+                ? Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                    child: Column(
+                      children: [
+                        const CircularProgressIndicator(
+                          color: CustomColors.qrlYellowColor,
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        Text(loadingMessage),
+                      ],
+                    ),
+                  )
+                : Padding(
+                    padding:
+                        const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                    child: SelectableText(
+                      value,
+                    ),
+                  ),
+          ],
+        ),
+      ),
     );
   }
 

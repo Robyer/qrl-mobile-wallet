@@ -18,4 +18,8 @@ class MockAddressBookService extends Mock implements AddressBookService {
   Future<bool> hasAddress(String address) async {
     return Future(() => false);
   }
+
+  Future<void> saveEntry(AddressBookEntry addressBookEntry) async {
+    return Future(() => {});
+  }
 }

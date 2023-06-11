@@ -10,6 +10,7 @@ import 'package:mobile_wallet/ui/addwallet/add_wallet_page.dart';
 import 'package:wakelock/wakelock.dart';
 
 part 'add_wallet_event.dart';
+
 part 'add_wallet_state.dart';
 
 class AddWalletBloc extends Bloc<AddWalletEvent, AddWalletState> {
@@ -18,7 +19,7 @@ class AddWalletBloc extends Bloc<AddWalletEvent, AddWalletState> {
 
   AddWalletBloc(this._addWalletMode)
       : _walletService = getIt<WalletService>(),
-        super(const AddWalletState()) {
+        super(AddWalletState(_addWalletMode)) {
     on<NameChangedEvent>((event, emit) async {
       String newName = event.value;
       if (newName.isNotEmpty) {
@@ -44,6 +45,16 @@ class AddWalletBloc extends Bloc<AddWalletEvent, AddWalletState> {
     on<HashFunctionChangedEvent>(
       (event, emit) async {
         emit(state.copyWith(hashFunction: event.value));
+      },
+    );
+
+    on<WalletModeChangedEvent>(
+      (event, emit) async {
+        if (event.value == AddWalletMode.mnemonic) {
+          emit(state.copyWith(addWalletMode: event.value, hexSeed: null));
+        } else if (event.value == AddWalletMode.hexSeed) {
+          emit(state.copyWith(addWalletMode: event.value, mnemonic: null));
+        }
       },
     );
 

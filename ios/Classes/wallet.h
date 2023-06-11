@@ -19,7 +19,7 @@ extern const char* openWalletWithMnemonic(char *mnemonic);
 
 extern const char* isAddressValid(char *address);
 
-extern const char* createTransaction(char *hexSeed, int64_t* amounts, char** receiverWalletAddresses, int transactionCount, int64_t otsIndex, int64_t fee);
+extern const char* createTransaction(char *hexSeed, int64_t* amounts, char** receiverWalletAddresses, int transactionCount, int64_t otsIndex, int64_t fee, char *message);
 
 #ifdef __cplusplus
 }

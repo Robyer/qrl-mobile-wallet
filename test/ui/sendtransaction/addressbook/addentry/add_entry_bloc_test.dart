@@ -4,7 +4,7 @@ import 'package:mobile_wallet/service/address_book_service.dart';
 import 'package:mobile_wallet/service/service_locator.dart';
 import 'package:mobile_wallet/ui/sendtransaction/addressbook/addentry/add_entry_bloc.dart';
 
-import '../../../testutil/mock_address_book_service.dart';
+import '../../../../testutil/mock_address_book_service.dart';
 
 void main() {
   group('AddEntryBloc', () {

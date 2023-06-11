@@ -1,7 +1,11 @@
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:fixnum/fixnum.dart';
 import 'package:grpc/grpc.dart';
 import 'package:mobile_wallet/model/app_settings.dart';
 import 'package:mobile_wallet/model/extended_wallet_data.dart';
+import 'package:mobile_wallet/model/transaction.dart';
 import 'package:mobile_wallet/service/settings_service.dart';
 import 'package:mobile_wallet/util/string_util.dart';
 
@@ -21,19 +25,9 @@ class GrpcService {
           .getAddressState(GetAddressStateReq(address: addressBytes));
       var state = getAddressStateResp.state;
       List<TransactionData> transactions =
-          await _getTransactions(walletAddress, state, publicAPIClient);
-      int unconfirmedSendCounter = 0;
-      for (TransactionData transactionData in transactions) {
-        if (transactionData.unconfirmed) {
-          if (!transactionData.incoming) {
-            unconfirmedSendCounter = unconfirmedSendCounter + 1;
-          }
-        } else {
-          break;
-        }
-      }
-      return ExtendedWalletData(state.balance.toInt(), transactions,
-          _getOtsIndex(state) + unconfirmedSendCounter);
+          await _findUnconfirmedTransactions(publicAPIClient, walletAddress);
+      return ExtendedWalletData(
+          state.balance.toInt(), _getOtsIndex(state) + transactions.length);
     } finally {
       clientChannel.shutdown();
     }
@@ -56,18 +50,34 @@ class GrpcService {
     return -1;
   }
 
-  Future<List<TransactionData>> _getTransactions(String walletAddress,
-      AddressState state, PublicAPIClient publicAPIClient) async {
-    List<TransactionData> transactions = <TransactionData>[];
-    await _addUnconfirmedTransactions(
-        publicAPIClient, walletAddress, transactions);
-    await _addTransactions(state, publicAPIClient, walletAddress, transactions);
-    return transactions;
+  Future<List<TransactionData>> findTransactions(
+      String walletAddress, int batchCount,
+      {int skip = -1}) async {
+    List<int> addressBytes = StringUtil.toBytes(walletAddress);
+    ClientChannel clientChannel = await getClientChannel();
+    try {
+      PublicAPIClient publicAPIClient = PublicAPIClient(clientChannel);
+      GetAddressStateResp getAddressStateResp = await publicAPIClient
+          .getAddressState(GetAddressStateReq(address: addressBytes));
+      var state = getAddressStateResp.state;
+      List<TransactionData> transactions = <TransactionData>[];
+      if (skip == -1) {
+        transactions.addAll(
+            await _findUnconfirmedTransactions(publicAPIClient, walletAddress));
+      }
+      transactions.addAll(await _findTransactions(
+          state, publicAPIClient, walletAddress, transactions, batchCount,
+          skip: skip == -1 ? 0 : skip));
+      return transactions;
+    } finally {
+      clientChannel.shutdown();
+    }
   }
 
-  Future<void> _addUnconfirmedTransactions(PublicAPIClient publicAPIClient,
-      String walletAddress, List<TransactionData> transactions,
+  Future<List<TransactionData>> _findUnconfirmedTransactions(
+      PublicAPIClient publicAPIClient, String walletAddress,
       {int offset = 0}) async {
+    List<TransactionData> transactions = <TransactionData>[];
     int batchQuantity = 5;
     GetLatestDataResp getLatestDataResp = await publicAPIClient.getLatestData(
         GetLatestDataReq(
@@ -83,44 +93,59 @@ class GrpcService {
             .join();
         bool incoming = senderAddress != walletAddress;
         Transaction tx = transactionExtended.tx;
-        Transaction_Transfer transfer = tx.transfer;
-        for (int i = 0; i < transfer.addrsTo.length; i++) {
-          String receiverAddress = transfer.addrsTo[i]
-              .map((e) => e.toRadixString(16).padLeft(2, '0'))
-              .join();
-          if (!incoming || receiverAddress == walletAddress) {
-            transactions.add(TransactionData(
-                tx.transactionHash
-                    .map((e) => e.toRadixString(16).padLeft(2, '0'))
-                    .join(),
-                senderAddress,
-                receiverAddress,
-                transfer.amounts[i].toInt(),
-                DateTime.fromMillisecondsSinceEpoch(
-                    transactionExtended.timestampSeconds.toInt() * 1000),
-                incoming,
-                true));
+        if ("transfer" == tx.whichTransactionType().name.toLowerCase()) {
+          Transaction_Transfer transfer = tx.transfer;
+          String? message = tx.transfer.messageData.isNotEmpty
+              ? utf8.decode(tx.transfer.messageData)
+              : null;
+          for (int i = 0; i < transfer.addrsTo.length; i++) {
+            String receiverAddress = transfer.addrsTo[i]
+                .map((e) => e.toRadixString(16).padLeft(2, '0'))
+                .join();
+            if (!incoming || receiverAddress == walletAddress) {
+              transactions.add(TransactionData(
+                  tx.transactionHash
+                      .map((e) => e.toRadixString(16).padLeft(2, '0'))
+                      .join(),
+                  "transfer",
+                  senderAddress,
+                  receiverAddress,
+                  transfer.amounts[i].toInt(),
+                  DateTime.fromMillisecondsSinceEpoch(
+                      transactionExtended.timestampSeconds.toInt() * 1000),
+                  incoming,
+                  true,
+                  message,
+                  tx.fee.toInt()));
+            }
           }
         }
       }
       if (quantityFound == batchQuantity) {
-        await _addUnconfirmedTransactions(
-            publicAPIClient, walletAddress, transactions,
-            offset: offset + batchQuantity);
+        transactions.addAll(await _findUnconfirmedTransactions(
+            publicAPIClient, walletAddress,
+            offset: offset + batchQuantity));
       }
     }
+    return transactions;
   }
 
-  Future<void> _addTransactions(
+  Future<List<TransactionData>> _findTransactions(
       AddressState state,
       PublicAPIClient publicAPIClient,
       String walletAddress,
-      List<TransactionData> transactions) async {
+      List<TransactionData> transactions,
+      int batchCount,
+      {int skip = 0}) async {
+    List<TransactionData> transactions = <TransactionData>[];
     List<List<int>> transactionsHashes = state.transactionHashes;
     int totalTransactions = transactionsHashes.length;
+    if (totalTransactions <= skip) {
+      return transactions;
+    }
     int lastTransactionToGet = 0;
-    if (totalTransactions > 10) {
-      lastTransactionToGet = totalTransactions - 10;
+    if (totalTransactions > (batchCount + skip)) {
+      lastTransactionToGet = totalTransactions - batchCount - skip;
     }
     for (int i = totalTransactions - 1; i >= lastTransactionToGet; i--) {
       GetObjectResp getObjectResp = await publicAPIClient
@@ -137,6 +162,9 @@ class GrpcService {
         bool incoming = senderAddress != walletAddress;
         DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
             transaction.timestampSeconds.toInt() * 1000);
+        String? message = tx.transfer.messageData.isNotEmpty
+            ? utf8.decode(tx.transfer.messageData)
+            : null;
         for (int j = 0; j < tx.transfer.addrsTo.length; j++) {
           String receiverAddress = tx.transfer.addrsTo[j]
               .map((e) => e.toRadixString(16).padLeft(2, '0'))
@@ -144,16 +172,20 @@ class GrpcService {
           if (!incoming || receiverAddress == walletAddress) {
             transactions.add(TransactionData(
                 transactionHash,
+                "transfer",
                 senderAddress,
                 receiverAddress,
                 tx.transfer.amounts[j].toInt(),
                 dateTime,
                 incoming,
-                false));
+                false,
+                message,
+                tx.fee.toInt()));
           }
         }
       }
     }
+    return transactions;
   }
 
   Future<void> sendTransaction(
@@ -163,7 +195,8 @@ class GrpcService {
       List<String> receiverWalletAddresses,
       int otsIndex,
       int fee,
-      String transactionData) async {
+      String transactionData,
+      String message) async {
     List<List<int>> receiverWalletBytesList = receiverWalletAddresses
         .map((address) => StringUtil.toBytes(address))
         .toList();
@@ -174,11 +207,13 @@ class GrpcService {
     List<int> txSignature = StringUtil.toBytes(signature);
     String hash = transactionData.substring(
         (transactionData.length - 64), transactionData.length);
+    List<int> messageData = Uint8List.fromList(utf8.encode(message));
     List<int> txHash = StringUtil.toBytes(hash);
     ClientChannel clientChannel = await getClientChannel();
     try {
       PublicAPIClient publicAPIClient = PublicAPIClient(clientChannel);
       var transferCoinsReq = TransferCoinsReq(
+          messageData: messageData,
           addressesTo: receiverWalletBytesList,
           amounts: int64Amounts,
           fee: int64Fee,
@@ -188,7 +223,9 @@ class GrpcService {
       await publicAPIClient.pushTransaction(PushTransactionReq(
           transactionSigned: Transaction(
               transfer: Transaction_Transfer(
-                  addrsTo: receiverWalletBytesList, amounts: int64Amounts),
+                  addrsTo: receiverWalletBytesList,
+                  amounts: int64Amounts,
+                  messageData: messageData),
               signature: txSignature,
               transactionHash: txHash,
               fee: int64Fee,

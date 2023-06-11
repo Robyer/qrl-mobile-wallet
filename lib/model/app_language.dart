@@ -6,6 +6,9 @@ enum AppLanguage {
   ja("日本", Locale.fromSubtags(languageCode: "ja")),
   nl("Nederlands", Locale.fromSubtags(languageCode: "nl")),
   ko("한국어", Locale.fromSubtags(languageCode: "ko")),
+  de("Deutsch", Locale.fromSubtags(languageCode: "de")),
+  it("Italiano", Locale.fromSubtags(languageCode: "it")),
+  es("Español", Locale.fromSubtags(languageCode: "es")),
   ;
 
   final String displayName;
@@ -25,6 +28,12 @@ enum AppLanguage {
         return nl;
       case "AppLanguage.ko":
         return ko;
+      case "AppLanguage.de":
+        return de;
+      case "AppLanguage.it":
+        return it;
+      case "AppLanguage.es":
+        return es;
     }
     return en;
   }

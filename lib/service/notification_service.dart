@@ -30,6 +30,9 @@ class NotificationService {
     AppLanguage.ja.name: "priceNotificationsJa",
     AppLanguage.nl.name: "priceNotificationsNl",
     AppLanguage.ko.name: "priceNotificationsKo",
+    AppLanguage.de.name: "priceNotificationsDe",
+    AppLanguage.it.name: "priceNotificationsIt",
+    AppLanguage.es.name: "priceNotificationsEs",
   };
   static const _notificationTaskName = "notificationTask";
   static const _transactionNotificationTaskName = "transactionNotificationTask";

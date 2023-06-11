@@ -13,42 +13,54 @@ class ChangeWalletNameView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
+    return Dialog(
+      insetPadding: const EdgeInsets.all(16),
       shape: RoundedRectangleBorder(
-          side: const BorderSide(color: CustomColors.qrlYellowColor),
-          borderRadius: BorderRadius.circular(8)),
-      backgroundColor: CustomColors.qrlDarkBlueColor,
-      insetPadding: const EdgeInsets.all(24),
-      content: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: QrlTextFormField(
-          initialValue: _initialName,
-          (value) => BlocProvider.of<ChangeWalletNameBloc>(context)
-              .add(ChangedEvent(value)),
-          text: AppLocalizations.of(context)!.walletName,
-          autoFocus: true,
-        ),
+        borderRadius: BorderRadius.circular(5),
+        side: const BorderSide(color: CustomColors.qrlYellowColor),
       ),
-      contentPadding: const EdgeInsets.only(left: 24, right: 24, top: 36),
-      actionsPadding:
-          const EdgeInsets.only(left: 24, right: 24, bottom: 8, top: 24),
-      actionsAlignment: MainAxisAlignment.spaceBetween,
-      actions: [
-        SizedBox(
-          width: 120,
-          child: _buildButtonBlocBuilder(),
+      backgroundColor: CustomColors.qrlDarkBlueColor,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: CustomColors.qrlDarkBlueLinearGradient,
+          borderRadius: BorderRadius.circular(5),
         ),
-        SizedBox(
-          width: 120,
-          child: QrlButton(
-            () {
-              Navigator.of(context).pop();
-            },
-            text: AppLocalizations.of(context)!.cancel,
-            baseColor: CustomColors.qrlLightBlueColor,
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 24, top: 24, right: 24, bottom: 16),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: QrlTextFormField(
+                initialValue: _initialName,
+                (value) => BlocProvider.of<ChangeWalletNameBloc>(context)
+                    .add(ChangedEvent(value)),
+                text: AppLocalizations.of(context)!.walletName,
+                autoFocus: true,
+              ),
+            ),
           ),
-        )
-      ],
+          Padding(
+            padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: QrlButton(
+                    () {
+                      Navigator.of(context).pop();
+                    },
+                    text: AppLocalizations.of(context)!.cancel,
+                  ),
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                Expanded(child: _buildButtonBlocBuilder()),
+              ],
+            ),
+          ),
+        ]),
+      ),
     );
   }
 
@@ -70,6 +82,7 @@ class ChangeWalletNameView extends StatelessWidget {
               : null,
           text: AppLocalizations.of(context)!.confirm,
           baseColor: CustomColors.qrlLightBlueColor,
+          backgroundColor: CustomColors.qrlLightBlueColorBackground,
         );
       },
     );

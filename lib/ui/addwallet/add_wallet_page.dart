@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mobile_wallet/ui/addwallet/add_wallet_data_page.dart';
-import 'package:mobile_wallet/ui/addwallet/add_wallet_existing_page.dart';
 import 'package:mobile_wallet/ui/component/qrl_app_bar.dart';
 import 'package:mobile_wallet/ui/component/qrl_button.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
@@ -13,17 +12,21 @@ class AddWalletPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: QrlAppBar(),
-      body: Stack(children: [
-        Align(
+    return Container(
+      decoration: BoxDecoration(
+        gradient: CustomColors.qrlDarkBlueLinearGradient,
+        image: DecorationImage(
+          image: const AssetImage('assets/images/orange-dots-1.png'),
           alignment: Alignment.bottomCenter,
-          child: Image.asset(
-            'assets/images/orange-dots.png',
-            scale: 0.9,
+          colorFilter: ColorFilter.mode(
+            CustomColors.qrlDarkBlueMaterial.withOpacity(0.15),
+            BlendMode.dstATop,
           ),
         ),
-        Column(
+      ),
+      child: Scaffold(
+        appBar: QrlAppBar(),
+        body: Column(
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -37,8 +40,7 @@ class AddWalletPage extends StatelessWidget {
                   child: Text(AppLocalizations.of(context)!.welcomeTo,
                       style: const TextStyle(
                         color: CustomColors.qrlYellowColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: 16,
                       )),
                 ),
               ),
@@ -48,8 +50,7 @@ class AddWalletPage extends StatelessWidget {
                   child: Text(AppLocalizations.of(context)!.ledger,
                       style: const TextStyle(
                         color: CustomColors.qrlYellowColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                        fontSize: 16,
                       )),
                 ),
               ),
@@ -60,9 +61,9 @@ class AddWalletPage extends StatelessWidget {
               )),
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 60),
+                  padding: const EdgeInsets.only(top: 40),
                   child: SizedBox(
-                    width: 144,
+                    width: 172,
                     child: QrlButton(
                       () {
                         Navigator.push(
@@ -74,6 +75,7 @@ class AddWalletPage extends StatelessWidget {
                       },
                       text: AppLocalizations.of(context)!.createWallet,
                       baseColor: CustomColors.qrlLightBlueColor,
+                      backgroundColor: CustomColors.qrlLightBlueColorBackground,
                     ),
                   ),
                 ),
@@ -82,14 +84,14 @@ class AddWalletPage extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 5),
                   child: SizedBox(
-                    width: 144,
+                    width: 172,
                     child: QrlButton(
                       () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  const AddWalletExistingPage()),
+                              builder: (context) => const AddWalletDataPage(
+                                  AddWalletMode.mnemonic)),
                         );
                       },
                       text: AppLocalizations.of(context)!.addWallet,
@@ -98,7 +100,7 @@ class AddWalletPage extends StatelessWidget {
                 ),
               ),
             ]),
-      ]),
+      ),
     );
   }
 }

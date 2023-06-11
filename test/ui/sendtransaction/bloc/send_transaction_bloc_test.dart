@@ -5,23 +5,24 @@ import 'package:mobile_wallet/model/wallet.dart';
 import 'package:mobile_wallet/service/address_book_service.dart';
 import 'package:mobile_wallet/service/service_locator.dart';
 import 'package:mobile_wallet/service/settings_service.dart';
-import 'package:mobile_wallet/service/wallet_service.dart';
+import 'package:mobile_wallet/service/transaction_service.dart';
 import 'package:mobile_wallet/ui/sendtransaction/bloc/send_transaction_bloc.dart';
 
 import '../../../testutil/mock_address_book_service.dart';
 import '../../../testutil/mock_settings_service.dart';
-import '../../../testutil/mock_wallet_service.dart';
+import '../../../testutil/mock_transaction_service.dart';
 
 void main() {
   group('SendTransactionBloc', () {
     late SendTransactionBloc sendTransactionBloc;
     Wallet wallet = Wallet(1, "name", "address", 1000);
-    ExtendedWalletData extendedWalletData = ExtendedWalletData(5000000, [], 1);
+    ExtendedWalletData extendedWalletData = ExtendedWalletData(5000000, 1);
     setUpAll(() async {
       SettingsService settingsService = MockSettingsService();
-      WalletService walletService = MockWalletService();
+      TransactionService transactionsService = MockTransactionService();
       AddressBookService addressBookService = MockAddressBookService();
-      getIt.registerLazySingleton<WalletService>(() => walletService);
+      getIt
+          .registerLazySingleton<TransactionService>(() => transactionsService);
       getIt.registerLazySingleton<SettingsService>(() => settingsService);
       getIt.registerLazySingleton<AddressBookService>(() => addressBookService);
     });
@@ -237,6 +238,75 @@ void main() {
                   SendTransactionStatus.reviewable)
               .having((state) => state.transactionLines.length,
                   "transaction lines", 1)
+        ];
+      },
+    );
+
+    blocTest(
+      'emits [hasMessageUpdated and initial] when HasMessageChangedEvent',
+      build: () => sendTransactionBloc,
+      seed: () => SendTransactionState(wallet, extendedWalletData,
+          status: SendTransactionStatus.initial),
+      act: (bloc) =>
+          sendTransactionBloc.add(const HasMessageChangedEvent(true)),
+      wait: const Duration(seconds: 1),
+      expect: () {
+        return [
+          isA<SendTransactionState>()
+              .having((state) => state.status, "status",
+                  SendTransactionStatus.hasMessageUpdated)
+              .having((state) => state.hasMessage, "hasMessage", true),
+          isA<SendTransactionState>()
+              .having((state) => state.status, "status",
+                  SendTransactionStatus.initial)
+              .having((state) => state.hasMessage, "hasMessage", true),
+        ];
+      },
+    );
+
+    blocTest(
+      'emits [hasMessageUpdated and initial + clearing message] when HasMessageChangedEvent',
+      build: () => sendTransactionBloc,
+      seed: () => SendTransactionState(wallet, extendedWalletData,
+          status: SendTransactionStatus.initial,
+          hasMessage: true,
+          message: "test-message"),
+      act: (bloc) =>
+          sendTransactionBloc.add(const HasMessageChangedEvent(false)),
+      wait: const Duration(seconds: 1),
+      expect: () {
+        return [
+          isA<SendTransactionState>()
+              .having((state) => state.status, "status",
+                  SendTransactionStatus.hasMessageUpdated)
+              .having((state) => state.hasMessage, "hasMessage", false)
+              .having((state) => state.message, "message", ""),
+          isA<SendTransactionState>()
+              .having((state) => state.status, "status",
+                  SendTransactionStatus.initial)
+              .having((state) => state.hasMessage, "hasMessage", false)
+              .having((state) => state.message, "message", ""),
+        ];
+      },
+    );
+
+    blocTest(
+      'emits [initial + message] when MessageChangedEvent',
+      build: () => sendTransactionBloc,
+      seed: () => SendTransactionState(wallet, extendedWalletData,
+          status: SendTransactionStatus.initial,
+          hasMessage: true,
+          message: "test-message"),
+      act: (bloc) =>
+          sendTransactionBloc.add(const MessageChangedEvent("changed-message")),
+      wait: const Duration(seconds: 1),
+      expect: () {
+        return [
+          isA<SendTransactionState>()
+              .having((state) => state.status, "status",
+                  SendTransactionStatus.initial)
+              .having((state) => state.hasMessage, "hasMessage", true)
+              .having((state) => state.message, "message", "changed-message"),
         ];
       },
     );
