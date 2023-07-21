@@ -227,8 +227,9 @@ message PushTransactionResp {
 message MessageTxnReq {
     bytes master_addr = 1;
     bytes message = 2;
-    uint64 fee = 3;
-    bytes xmss_pk = 4;
+    bytes addr_to = 3;
+    uint64 fee = 4;
+    bytes xmss_pk = 5;
 }
 
 message TokenTxnReq {

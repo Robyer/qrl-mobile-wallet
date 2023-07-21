@@ -7,10 +7,10 @@ import 'package:mobile_wallet/ui/addwallet/add_wallet_page.dart';
 import 'package:mobile_wallet/ui/balance/community_list.dart';
 import 'package:mobile_wallet/ui/balance/receive_amount_page.dart';
 import 'package:mobile_wallet/ui/balance/transactions/transactions_page.dart';
+import 'package:mobile_wallet/ui/balance/transfer/add_transfer_page.dart';
 import 'package:mobile_wallet/ui/component/bottomsheetselect/bottom_sheet_select.dart';
 import 'package:mobile_wallet/ui/component/qrl_button.dart';
 import 'package:mobile_wallet/ui/component/snack_bars.dart';
-import 'package:mobile_wallet/ui/sendtransaction/send_transaction_page.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
 import 'package:mobile_wallet/util/string_util.dart';
 
@@ -376,8 +376,7 @@ class _BalanceView extends StatelessWidget {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => SendTransactionPage(
-              state.currentWallet!, state.extendedWalletData!),
+          builder: (context) => const AddTransferPage(),
         ),
       );
     }

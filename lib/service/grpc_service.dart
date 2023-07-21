@@ -88,9 +88,8 @@ class GrpcService {
     if (getLatestDataResp.transactionsUnconfirmed.isNotEmpty) {
       for (TransactionExtended transactionExtended
           in getLatestDataResp.transactionsUnconfirmed) {
-        String senderAddress = transactionExtended.addrFrom
-            .map((e) => e.toRadixString(16).padLeft(2, '0'))
-            .join();
+        String senderAddress =
+            StringUtil.fromBytes(transactionExtended.addrFrom);
         bool incoming = senderAddress != walletAddress;
         Transaction tx = transactionExtended.tx;
         if ("transfer" == tx.whichTransactionType().name.toLowerCase()) {
@@ -99,26 +98,26 @@ class GrpcService {
               ? utf8.decode(tx.transfer.messageData)
               : null;
           for (int i = 0; i < transfer.addrsTo.length; i++) {
-            String receiverAddress = transfer.addrsTo[i]
-                .map((e) => e.toRadixString(16).padLeft(2, '0'))
-                .join();
+            String receiverAddress = StringUtil.fromBytes(transfer.addrsTo[i]);
             if (!incoming || receiverAddress == walletAddress) {
               transactions.add(TransactionData(
-                  tx.transactionHash
-                      .map((e) => e.toRadixString(16).padLeft(2, '0'))
-                      .join(),
+                  TransactionType.transfer,
+                  StringUtil.fromBytes(tx.transactionHash),
                   "transfer",
                   senderAddress,
-                  receiverAddress,
-                  transfer.amounts[i].toInt(),
                   DateTime.fromMillisecondsSinceEpoch(
                       transactionExtended.timestampSeconds.toInt() * 1000),
                   incoming,
                   true,
                   message,
-                  tx.fee.toInt()));
+                  MessageType.text,
+                  tx.fee.toInt(),
+                  receiverAddress: receiverAddress,
+                  amount: transfer.amounts[i].toInt()));
             }
           }
+        } else if ("message" == tx.whichTransactionType().name.toLowerCase()) {
+          transactions.add(_convertMessage(transactionExtended));
         }
       }
       if (quantityFound == batchQuantity) {
@@ -147,48 +146,70 @@ class GrpcService {
     if (totalTransactions > (batchCount + skip)) {
       lastTransactionToGet = totalTransactions - batchCount - skip;
     }
-    for (int i = totalTransactions - 1; i >= lastTransactionToGet; i--) {
+    for (int i = totalTransactions - 1 - skip; i >= lastTransactionToGet; i--) {
       GetObjectResp getObjectResp = await publicAPIClient
           .getObject(GetObjectReq(query: transactionsHashes[i]));
       TransactionExtended transaction = getObjectResp.transaction;
       Transaction tx = transaction.tx;
       if ("transfer" == tx.whichTransactionType().name.toLowerCase()) {
-        String transactionHash = tx.transactionHash
-            .map((e) => e.toRadixString(16).padLeft(2, '0'))
-            .join();
-        String senderAddress = transaction.addrFrom
-            .map((e) => e.toRadixString(16).padLeft(2, '0'))
-            .join();
+        String senderAddress = StringUtil.fromBytes(transaction.addrFrom);
         bool incoming = senderAddress != walletAddress;
-        DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(
-            transaction.timestampSeconds.toInt() * 1000);
         String? message = tx.transfer.messageData.isNotEmpty
             ? utf8.decode(tx.transfer.messageData)
             : null;
         for (int j = 0; j < tx.transfer.addrsTo.length; j++) {
-          String receiverAddress = tx.transfer.addrsTo[j]
-              .map((e) => e.toRadixString(16).padLeft(2, '0'))
-              .join();
+          String receiverAddress = StringUtil.fromBytes(tx.transfer.addrsTo[j]);
           if (!incoming || receiverAddress == walletAddress) {
             transactions.add(TransactionData(
-                transactionHash,
+                TransactionType.transfer,
+                StringUtil.fromBytes(tx.transactionHash),
                 "transfer",
                 senderAddress,
-                receiverAddress,
-                tx.transfer.amounts[j].toInt(),
-                dateTime,
+                DateTime.fromMillisecondsSinceEpoch(
+                    transaction.timestampSeconds.toInt() * 1000),
                 incoming,
                 false,
                 message,
-                tx.fee.toInt()));
+                MessageType.text,
+                tx.fee.toInt(),
+                receiverAddress: receiverAddress,
+                amount: tx.transfer.amounts[j].toInt()));
           }
         }
+      } else if ("message" == tx.whichTransactionType().name.toLowerCase()) {
+        transactions.add(_convertMessage(transaction));
       }
     }
     return transactions;
   }
 
-  Future<void> sendTransaction(
+  TransactionData _convertMessage(TransactionExtended transaction) {
+    Transaction tx = transaction.tx;
+    MessageType messageType = MessageType.text;
+    String? message;
+    if (tx.message.messageHash.isNotEmpty) {
+      try {
+        message = utf8.decode(tx.message.messageHash);
+      } on FormatException {
+        message = StringUtil.fromBytes(tx.message.messageHash);
+        messageType = MessageType.hex;
+      }
+    }
+    return TransactionData(
+        TransactionType.message,
+        StringUtil.fromBytes(tx.transactionHash),
+        "message",
+        StringUtil.fromBytes(transaction.addrFrom),
+        DateTime.fromMillisecondsSinceEpoch(
+            transaction.timestampSeconds.toInt() * 1000),
+        false,
+        false,
+        message,
+        messageType,
+        tx.fee.toInt());
+  }
+
+  Future<String> sendTransferTransaction(
       String senderWalletAddress,
       String xmssPk,
       List<int> amounts,
@@ -222,16 +243,60 @@ class GrpcService {
           await publicAPIClient.transferCoins(transferCoinsReq);
       await publicAPIClient.pushTransaction(PushTransactionReq(
           transactionSigned: Transaction(
-              transfer: Transaction_Transfer(
-                  addrsTo: receiverWalletBytesList,
-                  amounts: int64Amounts,
-                  messageData: messageData),
+              transfer:
+                  transferCoinsResp.extendedTransactionUnsigned.tx.transfer,
               signature: txSignature,
               transactionHash: txHash,
               fee: int64Fee,
               publicKey:
                   transferCoinsResp.extendedTransactionUnsigned.tx.publicKey,
               nonce: Int64(12))));
+      return hash;
+    } finally {
+      clientChannel.shutdown();
+    }
+  }
+
+  Future<String> sendMessageTransaction(
+      String senderWalletAddress,
+      String xmssPk,
+      String message,
+      int otsIndex,
+      int fee,
+      String transactionData,
+      {MessageType messageType = MessageType.text}) async {
+    Int64 int64Fee = Int64(fee);
+    String signature =
+        transactionData.substring(0, (transactionData.length - 64));
+    List<int> txSignature = StringUtil.toBytes(signature);
+    String hash = transactionData.substring(
+        (transactionData.length - 64), transactionData.length);
+    List<int> messageData;
+    if (messageType == MessageType.text) {
+      messageData = Uint8List.fromList(utf8.encode(message));
+    } else {
+      messageData = StringUtil.toBytes(message);
+    }
+    List<int> txHash = StringUtil.toBytes(hash);
+    ClientChannel clientChannel = await getClientChannel();
+    try {
+      PublicAPIClient publicAPIClient = PublicAPIClient(clientChannel);
+      var transferCoinsReq = MessageTxnReq(
+          message: messageData,
+          fee: int64Fee,
+          xmssPk: StringUtil.toBytes(xmssPk));
+      TransferCoinsResp transferCoinsResp =
+          await publicAPIClient.getMessageTxn(transferCoinsReq);
+      await publicAPIClient.pushTransaction(PushTransactionReq(
+          transactionSigned: Transaction(
+              message: transferCoinsResp.extendedTransactionUnsigned.tx.message,
+              signature: txSignature,
+              transactionHash: txHash,
+              fee: int64Fee,
+              publicKey:
+                  transferCoinsResp.extendedTransactionUnsigned.tx.publicKey,
+              nonce: Int64(12))));
+      return hash;
     } finally {
       clientChannel.shutdown();
     }
@@ -270,9 +335,7 @@ class GrpcService {
         }
         Transaction tx = transaction.tx;
         if ("transfer" == tx.whichTransactionType().name.toLowerCase()) {
-          String senderAddress = transaction.addrFrom
-              .map((e) => e.toRadixString(16).padLeft(2, '0'))
-              .join();
+          String senderAddress = StringUtil.fromBytes(transaction.addrFrom);
           bool incoming = senderAddress != walletAddress;
           if (incoming) {
             return true;
@@ -283,5 +346,23 @@ class GrpcService {
       clientChannel.shutdown();
     }
     return false;
+  }
+
+  Future<TransactionData?> findMessageTransaction(
+      String transactionHash) async {
+    ClientChannel clientChannel = await getClientChannel();
+    try {
+      PublicAPIClient publicAPIClient = PublicAPIClient(clientChannel);
+      GetObjectResp getObjectResp = await publicAPIClient
+          .getObject(GetObjectReq(query: StringUtil.toBytes(transactionHash)));
+      TransactionExtended transaction = getObjectResp.transaction;
+      if ("message" ==
+          transaction.tx.whichTransactionType().name.toLowerCase()) {
+        return _convertMessage(transaction);
+      }
+      return null;
+    } finally {
+      clientChannel.shutdown();
+    }
   }
 }

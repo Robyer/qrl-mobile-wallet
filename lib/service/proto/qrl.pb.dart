@@ -1528,8 +1528,9 @@ class MessageTxnReq extends $pb.GeneratedMessage {
   static final $pb.BuilderInfo _i = $pb.BuilderInfo(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'MessageTxnReq', package: const $pb.PackageName(const $core.bool.fromEnvironment('protobuf.omit_message_names') ? '' : 'qrl'), createEmptyInstance: create)
     ..a<$core.List<$core.int>>(1, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'masterAddr', $pb.PbFieldType.OY)
     ..a<$core.List<$core.int>>(2, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'message', $pb.PbFieldType.OY)
-    ..a<$fixnum.Int64>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'fee', $pb.PbFieldType.OU6, defaultOrMaker: $fixnum.Int64.ZERO)
-    ..a<$core.List<$core.int>>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'xmssPk', $pb.PbFieldType.OY)
+    ..a<$core.List<$core.int>>(3, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'addrTo', $pb.PbFieldType.OY)
+    ..a<$fixnum.Int64>(4, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'fee', $pb.PbFieldType.OU6, defaultOrMaker: $fixnum.Int64.ZERO)
+    ..a<$core.List<$core.int>>(5, const $core.bool.fromEnvironment('protobuf.omit_field_names') ? '' : 'xmssPk', $pb.PbFieldType.OY)
     ..hasRequiredFields = false
   ;
 
@@ -1537,6 +1538,7 @@ class MessageTxnReq extends $pb.GeneratedMessage {
   factory MessageTxnReq({
     $core.List<$core.int>? masterAddr,
     $core.List<$core.int>? message,
+    $core.List<$core.int>? addrTo,
     $fixnum.Int64? fee,
     $core.List<$core.int>? xmssPk,
   }) {
@@ -1546,6 +1548,9 @@ class MessageTxnReq extends $pb.GeneratedMessage {
     }
     if (message != null) {
       _result.message = message;
+    }
+    if (addrTo != null) {
+      _result.addrTo = addrTo;
     }
     if (fee != null) {
       _result.fee = fee;
@@ -1595,22 +1600,31 @@ class MessageTxnReq extends $pb.GeneratedMessage {
   void clearMessage() => clearField(2);
 
   @$pb.TagNumber(3)
-  $fixnum.Int64 get fee => $_getI64(2);
+  $core.List<$core.int> get addrTo => $_getN(2);
   @$pb.TagNumber(3)
-  set fee($fixnum.Int64 v) { $_setInt64(2, v); }
+  set addrTo($core.List<$core.int> v) { $_setBytes(2, v); }
   @$pb.TagNumber(3)
-  $core.bool hasFee() => $_has(2);
+  $core.bool hasAddrTo() => $_has(2);
   @$pb.TagNumber(3)
-  void clearFee() => clearField(3);
+  void clearAddrTo() => clearField(3);
 
   @$pb.TagNumber(4)
-  $core.List<$core.int> get xmssPk => $_getN(3);
+  $fixnum.Int64 get fee => $_getI64(3);
   @$pb.TagNumber(4)
-  set xmssPk($core.List<$core.int> v) { $_setBytes(3, v); }
+  set fee($fixnum.Int64 v) { $_setInt64(3, v); }
   @$pb.TagNumber(4)
-  $core.bool hasXmssPk() => $_has(3);
+  $core.bool hasFee() => $_has(3);
   @$pb.TagNumber(4)
-  void clearXmssPk() => clearField(4);
+  void clearFee() => clearField(4);
+
+  @$pb.TagNumber(5)
+  $core.List<$core.int> get xmssPk => $_getN(4);
+  @$pb.TagNumber(5)
+  set xmssPk($core.List<$core.int> v) { $_setBytes(4, v); }
+  @$pb.TagNumber(5)
+  $core.bool hasXmssPk() => $_has(4);
+  @$pb.TagNumber(5)
+  void clearXmssPk() => clearField(5);
 }
 
 class TokenTxnReq extends $pb.GeneratedMessage {

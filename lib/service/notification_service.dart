@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:decimal/decimal.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' as foundation;
@@ -64,21 +63,29 @@ class NotificationService {
     }
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      _handleRemoteDataMessage(
-          message, sharedPreferenceService, settingsService);
+      try {
+        _handleRemoteDataMessage(
+            message, sharedPreferenceService, settingsService);
+      } on Exception catch (e, stacktrace) {
+        foundation.debugPrintStack(stackTrace: stacktrace, label: e.toString());
+      }
     });
     FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
-      if (message.notification != null && Platform.isAndroid) {
-        await _showNotification(
-            message.notification!.title ?? "",
-            message.notification!.body ?? "",
-            'fb_high_importance_channel',
-            'High Importance Notifications Firebase',
-            3,
-            tag: message.notification!.android?.tag);
-      } else {
-        await _handleRemoteDataMessage(
-            message, sharedPreferenceService, settingsService);
+      try {
+        if (message.notification != null && Platform.isAndroid) {
+          await _showNotification(
+              message.notification!.title ?? "",
+              message.notification!.body ?? "",
+              'fb_high_importance_channel',
+              'High Importance Notifications Firebase',
+              3,
+              tag: message.notification!.android?.tag);
+        } else {
+          await _handleRemoteDataMessage(
+              message, sharedPreferenceService, settingsService);
+        }
+      } on Exception catch (e, stacktrace) {
+        foundation.debugPrintStack(stackTrace: stacktrace, label: e.toString());
       }
     });
     AppSettings appSettings = await settingsService.getAppSettings();

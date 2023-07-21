@@ -38,6 +38,7 @@ dependencies:
   permission_handler: ^10.2.0
   firebase_messaging: ^14.4.1
   firebase_core: ^2.10.0
+  file_picker: ^5.2.10
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -66,6 +67,7 @@ flutter:
     - assets/images/blocks-background.png
     - assets/images/lock-background.png
     - assets/images/atom-background.png
+    - assets/images/notarization-background.png
   fonts:
     - family: Roboto-Medium
       fonts:

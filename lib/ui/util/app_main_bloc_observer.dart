@@ -10,3 +10,4 @@ class AppMainBlocObserver extends BlocObserver {
     foundation.debugPrint('${bloc.runtimeType} $change');
   }
 }
+

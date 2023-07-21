@@ -52,7 +52,7 @@ class ReceiveAmountPage extends StatelessWidget {
                         color: CustomColors.qrlYellowColor,
                         width: 1,
                       )),
-                  child: QrImage(
+                  child: QrImageView(
                     data: "Q${_currentWallet.address}",
                     version: QrVersions.auto,
                     size: 200.0,

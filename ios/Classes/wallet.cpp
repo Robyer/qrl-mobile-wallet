@@ -162,16 +162,22 @@ const char* isAddressValid(char *address) {
 }
 
 extern "C" __attribute__((visibility("default"))) __attribute((used))
-const char* createTransaction(char *hexSeed, int64_t* amounts, char** receiverWalletAddresses, int transactionCount, int64_t otsIndex, int64_t fee, char *message) {
+const char* createTransaction(char *hexSeed, int64_t* amounts, char** receiverWalletAddresses, int transactionCount, int64_t otsIndex, int64_t fee, char *message, int messageType) {
     string hexSeedStr(hexSeed);
 
     string messageStr;
     int messageSize = 0;
+    int messageVectorSize = 0;
     if (message != nullptr) {
         messageStr = string(message);
         messageSize = messageStr.length();
+        if (messageType == 1) {
+            messageVectorSize = messageSize;
+        } else {
+            messageVectorSize = messageSize / 2;
+        }
     }
-    std::vector<unsigned char> concatenatedVector((8 + messageSize) + (47 * transactionCount));
+    std::vector<unsigned char> concatenatedVector((8 + messageVectorSize) + (47 * transactionCount));
     for (int i = 0; i < 8; i++) {
         concatenatedVector[7 - i] = (fee >> (i * 8));
     }
@@ -179,11 +185,24 @@ const char* createTransaction(char *hexSeed, int64_t* amounts, char** receiverWa
     int vectorPos = 8;
 
     if (messageSize > 0) {
-        char messageBytes[messageSize];
-        strcpy(messageBytes, messageStr.c_str());
-        for (int count = 0; count < sizeof(messageBytes); count++) {
-            concatenatedVector[vectorPos] = messageBytes[count];
-            vectorPos++;
+        if (messageType == 1) {
+            char messageBytes[messageSize];
+            strcpy(messageBytes, messageStr.c_str());
+            for (int count = 0; count < sizeof(messageBytes); count++) {
+                concatenatedVector[vectorPos] = messageBytes[count];
+                vectorPos++;
+            }
+        } else {
+            char messageBytes[messageSize+1];
+            strcpy(messageBytes, messageStr.c_str());
+            char *messagePos = messageBytes;
+            unsigned char val[messageSize / 2];
+            for (int count = 0; count < (sizeof(messageBytes) / 2); count++) {
+                sscanf(messagePos, "%2hhx", &val[count]);
+                concatenatedVector[vectorPos] = val[count];
+                messagePos += 2;
+                vectorPos++;
+            }
         }
     }
 
@@ -203,7 +222,7 @@ const char* createTransaction(char *hexSeed, int64_t* amounts, char** receiverWa
             vectorPos++;
         }
 
-        int vectorPos2 = 46 + ((8 + messageSize) + (t * 47));
+        int vectorPos2 = 46 + ((8 + messageVectorSize) + (t * 47));
         for (int i = 0; i < 8; i++){
             concatenatedVector[vectorPos2 - i] = (amounts[t] >> (i * 8));
         }
