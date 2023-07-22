@@ -248,7 +248,7 @@ class _TransactionsListState extends State<TransactionsList> {
         label = notarizationMessage.additionalMessage.isNotEmpty
             ? notarizationMessage.additionalMessage
             : notarizationMessage.fileHash;
-        iconData = Icons.document_scanner_outlined;
+        iconData = Icons.note_add_outlined;
       } else {
         header = AppLocalizations.of(context)!.message.toUpperCase();
         label = transactionData.message ?? "";

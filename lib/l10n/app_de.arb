@@ -69,7 +69,7 @@
   "noAuthenticationFound": "Keine Authentifizierungsmethode auf dem Gerät gefunden!",
   "notarization": "Notarisierung",
   "notarizationCardHeader": "DOKUMENT BEGLAUBIGEN",
-  "notarizationCardBody": "SICHERE UND ÜBERPRÜFBARE DOKUMENTENBEGLAUBIGUNG",
+  "notarizationCardBody": "SICHERE UND ÜBERPRÜFBARE \nDOKUMENTENBEGLAUBIGUNG",
   "notarizationNotFound": "Beglaubigungstransaktion nicht gefunden!",
   "notarize": "Beglaubigen",
   "notarizeDocumentToolsBody": "Sichere und überprüfbare Dokumentenbeglaubigung",

@@ -43,7 +43,7 @@ class ToolsPage extends StatelessWidget {
                     context,
                     AppLocalizations.of(context)!.notarizeDocumentToolsTitle,
                     AppLocalizations.of(context)!.notarizeDocumentToolsBody,
-                    Icons.document_scanner_outlined,
+                    Icons.note_add_outlined,
                     () => Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -53,7 +53,7 @@ class ToolsPage extends StatelessWidget {
                     context,
                     AppLocalizations.of(context)!.verifyDocumentToolsTitle,
                     AppLocalizations.of(context)!.verifyDocumentToolsBody,
-                    Icons.document_scanner_outlined,
+                    Icons.task_outlined,
                     () => Navigator.push(
                         context,
                         MaterialPageRoute(

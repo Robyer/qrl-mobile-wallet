@@ -69,7 +69,7 @@
   "noAuthenticationFound": "¡No se encontró ningún método de autenticación en el dispositivo!",
   "notarization": "Notarización",
   "notarizationCardHeader": "NOTARIZAR DOCUMENTO",
-  "notarizationCardBody": "NOTARIZACIÓN SEGURA Y VERIFICABLE DEL DOCUMENTO",
+  "notarizationCardBody": "NOTARIZACIÓN SEGURA Y \nVERIFICABLE DEL DOCUMENTO",
   "notarizationNotFound": "¡Transacción de notarización no encontrada!",
   "notarize": "Notarizar",
   "notarizeDocumentToolsBody": "Notarización segura y verificable del documento",
