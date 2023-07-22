@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_wallet/model/notarization_message.dart';
 import 'package:mobile_wallet/model/transaction.dart';
 import 'package:mobile_wallet/model/wallet.dart';
 import 'package:mobile_wallet/ui/balance/transactions/transaction_data_page.dart';
@@ -98,103 +99,10 @@ class _TransactionsListState extends State<TransactionsList> {
                 );
               }
               TransactionData transactionData = transactions[index];
-              return Padding(
-                padding: const EdgeInsets.only(left: 8, right: 8),
-                child: Card(
-                  elevation: 1,
-                  color: CustomColors.qrlLightBlueColor.withOpacity(0.1),
-                  child: ListTile(
-                    horizontalTitleGap: 10,
-                    leading: SizedBox(
-                      height: double.infinity,
-                      child: Container(
-                        decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border:
-                                Border.all(color: CustomColors.qrlYellowColor)),
-                        child: Icon(
-                          transactionData.incoming
-                              ? Icons.arrow_back
-                              : Icons.arrow_forward,
-                          color: CustomColors.qrlYellowColor,
-                          size: 28,
-                        ),
-                      ),
-                    ),
-                    title: Padding(
-                      padding: const EdgeInsets.only(bottom: 4),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                  transactionData.incoming
-                                      ? AppLocalizations.of(context)!.received
-                                      : AppLocalizations.of(context)!.sent,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
-                                    color: CustomColors.qrlLightBlueColor,
-                                  )),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8),
-                                child: Text(
-                                  transactionData.unconfirmed
-                                      ? AppLocalizations.of(context)!
-                                          .unconfirmed
-                                      : "",
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontStyle: FontStyle.italic,
-                                    color: CustomColors.qrlYellowMaterial
-                                        .withOpacity(0.5),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            DateFormat("HH:mm, MMM d yyyy")
-                                .format(transactions[index].dateTime),
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontSize: 12,
-                              color: Colors.grey[500],
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    isThreeLine: true,
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "${transactionData.incoming ? "+" : "-"} ${StringUtil.formatAmount(transactionData.amount)} QRL",
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: MiddleEllipsisText(
-                            transactionData.incoming
-                                ? transactionData.senderAddress
-                                : transactionData.receiverAddress,
-                          ),
-                        ),
-                      ],
-                    ),
-                    dense: true,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              TransactionDetailPage(transactionData)),
-                    ),
-                  ),
-                ),
-              );
+              if (transactionData.transactionType == TransactionType.transfer) {
+                return _buildTransferTransaction(transactionData, context);
+              }
+              return _buildMessageTransaction(transactionData, context);
             },
             itemCount: state.hasReachedMax
                 ? state.transactions.length
@@ -220,6 +128,202 @@ class _TransactionsListState extends State<TransactionsList> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildTransferTransaction(
+      TransactionData transactionData, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, right: 8),
+      child: Card(
+        elevation: 1,
+        color: CustomColors.qrlLightBlueColor.withOpacity(0.1),
+        child: ListTile(
+          horizontalTitleGap: 10,
+          leading: SizedBox(
+            height: double.infinity,
+            child: Container(
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: CustomColors.qrlYellowColor)),
+              child: Icon(
+                transactionData.incoming
+                    ? Icons.arrow_back
+                    : Icons.arrow_forward,
+                color: CustomColors.qrlYellowColor,
+                size: 28,
+              ),
+            ),
+          ),
+          title: Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                        transactionData.incoming
+                            ? AppLocalizations.of(context)!
+                                .received
+                                .toUpperCase()
+                            : AppLocalizations.of(context)!.sent.toUpperCase(),
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: CustomColors.qrlLightBlueColor,
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Text(
+                        transactionData.unconfirmed
+                            ? AppLocalizations.of(context)!.unconfirmed
+                            : "",
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color:
+                              CustomColors.qrlYellowMaterial.withOpacity(0.5),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  DateFormat("HH:mm, MMM d yyyy")
+                      .format(transactionData.dateTime),
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 12,
+                    color: Colors.grey[500],
+                  ),
+                )
+              ],
+            ),
+          ),
+          isThreeLine: true,
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "${transactionData.incoming ? "+" : "-"} ${StringUtil.formatAmount(transactionData.amount!)} QRL",
+                overflow: TextOverflow.ellipsis,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: MiddleEllipsisText(
+                  transactionData.incoming
+                      ? transactionData.senderAddress
+                      : transactionData.receiverAddress!,
+                ),
+              ),
+            ],
+          ),
+          dense: true,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TransactionDetailPage(transactionData)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMessageTransaction(
+      TransactionData transactionData, BuildContext context) {
+    String header;
+    String label;
+    IconData iconData;
+    if (transactionData.messageType == MessageType.text) {
+      header = AppLocalizations.of(context)!.message.toUpperCase();
+      label = transactionData.message ?? "";
+      iconData = Icons.message_outlined;
+    } else {
+      NotarizationMessage? notarizationMessage =
+          NotarizationMessage.fromTransactionData(transactionData);
+      if (notarizationMessage != null) {
+        header = AppLocalizations.of(context)!.notarization.toUpperCase();
+        label = notarizationMessage.additionalMessage.isNotEmpty
+            ? notarizationMessage.additionalMessage
+            : notarizationMessage.fileHash;
+        iconData = Icons.note_add_outlined;
+      } else {
+        header = AppLocalizations.of(context)!.message.toUpperCase();
+        label = transactionData.message ?? "";
+        iconData = Icons.message_outlined;
+      }
+    }
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, right: 8),
+      child: Card(
+        elevation: 1,
+        color: CustomColors.qrlLightBlueColor.withOpacity(0.1),
+        child: ListTile(
+          horizontalTitleGap: 10,
+          leading: SizedBox(
+            height: double.infinity,
+            child: Icon(
+              iconData,
+              color: CustomColors.qrlYellowColor,
+              size: 28,
+            ),
+          ),
+          title: Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Row(
+                  children: [
+                    Text(header,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: CustomColors.qrlLightBlueColor,
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Text(
+                        transactionData.unconfirmed
+                            ? AppLocalizations.of(context)!.unconfirmed
+                            : "",
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color:
+                              CustomColors.qrlYellowMaterial.withOpacity(0.5),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  DateFormat("HH:mm, MMM d yyyy")
+                      .format(transactionData.dateTime),
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 12,
+                    color: Colors.grey[500],
+                  ),
+                )
+              ],
+            ),
+          ),
+          subtitle: Text(
+            label,
+            overflow: TextOverflow.ellipsis,
+          ),
+          dense: true,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TransactionDetailPage(transactionData)),
+          ),
+        ),
+      ),
     );
   }
 

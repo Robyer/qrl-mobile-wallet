@@ -372,6 +372,70 @@ class CommunityList extends StatelessWidget {
               ),
             ),
             Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+              child: InkWell(
+                onTap: () async {
+                  Uri url = Uri.parse("https://youtu.be/auDAg8uW1wY");
+                  await Util.launchInBrowser(url);
+                },
+                child: Container(
+                  decoration: _buildBoxDecoration(
+                      'assets/images/notarization-background.png'),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16, right: 16, top: 8, bottom: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            AppLocalizations.of(context)!
+                                .notarizationCardHeader,
+                            style: const TextStyle(
+                                color: CustomColors.qrlYellowColor,
+                                fontSize: 18),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16, bottom: 16),
+                          child: Text(
+                            AppLocalizations.of(context)!.notarizationCardBody,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8, bottom: 16),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: RadialGradient(colors: [
+                                CustomColors.qrlLightBlueColor,
+                                CustomColors.qrlLightBlueColor.withOpacity(0.1),
+                              ], radius: 7),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10)),
+                            ),
+                            child: SizedBox(
+                              width: 144,
+                              height: 24,
+                              child: Center(
+                                child: Text(
+                                  AppLocalizations.of(context)!.learnMore,
+                                  style: const TextStyle(
+                                      color: CustomColors.qrlDarkBlueColor,
+                                      fontSize: 14),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.only(
                   left: 16, right: 16, top: 16, bottom: 16),
               child: Container(

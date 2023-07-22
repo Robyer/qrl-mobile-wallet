@@ -4,6 +4,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mobile_wallet/ui/balance/balance_page.dart';
 import 'package:mobile_wallet/ui/main/main_cubit.dart';
 import 'package:mobile_wallet/ui/settings/settings_page.dart';
+import 'package:mobile_wallet/ui/tools/tools_page.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
 import 'package:mobile_wallet/ui/wallets/wallets_page.dart';
 
@@ -23,6 +24,7 @@ class _MainView extends StatelessWidget {
   static const List<Widget> _widgetOptions = <Widget>[
     BalancePage(),
     WalletsPage(),
+    ToolsPage(),
     SettingsPage(),
   ];
 
@@ -58,6 +60,13 @@ class _MainView extends StatelessWidget {
                   size: 22,
                 ),
                 label: AppLocalizations.of(context)!.wallets,
+              ),
+              BottomNavigationBarItem(
+                icon: const Icon(
+                  Icons.electric_bolt,
+                  size: 22,
+                ),
+                label: AppLocalizations.of(context)!.tools,
               ),
               BottomNavigationBarItem(
                 icon: const Icon(

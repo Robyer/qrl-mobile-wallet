@@ -107,6 +107,22 @@
     "description": "a warning message that deviating from the default is at your own risk"
   },
   "deviatingDefault": "Deviating from the default is at your own risk",
+  "@documentVerifiedTitle": {
+    "description": "Title text for notarize document verified."
+  },
+  "documentVerifiedTitle": "Document Verified",
+  "@documentVerifiedBody": {
+    "description": "Body text for notarize document verified."
+  },
+  "documentVerifiedBody": "The provided file ${fileName} matches the notary hash in this transaction.",
+  "@documentVerifyFailedTitle": {
+    "description": "Title text for notarize document verify failed."
+  },
+  "documentVerifyFailedTitle": "Document Verification Failed",
+  "@documentVerifyFailedBody": {
+    "description": "Body text for notarize document verify failed."
+  },
+  "documentVerifyFailedBody": "The provided file ${fileName} does not match the notary hash in this transaction.",
   "@done": {
     "description": "a button label for completing an action"
   },
@@ -127,6 +143,18 @@
     "description": "a label for the fee field"
   },
   "fee": "Fee: ",
+  "@fileHash": {
+    "description": "a label for the file hash field"
+  },
+  "fileHash": "File Hash",
+  "@fileName": {
+    "description": "a label for the file name field"
+  },
+  "fileName": "File Name",
+  "@findNotarization": {
+    "description": "a label for the find notarization search field"
+  },
+  "findNotarization": "Find Notarization",
   "@fromAddress": {
     "description": "a label for the 'from address' field"
   },
@@ -243,6 +271,34 @@
     "description": "A message that appears when a device does not have any authentication methods set up."
   },
   "noAuthenticationFound": "No authentication method found on device!",
+  "@notarization": {
+    "description": "A header label for notarization."
+  },
+  "notarization": "Notarization",
+  "@notarizationNotFound": {
+    "description": "A label for notarization not found."
+  },
+  "notarizationNotFound": "Notarization transaction not found!",
+  "@notarize": {
+    "description": "A header label for notarize."
+  },
+  "notarize": "Notarize",
+  "@notarizeDocumentToolsBody": {
+    "description": "Body text for notarize document tools card."
+  },
+  "notarizeDocumentToolsBody": "Secure and verifiable document notarization",
+  "@notarizeDocumentToolsTitle": {
+    "description": "Title text for notarize document tools card."
+  },
+  "notarizeDocumentToolsTitle": "Notarize Document",
+  "@notarizationCardHeader": {
+    "description": "Notarization card header"
+  },
+  "notarizationCardHeader": "NOTARIZE DOCUMENTS",
+  "@notarizationCardBody": {
+    "description": "Notarization card body"
+  },
+  "notarizationCardBody": "SECURE AND VERIFIABLE DOCUMENT\nNOTARIZATION USING BLOCKCHAIN\nTECHNOLOGY",
   "@noTransactionsFound": {
     "description": "A message that appears when no transactions are found in a user's wallet."
   },
@@ -358,7 +414,7 @@
   "@review": {
     "description": "Button or link text to review a transaction or other information before submitting it."
   },
-  "review": "REVIEW",
+  "review": "Review",
   "@saveToAddressBook": {
     "description": "Button or link text to save a new wallet address to the user's address book."
   },
@@ -375,6 +431,14 @@
     "description": "Button or link text to open the device's camera for scanning a QR code containing a wallet's hexseed or recovery phrase."
   },
   "scanHexseed": "Scan hexseed",
+  "@search": {
+    "description": "Label for search field"
+  },
+  "search": "Search",
+  "@searchingNotarization": {
+    "description": "Label for searching for notarization"
+  },
+  "searchingNotarization": "Searching notarization",
   "@securityCardBody": {
     "description": "Security box body"
   },
@@ -391,6 +455,14 @@
     "description": "Button or link text to initiate a transaction from the user's wallet to another wallet address."
   },
   "send": "SEND",
+  "@sendMessageToolsBody": {
+    "description": "Body text for send message tools card."
+  },
+  "sendMessageToolsBody": "Save a message on the QRL",
+  "@sendMessageToolsTitle": {
+    "description": "Title text for send message tools card."
+  },
+  "sendMessageToolsTitle": "Send Message",
   "@sendTitle": {
     "description": "Title text for the page or section of the wallet app used to send a cryptocurrency transaction."
   },
@@ -427,6 +499,10 @@
     "description": "Label for a field where the user enters the wallet address of the recipient for a transaction."
   },
   "toAddress": "To address",
+  "@tools": {
+    "description": "Label for a Tools header."
+  },
+  "tools": "Tools",
   "@transaction": {
     "description": "Label for transaction header."
   },
@@ -479,6 +555,10 @@
     "description": "Tooltip for change wallet name button."
   },
   "updateName": "Update name",
+  "@uploadDocument": {
+    "description": "Text displayed to indicate that a transaction is still waiting for confirmation from the network."
+  },
+  "uploadDocument": "Upload Document",
   "@useDeviceLogin": {
     "description": "Checkbox or toggle button to enable or disable using the device's biometric login or other security features to access the wallet app."
   },
@@ -491,10 +571,34 @@
     "description": "Checkbox or toggle button to enable or disable showing notifications for incoming transactions."
   },
   "useTransactionNotification": "Use transaction notifications",
+  "@verify": {
+    "description": "Verify label."
+  },
+  "verify": "Verify",
+  "@verifyDocumentToolsBody": {
+    "description": "Body text for verify document tools card."
+  },
+  "verifyDocumentToolsBody": "Verify notarized document using document hash.",
+  "@verifyDocumentToolsTitle": {
+    "description": "Title text for verify document tools card."
+  },
+  "verifyDocumentToolsTitle": "Verify Document",
+  "@verifyDocument": {
+    "description": "Verify document label."
+  },
+  "verifyDocument": "Verify Document",
+  "@verifyingNotarization": {
+    "description": "Text displayed to indicate that a notarization is being verified by the network."
+  },
+  "verifyingNotarization": "Verifying notarization...",
   "@verifyingTransaction": {
     "description": "Text displayed to indicate that a transaction is being verified by the network."
   },
   "verifyingTransaction": "Verifying transaction...",
+  "@wallet": {
+    "description": "Label for a section of the wallet app used to display the user's wallet."
+  },
+  "wallet": "Wallet",
   "@wallets": {
     "description": "Label for a section of the wallet app used to display the user's list of  wallets."
   },

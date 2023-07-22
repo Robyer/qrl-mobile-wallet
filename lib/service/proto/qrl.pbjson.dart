@@ -304,13 +304,14 @@ const MessageTxnReq$json = const {
   '2': const [
     const {'1': 'master_addr', '3': 1, '4': 1, '5': 12, '10': 'masterAddr'},
     const {'1': 'message', '3': 2, '4': 1, '5': 12, '10': 'message'},
-    const {'1': 'fee', '3': 3, '4': 1, '5': 4, '10': 'fee'},
-    const {'1': 'xmss_pk', '3': 4, '4': 1, '5': 12, '10': 'xmssPk'},
+    const {'1': 'addr_to', '3': 3, '4': 1, '5': 12, '10': 'addrTo'},
+    const {'1': 'fee', '3': 4, '4': 1, '5': 4, '10': 'fee'},
+    const {'1': 'xmss_pk', '3': 5, '4': 1, '5': 12, '10': 'xmssPk'},
   ],
 };
 
 /// Descriptor for `MessageTxnReq`. Decode as a `google.protobuf.DescriptorProto`.
-final $typed_data.Uint8List messageTxnReqDescriptor = $convert.base64Decode('Cg1NZXNzYWdlVHhuUmVxEh8KC21hc3Rlcl9hZGRyGAEgASgMUgptYXN0ZXJBZGRyEhgKB21lc3NhZ2UYAiABKAxSB21lc3NhZ2USEAoDZmVlGAMgASgEUgNmZWUSFwoHeG1zc19waxgEIAEoDFIGeG1zc1Br');
+final $typed_data.Uint8List messageTxnReqDescriptor = $convert.base64Decode('Cg1NZXNzYWdlVHhuUmVxEh8KC21hc3Rlcl9hZGRyGAEgASgMUgptYXN0ZXJBZGRyEhgKB21lc3NhZ2UYAiABKAxSB21lc3NhZ2USFwoHYWRkcl90bxgDIAEoDFIGYWRkclRvEhAKA2ZlZRgEIAEoBFIDZmVlEhcKB3htc3NfcGsYBSABKAxSBnhtc3NQaw==');
 @$core.Deprecated('Use tokenTxnReqDescriptor instead')
 const TokenTxnReq$json = const {
   '1': 'TokenTxnReq',

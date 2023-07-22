@@ -112,27 +112,31 @@ String _ffiCreateTransaction(List<Object> params) {
   int fee = params[4] as int;
   int transactionCount = amounts.length;
   Pointer<Utf8> nativeMessage = (params[5] as String).toNativeUtf8();
+  int messageType = params[6] as int;
 
   Pointer<Utf8> Function(
-          Pointer<Utf8> hexSeed,
-          Pointer<Int64> amounts,
-          Pointer<Pointer<Utf8>> receiverWalletAddresses,
-          int transactionCount,
-          int otsIndex,
-          int fee,
-          Pointer<Utf8> message) nativeCreateTransaction =
-      _openWalletLib()
-          .lookup<
-              NativeFunction<
-                  Pointer<Utf8> Function(
-                      Pointer<Utf8>,
-                      Pointer<Int64>,
-                      Pointer<Pointer<Utf8>>,
-                      Int32,
-                      Int64,
-                      Int64,
-                      Pointer<Utf8>)>>("createTransaction")
-          .asFunction();
+    Pointer<Utf8> hexSeed,
+    Pointer<Int64> amounts,
+    Pointer<Pointer<Utf8>> receiverWalletAddresses,
+    int transactionCount,
+    int otsIndex,
+    int fee,
+    Pointer<Utf8> message,
+    int messageType,
+  ) nativeCreateTransaction = _openWalletLib()
+      .lookup<
+          NativeFunction<
+              Pointer<Utf8> Function(
+        Pointer<Utf8>,
+        Pointer<Int64>,
+        Pointer<Pointer<Utf8>>,
+        Int32,
+        Int64,
+        Int64,
+        Pointer<Utf8>,
+        Int32,
+      )>>("createTransaction")
+      .asFunction();
 
   final amountsPtr = malloc<Int64>(transactionCount);
   for (int i = 0; i < transactionCount; i++) {
@@ -151,7 +155,8 @@ String _ffiCreateTransaction(List<Object> params) {
       transactionCount,
       otsIndex,
       fee,
-      nativeMessage);
+      nativeMessage,
+      messageType);
 
   String result = resultPtr.toDartString();
 
