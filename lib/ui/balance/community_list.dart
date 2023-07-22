@@ -375,9 +375,7 @@ class CommunityList extends StatelessWidget {
               padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
               child: InkWell(
                 onTap: () async {
-                  Uri url =
-                      //TODO URL of how to on youtube
-                      Uri.parse("https://qrl.volt-mine.com/getting-started");
+                  Uri url = Uri.parse("https://youtu.be/auDAg8uW1wY");
                   await Util.launchInBrowser(url);
                 },
                 child: Container(
