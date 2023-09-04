@@ -1,4 +1,8 @@
 {
+  "@addHolder": {
+    "description": "add a initial token holder button"
+  },
+  "addHolder": "ADD HOLDER",
   "@addMessage": {
     "description": "add a message to the transaction"
   },
@@ -27,6 +31,10 @@
     "description": "a label for the amount field"
   },
   "amount": "Amount",
+  "@assets": {
+    "description": "a label for the amount field"
+  },
+  "assets": "Assets",
   "@balance": {
     "description": "a label for the balance field"
   },
@@ -63,6 +71,18 @@
     "description": "a label for the community section"
   },
   "community": "Community",
+  "@createToken": {
+    "description": "Title text for create token."
+  },
+  "createToken": "Create Token",
+  "@createTokenToolsBody": {
+    "description": "Body text for create token tools card."
+  },
+  "createTokenToolsBody": "Create a custom token bla bla bla.",
+  "@createTokenToolsTitle": {
+    "description": "Title text for create token tools card."
+  },
+  "createTokenToolsTitle": "Create Token",
   "@createWallet": {
     "description": "a button label for creating a wallet"
   },
@@ -87,6 +107,10 @@
     "description": "a title for the transaction confirmation screen"
   },
   "confirmTransaction": "Confirm transaction",
+  "@decimals": {
+    "description": "a label for Decimals field"
+  },
+  "decimals": "Decimals",
   "@delete": {
     "description": "a button label for deleting an item"
   },
@@ -171,10 +195,18 @@
     "description": "a label for the hexseed field"
   },
   "hexseed": "Hexseed",
+  "@holderAddress": {
+    "description": "a label for holder address field"
+  },
+  "holderAddress": "Holder Address",
   "@important": {
     "description": "a label for an important message"
   },
   "important": "Important",
+  "@initialBalance": {
+    "description": "a label for initial token balance field"
+  },
+  "initialBalance": "Initial Balance",
   "@insufficientBalance": {
     "description": "a message that indicates insufficient balance for a transaction"
   },
@@ -215,6 +247,10 @@
     "description": "a message that indicates settings are being loaded"
   },
   "loadingSettings": "Loading settings",
+  "@loadingTokens": {
+    "description": "a message that indicates tokens are being loaded"
+  },
+  "loadingTokens": "Loading tokens...",
   "@loadingTransactions": {
     "description": "a message that indicates transaction are being loaded"
   },
@@ -251,6 +287,10 @@
     "description": "a label for the mnemonic field"
   },
   "mnemonic": "Mnemonic",
+  "@nfts": {
+    "description": "a tab label for NFTs"
+  },
+  "nfts": "NFTs",
   "@no": {
     "description": "a button label for negative response"
   },
@@ -271,6 +311,10 @@
     "description": "A message that appears when a device does not have any authentication methods set up."
   },
   "noAuthenticationFound": "No authentication method found on device!",
+  "@noNftsFound": {
+    "description": "a description when wallet has no NFTs in assets"
+  },
+  "noNftsFound": "No NFTs found",
   "@notarization": {
     "description": "A header label for notarization."
   },
@@ -299,6 +343,10 @@
     "description": "Notarization card body"
   },
   "notarizationCardBody": "SECURE AND VERIFIABLE DOCUMENT\nNOTARIZATION USING BLOCKCHAIN\nTECHNOLOGY",
+  "@noTokensFound": {
+    "description": "a description when wallet has no tokens in assets"
+  },
+  "noTokensFound": "No tokens found",
   "@noTransactionsFound": {
     "description": "A message that appears when no transactions are found in a user's wallet."
   },
@@ -347,6 +395,10 @@
     "description": "A message that informs a user that they will need to create a new wallet once they run out of signatures."
   },
   "outOfSignatures": "Once you run out of signatures you will need to create a new wallet. Be aware that wallet creation and transaction time increases with tree height. \nContinue wallet creation with current setup",
+  "@ownerAddress": {
+    "description": "A label for the owner address."
+  },
+  "ownerAddress": "Owner Address",
   "@permissionNotGranted": {
     "description": "Device permission not granted."
   },
@@ -499,6 +551,34 @@
     "description": "Label for a field where the user enters the wallet address of the recipient for a transaction."
   },
   "toAddress": "To address",
+  "@tokenCreation": {
+    "description": "Label for a Token creation transaction."
+  },
+  "tokenCreation": "TOKEN CREATION",
+  "@tokenName": {
+    "description": "Label for a Token Name field."
+  },
+  "tokenName": "Token Name",
+  "@tokenReceived": {
+    "description": "Label for a Token received transaction."
+  },
+  "tokenReceived": "TOKEN RECEIVED",
+  "@tokens": {
+    "description": "a tab label for tokens"
+  },
+  "tokens": "Tokens",
+  "@tokenSent": {
+    "description": "Label for a Token sent transaction."
+  },
+  "tokenSent": "TOKEN SENT",
+  "@tokenSymbol": {
+    "description": "Label for a Token Symbol field."
+  },
+  "tokenSymbol": "Token Symbol",
+  "@tokenTransactionHash": {
+    "description": "Label for a Token creation transaction."
+  },
+  "tokenTransactionHash": "Token Transaction Hash",
   "@tools": {
     "description": "Label for a Tools header."
   },
