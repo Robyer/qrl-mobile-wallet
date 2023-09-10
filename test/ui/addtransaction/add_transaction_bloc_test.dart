@@ -63,6 +63,11 @@ void main() {
         return [
           isA<AddTransactionState>()
               .having((state) => state.status, "status",
+                  AddTransactionStatus.tokenChanged)
+              .having(
+                  (state) => state.selectedToken, "current wallet name", null),
+          isA<AddTransactionState>()
+              .having((state) => state.status, "status",
                   AddTransactionStatus.loadingExtendedWalletData)
               .having((state) => state.currentWallet!.name,
                   "current wallet name", "name-1"),

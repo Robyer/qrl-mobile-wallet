@@ -14,9 +14,10 @@ class MockWalletService extends Mock implements WalletService {
   Future<int?> getCurrentWalletId() async {
     return Future(() => 2);
   }
-@override
+
+  @override
   Future<void> setCurrentWalletId(int id) async {
-  return Future(() => {});
+    return Future(() => {});
   }
 
   @override
@@ -49,7 +50,8 @@ class MockWalletService extends Mock implements WalletService {
   }
 
   @override
-  Future<ExtendedWalletData> getExtendedWalletData(String walletAddress) async {
-    return Future(() => ExtendedWalletData(1337, 25));
+  Future<ExtendedWalletData> getExtendedWalletData(String walletAddress,
+      {bool loadTokenTransaction = false}) async {
+    return Future(() => ExtendedWalletData(1337, 25, []));
   }
 }

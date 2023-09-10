@@ -101,6 +101,12 @@ class _TransactionsListState extends State<TransactionsList> {
               TransactionData transactionData = transactions[index];
               if (transactionData.transactionType == TransactionType.transfer) {
                 return _buildTransferTransaction(transactionData, context);
+              } else if (transactionData.transactionType ==
+                  TransactionType.token) {
+                return _buildTokenTransaction(transactionData, context);
+              } else if (transactionData.transactionType ==
+                  TransactionType.transferToken) {
+                return _buildTransferTokenTransaction(transactionData, context);
               }
               return _buildMessageTransaction(transactionData, context);
             },
@@ -208,6 +214,183 @@ class _TransactionsListState extends State<TransactionsList> {
             children: [
               Text(
                 "${transactionData.incoming ? "+" : "-"} ${StringUtil.formatAmount(transactionData.amount!)} QRL",
+                overflow: TextOverflow.ellipsis,
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: MiddleEllipsisText(
+                  transactionData.incoming
+                      ? transactionData.senderAddress
+                      : transactionData.receiverAddress!,
+                ),
+              ),
+            ],
+          ),
+          dense: true,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TransactionDetailPage(transactionData)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTokenTransaction(
+      TransactionData transactionData, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, right: 8),
+      child: Card(
+        elevation: 1,
+        color: CustomColors.qrlLightBlueColor.withOpacity(0.1),
+        child: ListTile(
+          horizontalTitleGap: 10,
+          leading: SizedBox(
+            height: double.infinity,
+            child: Container(
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: CustomColors.qrlYellowColor)),
+              child: const Icon(
+                Icons.token_outlined,
+                color: CustomColors.qrlYellowColor,
+                size: 28,
+              ),
+            ),
+          ),
+          title: Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Row(
+                  children: [
+                    Text(AppLocalizations.of(context)!.tokenCreation,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: CustomColors.qrlLightBlueColor,
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Text(
+                        transactionData.unconfirmed
+                            ? AppLocalizations.of(context)!.unconfirmed
+                            : "",
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color:
+                              CustomColors.qrlYellowMaterial.withOpacity(0.5),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  DateFormat("HH:mm, MMM d yyyy")
+                      .format(transactionData.dateTime),
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 12,
+                    color: Colors.grey[500],
+                  ),
+                )
+              ],
+            ),
+          ),
+          subtitle: Text(
+            "${transactionData.tokenName} (${transactionData.tokenSymbol})",
+            overflow: TextOverflow.ellipsis,
+          ),
+          dense: true,
+          onTap: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => TransactionDetailPage(transactionData)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTransferTokenTransaction(
+      TransactionData transactionData, BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, right: 8),
+      child: Card(
+        elevation: 1,
+        color: CustomColors.qrlLightBlueColor.withOpacity(0.1),
+        child: ListTile(
+          horizontalTitleGap: 10,
+          leading: SizedBox(
+            height: double.infinity,
+            child: Container(
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: CustomColors.qrlYellowColor)),
+              child: Icon(
+                transactionData.incoming
+                    ? Icons.arrow_back
+                    : Icons.arrow_forward,
+                color: CustomColors.qrlYellowColor,
+                size: 28,
+              ),
+            ),
+          ),
+          title: Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                        transactionData.incoming
+                            ? AppLocalizations.of(context)!.tokenReceived
+                            : AppLocalizations.of(context)!.tokenSent,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: CustomColors.qrlLightBlueColor,
+                        )),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Text(
+                        transactionData.unconfirmed
+                            ? AppLocalizations.of(context)!.unconfirmed
+                            : "",
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                          color:
+                              CustomColors.qrlYellowMaterial.withOpacity(0.5),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  DateFormat("HH:mm, MMM d yyyy")
+                      .format(transactionData.dateTime),
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                    fontSize: 12,
+                    color: Colors.grey[500],
+                  ),
+                )
+              ],
+            ),
+          ),
+          isThreeLine: true,
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "${transactionData.incoming ? "+" : "-"} ${StringUtil.formatAmount(transactionData.amount!, decimals: transactionData.tokenDecimals!)} ${transactionData.tokenSymbol}",
                 overflow: TextOverflow.ellipsis,
               ),
               Padding(

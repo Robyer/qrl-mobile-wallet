@@ -17,7 +17,7 @@ class AddMessageState extends AddTransactionState<AddMessageState> {
     transactionHash,
     this.message = "",
   }) : super(
-          TransactionType.message,
+          transactionType: TransactionType.message,
           status: status,
           wallets: wallets,
           currentWallet: currentWallet,
@@ -39,6 +39,7 @@ class AddMessageState extends AddTransactionState<AddMessageState> {
     int? fee,
     bool? reviewable,
     String? transactionHash,
+    TokenData? selectedToken,
   }) {
     return copyWith(
       status: status ?? this.status,

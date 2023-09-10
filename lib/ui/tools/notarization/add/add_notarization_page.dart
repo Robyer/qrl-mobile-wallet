@@ -122,7 +122,7 @@ class _AddNotarizationView extends AddTransactionPage<AddNotarizationBloc> {
             padding:
                 const EdgeInsets.only(left: 24, right: 24, bottom: 8, top: 4),
             child: SizedBox(
-              width: 256,
+              width: double.infinity,
               child: QrlButton(
                 () => BlocProvider.of<AddNotarizationBloc>(context)
                     .add(const HasMessageChangedEvent(true)),

@@ -16,7 +16,8 @@ class GrpcService {
 
   GrpcService(this._settingsService);
 
-  Future<ExtendedWalletData> getExtendedWalletData(String walletAddress) async {
+  Future<ExtendedWalletData> getExtendedWalletData(String walletAddress,
+      {bool loadTokenTransaction = false}) async {
     List<int> addressBytes = StringUtil.toBytes(walletAddress);
     ClientChannel clientChannel = await getClientChannel();
     try {
@@ -26,8 +27,22 @@ class GrpcService {
       var state = getAddressStateResp.state;
       List<TransactionData> transactions =
           await _findUnconfirmedTransactions(publicAPIClient, walletAddress);
-      return ExtendedWalletData(
-          state.balance.toInt(), _getOtsIndex(state) + transactions.length);
+      List<TokenData> tokens =
+          await Future.wait(state.tokens.entries.map((e) async {
+        TokenData tokenData =
+            TokenData(e.key, BigInt.parse(e.value.toStringUnsigned()).toInt());
+        if (loadTokenTransaction) {
+          tokenData.tokenTransactionData =
+              await findTokenTransaction(tokenData.tokenTransactionHash);
+        }
+        return tokenData;
+      }).toList());
+      tokens.sort((a, b) => (a.tokenTransactionData?.tokenSymbol ?? "")
+          .toLowerCase()
+          .compareTo(
+              (b.tokenTransactionData?.tokenSymbol ?? "").toLowerCase()));
+      return ExtendedWalletData(state.balance.toInt(),
+          _getOtsIndex(state) + transactions.length, tokens);
     } finally {
       clientChannel.shutdown();
     }
@@ -109,15 +124,21 @@ class GrpcService {
                       transactionExtended.timestampSeconds.toInt() * 1000),
                   incoming,
                   true,
-                  message,
-                  MessageType.text,
                   tx.fee.toInt(),
                   receiverAddress: receiverAddress,
-                  amount: transfer.amounts[i].toInt()));
+                  amount: transfer.amounts[i].toInt(),
+                  message: message,
+                  messageType: MessageType.text));
             }
           }
         } else if ("message" == tx.whichTransactionType().name.toLowerCase()) {
           transactions.add(_convertMessage(transactionExtended));
+        } else if ("token" == tx.whichTransactionType().name.toLowerCase()) {
+          transactions.add(_convertToken(transactionExtended));
+        } else if ("transfertoken" ==
+            tx.whichTransactionType().name.toLowerCase()) {
+          await _convertTransferToken(transactions, transactionExtended,
+              walletAddress, publicAPIClient);
         }
       }
       if (quantityFound == batchQuantity) {
@@ -152,35 +173,46 @@ class GrpcService {
       TransactionExtended transaction = getObjectResp.transaction;
       Transaction tx = transaction.tx;
       if ("transfer" == tx.whichTransactionType().name.toLowerCase()) {
-        String senderAddress = StringUtil.fromBytes(transaction.addrFrom);
-        bool incoming = senderAddress != walletAddress;
-        String? message = tx.transfer.messageData.isNotEmpty
-            ? utf8.decode(tx.transfer.messageData)
-            : null;
-        for (int j = 0; j < tx.transfer.addrsTo.length; j++) {
-          String receiverAddress = StringUtil.fromBytes(tx.transfer.addrsTo[j]);
-          if (!incoming || receiverAddress == walletAddress) {
-            transactions.add(TransactionData(
-                TransactionType.transfer,
-                StringUtil.fromBytes(tx.transactionHash),
-                "transfer",
-                senderAddress,
-                DateTime.fromMillisecondsSinceEpoch(
-                    transaction.timestampSeconds.toInt() * 1000),
-                incoming,
-                false,
-                message,
-                MessageType.text,
-                tx.fee.toInt(),
-                receiverAddress: receiverAddress,
-                amount: tx.transfer.amounts[j].toInt()));
-          }
-        }
+        _convertTransfer(transaction, walletAddress, tx, transactions);
       } else if ("message" == tx.whichTransactionType().name.toLowerCase()) {
         transactions.add(_convertMessage(transaction));
+      } else if ("token" == tx.whichTransactionType().name.toLowerCase()) {
+        transactions.add(_convertToken(transaction));
+      } else if ("transfertoken" ==
+          tx.whichTransactionType().name.toLowerCase()) {
+        await _convertTransferToken(
+            transactions, transaction, walletAddress, publicAPIClient);
       }
     }
     return transactions;
+  }
+
+  void _convertTransfer(TransactionExtended transaction, String walletAddress,
+      Transaction tx, List<TransactionData> transactions) {
+    String senderAddress = StringUtil.fromBytes(transaction.addrFrom);
+    bool incoming = senderAddress != walletAddress;
+    String? message = tx.transfer.messageData.isNotEmpty
+        ? utf8.decode(tx.transfer.messageData)
+        : null;
+    for (int j = 0; j < tx.transfer.addrsTo.length; j++) {
+      String receiverAddress = StringUtil.fromBytes(tx.transfer.addrsTo[j]);
+      if (!incoming || receiverAddress == walletAddress) {
+        transactions.add(TransactionData(
+            TransactionType.transfer,
+            StringUtil.fromBytes(tx.transactionHash),
+            "transfer",
+            senderAddress,
+            DateTime.fromMillisecondsSinceEpoch(
+                transaction.timestampSeconds.toInt() * 1000),
+            incoming,
+            false,
+            tx.fee.toInt(),
+            receiverAddress: receiverAddress,
+            amount: tx.transfer.amounts[j].toInt(),
+            message: message,
+            messageType: MessageType.text));
+      }
+    }
   }
 
   TransactionData _convertMessage(TransactionExtended transaction) {
@@ -204,23 +236,89 @@ class GrpcService {
             transaction.timestampSeconds.toInt() * 1000),
         false,
         false,
-        message,
-        messageType,
-        tx.fee.toInt());
+        tx.fee.toInt(),
+        message: message,
+        messageType: messageType);
+  }
+
+  TransactionData _convertToken(TransactionExtended transaction) {
+    Transaction tx = transaction.tx;
+    Transaction_Token transactionToken = tx.token;
+    return TransactionData(
+        TransactionType.token,
+        StringUtil.fromBytes(tx.transactionHash),
+        "token",
+        StringUtil.fromBytes(transaction.addrFrom),
+        DateTime.fromMillisecondsSinceEpoch(
+            transaction.timestampSeconds.toInt() * 1000),
+        false,
+        false,
+        tx.fee.toInt(),
+        tokenName: utf8.decode(transactionToken.name),
+        tokenSymbol: utf8.decode(transactionToken.symbol),
+        tokenDecimals: transactionToken.decimals.toInt(),
+        tokenOwnerAddress: StringUtil.fromBytes(transactionToken.owner),
+        initialTokenHolders: transactionToken.initialBalances
+            .map((addressAmount) => InitialTokenHolder(
+                StringUtil.fromBytes(addressAmount.address),
+                BigInt.parse(addressAmount.amount.toStringUnsigned()).toInt()))
+            .toList());
+  }
+
+  Future<void> _convertTransferToken(
+      List<TransactionData> transactions,
+      TransactionExtended transaction,
+      String walletAddress,
+      PublicAPIClient publicAPIClient) async {
+    Transaction tx = transaction.tx;
+    Transaction_TransferToken transactionTransferToken = tx.transferToken;
+
+    GetObjectResp getObjectResp = await publicAPIClient
+        .getObject(GetObjectReq(query: transactionTransferToken.tokenTxhash));
+    Transaction_Token transactionToken = getObjectResp.transaction.tx.token;
+    String tokenName = utf8.decode(transactionToken.name);
+    String tokenSymbol = utf8.decode(transactionToken.symbol);
+    int tokenDecimals = transactionToken.decimals.toInt();
+    String tokenHash =
+        StringUtil.fromBytes(transactionTransferToken.tokenTxhash);
+
+    String senderAddress = StringUtil.fromBytes(transaction.addrFrom);
+    bool incoming = senderAddress != walletAddress;
+    for (int j = 0; j < transactionTransferToken.addrsTo.length; j++) {
+      String receiverAddress =
+          StringUtil.fromBytes(transactionTransferToken.addrsTo[j]);
+      if (!incoming || receiverAddress == walletAddress) {
+        transactions.add(TransactionData(
+            TransactionType.transferToken,
+            StringUtil.fromBytes(tx.transactionHash),
+            "transferToken",
+            senderAddress,
+            DateTime.fromMillisecondsSinceEpoch(
+                transaction.timestampSeconds.toInt() * 1000),
+            incoming,
+            false,
+            tx.fee.toInt(),
+            receiverAddress: receiverAddress,
+            amount: BigInt.parse(
+                    transactionTransferToken.amounts[j].toStringUnsigned())
+                .toInt(),
+            tokenName: tokenName,
+            tokenSymbol: tokenSymbol,
+            tokenDecimals: tokenDecimals,
+            tokenHash: tokenHash));
+      }
+    }
   }
 
   Future<String> sendTransferTransaction(
       String senderWalletAddress,
       String xmssPk,
       List<int> amounts,
-      List<String> receiverWalletAddresses,
+      List<List<int>> receiverWalletAddressesBytes,
       int otsIndex,
       int fee,
       String transactionData,
-      String message) async {
-    List<List<int>> receiverWalletBytesList = receiverWalletAddresses
-        .map((address) => StringUtil.toBytes(address))
-        .toList();
+      List<int> messageBytes) async {
     List<Int64> int64Amounts = amounts.map((amount) => Int64(amount)).toList();
     Int64 int64Fee = Int64(fee);
     String signature =
@@ -228,14 +326,14 @@ class GrpcService {
     List<int> txSignature = StringUtil.toBytes(signature);
     String hash = transactionData.substring(
         (transactionData.length - 64), transactionData.length);
-    List<int> messageData = Uint8List.fromList(utf8.encode(message));
+    List<int> messageData = Uint8List.fromList(messageBytes);
     List<int> txHash = StringUtil.toBytes(hash);
     ClientChannel clientChannel = await getClientChannel();
     try {
       PublicAPIClient publicAPIClient = PublicAPIClient(clientChannel);
       var transferCoinsReq = TransferCoinsReq(
           messageData: messageData,
-          addressesTo: receiverWalletBytesList,
+          addressesTo: receiverWalletAddressesBytes,
           amounts: int64Amounts,
           fee: int64Fee,
           xmssPk: StringUtil.toBytes(xmssPk));
@@ -257,10 +355,108 @@ class GrpcService {
     }
   }
 
+  Future<String> sendTransferTokenTransaction(
+      String senderWalletAddress,
+      String xmssPk,
+      List<int> amounts,
+      List<List<int>> receiverWalletAddressesBytes,
+      int otsIndex,
+      int fee,
+      String transactionData,
+      List<int> tokenTransactionHashBytes) async {
+    List<Int64> int64Amounts = amounts.map((amount) => Int64(amount)).toList();
+    Int64 int64Fee = Int64(fee);
+    String signature =
+        transactionData.substring(0, (transactionData.length - 64));
+    List<int> txSignature = StringUtil.toBytes(signature);
+    String hash = transactionData.substring(
+        (transactionData.length - 64), transactionData.length);
+    List<int> txHash = StringUtil.toBytes(hash);
+    ClientChannel clientChannel = await getClientChannel();
+    try {
+      PublicAPIClient publicAPIClient = PublicAPIClient(clientChannel);
+      var transferTokenTxnReq = TransferTokenTxnReq(
+          tokenTxhash: tokenTransactionHashBytes,
+          addressesTo: receiverWalletAddressesBytes,
+          amounts: int64Amounts,
+          fee: int64Fee,
+          xmssPk: StringUtil.toBytes(xmssPk));
+      TransferCoinsResp transferCoinsResp =
+          await publicAPIClient.getTransferTokenTxn(transferTokenTxnReq);
+      await publicAPIClient.pushTransaction(PushTransactionReq(
+          transactionSigned: Transaction(
+              transferToken: transferCoinsResp
+                  .extendedTransactionUnsigned.tx.transferToken,
+              signature: txSignature,
+              transactionHash: txHash,
+              fee: int64Fee,
+              publicKey:
+                  transferCoinsResp.extendedTransactionUnsigned.tx.publicKey,
+              nonce: Int64(12))));
+      return hash;
+    } finally {
+      clientChannel.shutdown();
+    }
+  }
+
+  Future<String> sendTokenTransaction(
+      String senderWalletAddress,
+      String xmssPk,
+      List<int> symbolBytes,
+      List<int> nameBytes,
+      List<int> ownerBytes,
+      int decimals,
+      List<int> initialBalances,
+      List<List<int>> receiverWalletAddressesBytes,
+      int otsIndex,
+      int fee,
+      String transactionData) async {
+    Int64 int64Decimals = Int64(decimals);
+    List<AddressAmount> addressAmounts = [];
+    for (int i = 0; i < receiverWalletAddressesBytes.length; i++) {
+      addressAmounts.add(AddressAmount(
+          address: receiverWalletAddressesBytes[i],
+          amount: Int64(initialBalances[i])));
+    }
+    Int64 int64Fee = Int64(fee);
+    String signature =
+        transactionData.substring(0, (transactionData.length - 64));
+    List<int> txSignature = StringUtil.toBytes(signature);
+    String hash = transactionData.substring(
+        (transactionData.length - 64), transactionData.length);
+    List<int> txHash = StringUtil.toBytes(hash);
+    ClientChannel clientChannel = await getClientChannel();
+    try {
+      PublicAPIClient publicAPIClient = PublicAPIClient(clientChannel);
+      var tokenTxnReq = TokenTxnReq(
+          symbol: symbolBytes,
+          name: nameBytes,
+          owner: ownerBytes,
+          decimals: int64Decimals,
+          initialBalances: addressAmounts,
+          fee: int64Fee,
+          xmssPk: StringUtil.toBytes(xmssPk));
+      TransferCoinsResp transferCoinsResp =
+          await publicAPIClient.getTokenTxn(tokenTxnReq);
+      await publicAPIClient.pushTransaction(PushTransactionReq(
+          transactionSigned: Transaction(
+              token: transferCoinsResp.extendedTransactionUnsigned.tx.token,
+              signature: txSignature,
+              transactionHash: txHash,
+              fee: int64Fee,
+              publicKey:
+                  transferCoinsResp.extendedTransactionUnsigned.tx.publicKey,
+              nonce: Int64(12))));
+      return hash;
+    } finally {
+      clientChannel.shutdown();
+    }
+  }
+
   Future<String> sendMessageTransaction(
       String senderWalletAddress,
       String xmssPk,
-      String message,
+      List<int> messageBytes,
       int otsIndex,
       int fee,
       String transactionData,
@@ -273,9 +469,9 @@ class GrpcService {
         (transactionData.length - 64), transactionData.length);
     List<int> messageData;
     if (messageType == MessageType.text) {
-      messageData = Uint8List.fromList(utf8.encode(message));
+      messageData = Uint8List.fromList(messageBytes);
     } else {
-      messageData = StringUtil.toBytes(message);
+      messageData = messageBytes;
     }
     List<int> txHash = StringUtil.toBytes(hash);
     ClientChannel clientChannel = await getClientChannel();
@@ -334,7 +530,8 @@ class GrpcService {
           break;
         }
         Transaction tx = transaction.tx;
-        if ("transfer" == tx.whichTransactionType().name.toLowerCase()) {
+        if ("transfer" == tx.whichTransactionType().name.toLowerCase() ||
+            "transferToken" == tx.whichTransactionType().name.toLowerCase()) {
           String senderAddress = StringUtil.fromBytes(transaction.addrFrom);
           bool incoming = senderAddress != walletAddress;
           if (incoming) {
@@ -359,6 +556,22 @@ class GrpcService {
       if ("message" ==
           transaction.tx.whichTransactionType().name.toLowerCase()) {
         return _convertMessage(transaction);
+      }
+      return null;
+    } finally {
+      clientChannel.shutdown();
+    }
+  }
+
+  Future<TransactionData?> findTokenTransaction(String transactionHash) async {
+    ClientChannel clientChannel = await getClientChannel();
+    try {
+      PublicAPIClient publicAPIClient = PublicAPIClient(clientChannel);
+      GetObjectResp getObjectResp = await publicAPIClient
+          .getObject(GetObjectReq(query: StringUtil.toBytes(transactionHash)));
+      TransactionExtended transaction = getObjectResp.transaction;
+      if ("token" == transaction.tx.whichTransactionType().name.toLowerCase()) {
+        return _convertToken(transaction);
       }
       return null;
     } finally {

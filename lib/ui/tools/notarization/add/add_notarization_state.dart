@@ -25,7 +25,7 @@ class AddNotarizationState extends AddTransactionState<AddNotarizationState> {
     this.hasMessage = false,
     this.hashFunction = "2",
   }) : super(
-          TransactionType.message,
+          transactionType: TransactionType.message,
           status: status,
           wallets: wallets,
           currentWallet: currentWallet,
@@ -47,6 +47,7 @@ class AddNotarizationState extends AddTransactionState<AddNotarizationState> {
     int? fee,
     bool? reviewable,
     String? transactionHash,
+    TokenData? selectedToken,
   }) {
     return copyWith(
       status: status ?? this.status,

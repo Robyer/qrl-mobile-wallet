@@ -207,6 +207,10 @@
     "description": "a label for initial token balance field"
   },
   "initialBalance": "Initial Balance",
+  "@initialBalanceToLarge": {
+    "description": "a message for combined initial balance being to large"
+  },
+  "initialBalanceToLarge": "Combined initial balance is to large",
   "@insufficientBalance": {
     "description": "a message that indicates insufficient balance for a transaction"
   },

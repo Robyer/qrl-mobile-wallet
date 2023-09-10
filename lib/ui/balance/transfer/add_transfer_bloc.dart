@@ -1,6 +1,9 @@
+import 'dart:math';
+
 import 'package:bloc/src/bloc.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 import 'package:decimal/decimal.dart';
+import 'package:mobile_wallet/model/transaction.dart';
 import 'package:mobile_wallet/service/address_book_service.dart';
 import 'package:mobile_wallet/service/service_locator.dart';
 import 'package:mobile_wallet/service/transaction_service.dart';
@@ -12,10 +15,12 @@ import 'package:mobile_wallet/ui/balance/transfer/add_transfer_state.dart';
 class AddTransferBloc extends AddTransactionBloc<AddTransferState> {
   final TransactionService _transactionService;
   final AddressBookService _addressBookService;
+  final WalletService _walletService;
 
   AddTransferBloc()
       : _transactionService = getIt<TransactionService>(),
         _addressBookService = getIt<AddressBookService>(),
+        _walletService = getIt<WalletService>(),
         super(AddTransferState(transactionLines: [TransactionLine()])) {
     on<AddressChangedEvent>(
       (event, emit) async {
@@ -61,9 +66,12 @@ class AddTransferBloc extends AddTransactionBloc<AddTransferState> {
         if (value.isEmpty) {
           amount = 0;
         } else {
-          amount = (Decimal.parse(value) * Decimal.fromInt(1000000000))
-              .toBigInt()
-              .toInt();
+          int decimals =
+              state.selectedToken?.tokenTransactionData?.tokenDecimals ?? 9;
+          amount =
+              (Decimal.parse(value) * BigInt.from(10).pow(decimals).toDecimal())
+                  .toBigInt()
+                  .toInt();
         }
 
         List<TransactionLine> transactionLines = state.transactionLines;
@@ -131,18 +139,35 @@ class AddTransferBloc extends AddTransactionBloc<AddTransferState> {
         .toList();
     int totalAmount =
         filteredLines.isNotEmpty ? filteredLines.reduce((a, b) => a + b) : 0;
-    if (totalAmount + state.fee > (state.extendedWalletData?.balance ?? 0)) {
-      if (totalAmount > 0 && (state.extendedWalletData?.balance ?? 0) > 0) {
-        emit(state.copyWith(
-          transferStatus: AddTransferStatus.notEnoughFunds,
-        ));
-        emit(state.copyWith(
-          status: AddTransactionStatus.ready,
-          transferStatus: AddTransferStatus.initial,
-          reviewable: false,
-        ));
+
+    if (state.transactionType == TransactionType.transferToken) {
+      if (state.fee > (state.extendedWalletData?.balance ?? 0)) {
+        if (totalAmount > 0 && (state.selectedToken?.balance ?? 0) > 0) {
+          emit(state.copyWith(
+            transferStatus: AddTransferStatus.notEnoughFunds,
+          ));
+          emit(state.copyWith(
+            status: AddTransactionStatus.ready,
+            transferStatus: AddTransferStatus.initial,
+            reviewable: false,
+          ));
+        }
+        return false;
       }
-      return false;
+    } else {
+      if (totalAmount + state.fee > (state.extendedWalletData?.balance ?? 0)) {
+        if (totalAmount > 0 && (state.extendedWalletData?.balance ?? 0) > 0) {
+          emit(state.copyWith(
+            transferStatus: AddTransferStatus.notEnoughFunds,
+          ));
+          emit(state.copyWith(
+            status: AddTransactionStatus.ready,
+            transferStatus: AddTransferStatus.initial,
+            reviewable: false,
+          ));
+        }
+        return false;
+      }
     }
     return state.transactionLines.every((transactionLine) {
       if ((transactionLine.address != null &&
@@ -159,8 +184,7 @@ class AddTransferBloc extends AddTransactionBloc<AddTransferState> {
     bool allAddressesValid = true;
     List<TransactionLine> transactionLines = state.transactionLines;
     for (TransactionLine transactionLine in transactionLines) {
-      if (await getIt<WalletService>()
-          .isAddressValid(transactionLine.address ?? "")) {
+      if (await _walletService.isAddressValid(transactionLine.address ?? "")) {
         bool saveToAddressBook = transactionLine.saveToAddressBook;
         if (saveToAddressBook &&
             await _addressBookService.hasAddress(transactionLine.address!)) {
@@ -188,12 +212,31 @@ class AddTransferBloc extends AddTransactionBloc<AddTransferState> {
 
   @override
   Future<String> send(Emitter<AddTransferState> emit) async {
-    return await _transactionService.sendTransferTransaction(
-        state.currentWallet!.id,
-        state.transactionLines.map((line) => line.amount!).toList(),
-        state.transactionLines.map((line) => line.address!).toList(),
-        state.extendedWalletData!.otsIndex,
-        state.fee,
-        state.message);
+    if (state.transactionType == TransactionType.transferToken) {
+      return await _transactionService.sendTransferTokenTransaction(
+          state.currentWallet!.id,
+          state.transactionLines.map((line) => line.amount!).toList(),
+          state.transactionLines.map((line) => line.address!).toList(),
+          state.extendedWalletData!.otsIndex,
+          state.fee,
+          state.selectedToken!.tokenTransactionHash);
+    } else {
+      return await _transactionService.sendTransferTransaction(
+          state.currentWallet!.id,
+          state.transactionLines.map((line) => line.amount!).toList(),
+          state.transactionLines.map((line) => line.address!).toList(),
+          state.extendedWalletData!.otsIndex,
+          state.fee,
+          state.message);
+    }
+  }
+
+  @override
+  Future<void> resetData(Emitter<AddTransferState> emit) async {
+    for (TransactionLine transactionLine in state.transactionLines) {
+      if (transactionLine.amount != null) {
+        transactionLine.amount = null;
+      }
+    }
   }
 }

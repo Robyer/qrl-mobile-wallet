@@ -12,6 +12,7 @@ import 'package:mobile_wallet/service/wallet_service.dart';
 import 'package:wakelock/wakelock.dart';
 
 part 'add_transaction_event.dart';
+
 part 'add_transaction_state.dart';
 
 abstract class AddTransactionBloc<T extends AddTransactionState>
@@ -46,9 +47,14 @@ abstract class AddTransactionBloc<T extends AddTransactionState>
     on<WalletChangedEvent>((event, emit) async {
       Wallet currentWallet = event.wallet;
       emit(state.copyBase(
+          status: AddTransactionStatus.tokenChanged,
+          selectedToken: null,
+          transactionType: TransactionType.transfer));
+      emit(state.copyBase(
           status: AddTransactionStatus.loadingExtendedWalletData,
           currentWallet: currentWallet));
       await _loadCurrentWalletData(currentWallet, emit);
+      await resetData(emit);
       await checkReviewable(emit);
     });
 
@@ -106,14 +112,34 @@ abstract class AddTransactionBloc<T extends AddTransactionState>
         emit(state.copyBase(status: AddTransactionStatus.ready));
       },
     );
+
+    on<TokenChangedEvent>(
+      (event, emit) async {
+        AddTransactionStatus status = state.status;
+        if (event.tokenData != null) {
+          emit(state.copyBase(
+              transactionType: TransactionType.transferToken,
+              selectedToken: event.tokenData,
+              status: AddTransactionStatus.tokenChanged));
+        } else {
+          emit(state.copyBase(
+              transactionType: TransactionType.transfer,
+              selectedToken: null,
+              status: AddTransactionStatus.tokenChanged));
+        }
+        await resetData(emit);
+        emit(state.copyBase(status: status));
+      },
+    );
   }
 
   Future<void> _loadCurrentWalletData(
       Wallet currentWallet, Emitter<T> emit) async {
     ExtendedWalletData? extendedWalletData;
     try {
-      extendedWalletData =
-          await _walletService.getExtendedWalletData(currentWallet.address);
+      extendedWalletData = await _walletService.getExtendedWalletData(
+          currentWallet.address,
+          loadTokenTransaction: true);
     } on Exception catch (e, stacktrace) {
       var errorMessage = e.toString();
       log(errorMessage, stackTrace: stacktrace);
@@ -124,6 +150,8 @@ abstract class AddTransactionBloc<T extends AddTransactionState>
         status: AddTransactionStatus.ready,
         extendedWalletData: extendedWalletData));
   }
+
+  Future<void> resetData(Emitter<T> emit) async {}
 
   Future<void> checkReviewable(Emitter<T> emit);
 

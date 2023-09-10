@@ -165,7 +165,9 @@ class WalletService {
         "wallet-$id", jsonEncode(wallet.toJson()));
   }
 
-  Future<ExtendedWalletData> getExtendedWalletData(String walletAddress) async {
-    return await _grpcService.getExtendedWalletData(walletAddress);
+  Future<ExtendedWalletData> getExtendedWalletData(String walletAddress,
+      {bool loadTokenTransaction = false}) async {
+    return await _grpcService.getExtendedWalletData(walletAddress,
+        loadTokenTransaction: loadTokenTransaction);
   }
 }
