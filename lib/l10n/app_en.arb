@@ -1,4 +1,5 @@
 {
+
   "@addHolder": {
     "description": "add a initial token holder button"
   },
@@ -78,7 +79,7 @@
   "@createTokenToolsBody": {
     "description": "Body text for create token tools card."
   },
-  "createTokenToolsBody": "Create a custom token bla bla bla.",
+  "createTokenToolsBody": "Create a custom token on the QRL chain.",
   "@createTokenToolsTitle": {
     "description": "Title text for create token tools card."
   },
@@ -619,19 +620,7 @@
     "description": "Tree Height"
   },
   "treeHeight": "Tree Height",
-  "@twitterCardHeader": {
-    "description": "Twitter card header"
-  },
-  "twitterCardHeader": "TWEETS FROM @THEQRLEDGER",
-  "@twitterCardBody": {
-    "description": "Twitter card body"
-  },
-  "twitterCardBody": "DISCOVER THE LATEST NEWS \nAND SHARE YOUR VOICE ON \nTWITTER!",
-  "@twitterCardButton": {
-    "description": "Twitter card button"
-  },
-  "twitterCardButton": "VIEW TWEETS",
-  "@unconfirmed": {
+   "@unconfirmed": {
     "description": "Text displayed to indicate that a transaction is still waiting for confirmation from the network."
   },
   "unconfirmed": "Unconfirmed",
@@ -722,5 +711,17 @@
   "@youtubeCardButton": {
     "description": "Youtube card button"
   },
-  "youtubeCardButton": "WATCH NOW"
+  "youtubeCardButton": "WATCH NOW",
+  "@xCardHeader": {
+    "description": "X card header"
+  },
+  "xCardHeader": "NEWS FROM @THEQRLEDGER",
+  "@xCardBody": {
+    "description": "X card body"
+  },
+  "xCardBody": "DISCOVER THE LATEST NEWS \nAND SHARE YOUR VOICE ON \nX!",
+  "@xCardButton": {
+    "description": "X card button"
+  },
+  "xCardButton": "FOLLOW ON X"
 }

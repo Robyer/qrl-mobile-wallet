@@ -87,12 +87,12 @@ class CommunityList extends StatelessWidget {
               padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
               child: InkWell(
                 onTap: () async {
-                  Uri url = Uri.parse("https://twitter.com/qrledger");
+                  Uri url = Uri.parse("https://x.com/qrledger");
                   await Util.launchInBrowser(url);
                 },
                 child: Container(
                   decoration: _buildBoxDecoration(
-                      'assets/images/twitter-background.png'),
+                      'assets/images/x-background.png'),
                   child: Padding(
                     padding: const EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 8),
@@ -102,7 +102,7 @@ class CommunityList extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
-                            AppLocalizations.of(context)!.twitterCardHeader,
+                            AppLocalizations.of(context)!.xCardHeader,
                             style: const TextStyle(
                                 color: CustomColors.qrlYellowColor,
                                 fontSize: 18),
@@ -112,7 +112,7 @@ class CommunityList extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 16, bottom: 16),
                           child: Text(
                             textAlign: TextAlign.start,
-                            AppLocalizations.of(context)!.twitterCardBody,
+                            AppLocalizations.of(context)!.xCardBody,
                             style: const TextStyle(fontSize: 12),
                           ),
                         ),
@@ -133,7 +133,7 @@ class CommunityList extends StatelessWidget {
                               child: Center(
                                 child: Text(
                                   AppLocalizations.of(context)!
-                                      .twitterCardButton,
+                                      .xCardButton,
                                   style: const TextStyle(
                                       color: CustomColors.qrlDarkBlueColor,
                                       fontSize: 14),
