@@ -243,12 +243,7 @@ class CreateTokenBloc extends AddTransactionBloc<CreateTokenState> {
       state.tokenName,
       state.ownerAddress,
       state.tokenDecimals,
-      state.initialHolders
-          .map((line) => (Decimal.fromInt(line.initialBalance!) *
-                  BigInt.from(10).pow(state.tokenDecimals).toDecimal())
-              .toBigInt()
-              .toInt())
-          .toList(),
+      state.initialHolders.map((line) => line.initialBalance!).toList(),
       state.initialHolders.map((line) => line.address!).toList(),
       state.extendedWalletData!.otsIndex,
       state.fee,

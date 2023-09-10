@@ -244,7 +244,7 @@ abstract class AddTransactionPage<T extends AddTransactionBloc>
         }
         return Padding(
           padding:
-              const EdgeInsets.only(bottom: 8, top: 8, right: 16, left: 16),
+              const EdgeInsets.only(bottom: 16, top: 16, right: 16, left: 16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
