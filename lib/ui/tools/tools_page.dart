@@ -98,7 +98,6 @@ class ToolsPage extends StatelessWidget {
               )),
           subtitle: Text(
             subTitle,
-            overflow: TextOverflow.ellipsis,
           ),
           dense: true,
           onTap: onTap,

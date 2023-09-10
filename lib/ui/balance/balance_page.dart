@@ -181,7 +181,7 @@ class _BalanceView extends StatelessWidget {
               Center(
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      top: 12, left: 24, right: 24, bottom: 8),
+                      top: 8, left: 24, right: 24, bottom: 8),
                   child: _buildBalanceBlocBuilder(),
                 ),
               ),
@@ -453,7 +453,7 @@ class _BalanceView extends StatelessWidget {
       _buildNotificationListener(BuildContext context) {
     double height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top + kToolbarHeight);
-    double childHeight = 1 - (325 / height);
+    double childHeight = 1 - (350 / height);
     if (childHeight > 0.65) {
       childHeight = 0.65;
     }
