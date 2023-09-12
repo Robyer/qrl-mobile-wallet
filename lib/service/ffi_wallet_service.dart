@@ -73,6 +73,9 @@ String _ffiOpenWalletWithHexSeed(String hexSeed) {
   String result = resultPtr.toDartString();
   calloc.free(nativeHexSeed);
   calloc.free(resultPtr);
+  if (result.isEmpty) {
+    throw Exception("Invalid Hexseed");
+  }
   return result;
 }
 
@@ -87,6 +90,9 @@ String _ffiOpenWalletWithMnemonic(String mnemonic) {
   String result = resultPtr.toDartString();
   calloc.free(nativeMnemonic);
   calloc.free(resultPtr);
+  if (result.isEmpty) {
+    throw Exception("Invalid Mnemonic");
+  }
   return result;
 }
 

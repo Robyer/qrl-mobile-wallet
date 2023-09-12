@@ -84,40 +84,52 @@ const char* getMnemonic(char *hexSeed) {
 
 extern "C" __attribute__((visibility("default"))) __attribute((used))
 const char* openWalletWithHexSeed(char *hexSeed) {
-    string hexSeedStr(hexSeed);
-    QRLDescriptor desc = QRLDescriptor::fromExtendedSeed(hstr2bin(hexSeedStr));
-    XmssFast xmss = XmssFast( hstr2bin(hexSeedStr.substr(6)), desc.getHeight(), desc.getHashFunction(), eAddrFormatType::SHA256_2X);
-    std::string result = bin2hstr(xmss.getExtendedSeed());
-    result.append("||");
-    std::string address = bin2hstr(xmss.getAddress());
-    result.append(address);
-    result.append("||");
-    std::string xmsspk = bin2hstr(xmss.getPK());
-    result.append(xmsspk);
-    result.append("||");
-    result.append(std::to_string(xmss.getHeight()));
-    char* result_cstr = new char[result.length() + 1];
-    std::strcpy(result_cstr, result.c_str());
-    return result_cstr;
+    try {
+        string hexSeedStr(hexSeed);
+        QRLDescriptor desc = QRLDescriptor::fromExtendedSeed(hstr2bin(hexSeedStr));
+        XmssFast xmss = XmssFast( hstr2bin(hexSeedStr.substr(6)), desc.getHeight(), desc.getHashFunction(), eAddrFormatType::SHA256_2X);
+        std::string result = bin2hstr(xmss.getExtendedSeed());
+        result.append("||");
+        std::string address = bin2hstr(xmss.getAddress());
+        result.append(address);
+        result.append("||");
+        std::string xmsspk = bin2hstr(xmss.getPK());
+        result.append(xmsspk);
+        result.append("||");
+        result.append(std::to_string(xmss.getHeight()));
+        char* result_cstr = new char[result.length() + 1];
+        std::strcpy(result_cstr, result.c_str());
+        return result_cstr;
+    } catch (...) {
+        char* result_cstr = new char[2];
+        std::strcpy(result_cstr, "");
+        return result_cstr;
+    }
 }
 
 extern "C" __attribute__((visibility("default"))) __attribute((used))
 const char* openWalletWithMnemonic(char *mnemonic) {
-    string mnemonicStr(mnemonic);
-    QRLDescriptor desc = QRLDescriptor::fromExtendedSeed(mnemonic2bin(mnemonicStr));
-    XmssFast xmss = XmssFast( hstr2bin( bin2hstr(mnemonic2bin(mnemonicStr)).substr(6)), desc.getHeight(), desc.getHashFunction(), eAddrFormatType::SHA256_2X);
-    std::string result = bin2hstr(xmss.getExtendedSeed());
-    result.append("||");
-    std::string address = bin2hstr(xmss.getAddress());
-    result.append(address);
-    result.append("||");
-    std::string xmsspk = bin2hstr(xmss.getPK());
-    result.append(xmsspk);
-    result.append("||");
-    result.append(std::to_string(xmss.getHeight()));
-    char* result_cstr = new char[result.length() + 1];
-    std::strcpy(result_cstr, result.c_str());
-    return result_cstr;
+    try {
+        string mnemonicStr(mnemonic);
+        QRLDescriptor desc = QRLDescriptor::fromExtendedSeed(mnemonic2bin(mnemonicStr));
+        XmssFast xmss = XmssFast( hstr2bin( bin2hstr(mnemonic2bin(mnemonicStr)).substr(6)), desc.getHeight(), desc.getHashFunction(), eAddrFormatType::SHA256_2X);
+        std::string result = bin2hstr(xmss.getExtendedSeed());
+        result.append("||");
+        std::string address = bin2hstr(xmss.getAddress());
+        result.append(address);
+        result.append("||");
+        std::string xmsspk = bin2hstr(xmss.getPK());
+        result.append(xmsspk);
+        result.append("||");
+        result.append(std::to_string(xmss.getHeight()));
+        char* result_cstr = new char[result.length() + 1];
+        std::strcpy(result_cstr, result.c_str());
+        return result_cstr;
+    } catch (...) {
+        char* result_cstr = new char[2];
+        std::strcpy(result_cstr, "");
+        return result_cstr;
+    }
 }
 
 extern "C" __attribute__((visibility("default"))) __attribute((used))
