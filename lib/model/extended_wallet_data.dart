@@ -1,10 +1,17 @@
+import 'package:mobile_wallet/model/transaction.dart';
+
 class ExtendedWalletData {
-  final int _balance;
-  final int _otsIndex;
+  final int balance;
+  final int otsIndex;
+  final List<TokenData> tokens;
 
-  ExtendedWalletData(this._balance, this._otsIndex);
+  ExtendedWalletData(this.balance, this.otsIndex, this.tokens);
+}
 
-  int get balance => _balance;
+class TokenData {
+  final String tokenTransactionHash;
+  final int balance;
+  TransactionData? tokenTransactionData;
 
-  int get otsIndex => _otsIndex;
+  TokenData(this.tokenTransactionHash, this.balance);
 }

@@ -35,8 +35,9 @@ class AddTransactionTestState
     fee = 1000000,
     reviewable = false,
     transactionHash,
+    selectedToken,
   }) : super(
-          TransactionType.message,
+          transactionType: TransactionType.message,
           status: status,
           wallets: wallets,
           currentWallet: currentWallet,
@@ -45,6 +46,7 @@ class AddTransactionTestState
           fee: fee,
           reviewable: reviewable,
           transactionHash: transactionHash,
+          selectedToken: selectedToken,
         );
 
   @override
@@ -58,6 +60,7 @@ class AddTransactionTestState
     int? fee,
     bool? reviewable,
     String? transactionHash,
+    TokenData? selectedToken,
   }) {
     return copyWith(
       status: status ?? this.status,
@@ -68,6 +71,7 @@ class AddTransactionTestState
       fee: fee ?? this.fee,
       reviewable: reviewable ?? this.reviewable,
       transactionHash: transactionHash ?? this.transactionHash,
+      selectedToken: selectedToken ?? this.selectedToken,
     );
   }
 
@@ -80,6 +84,7 @@ class AddTransactionTestState
     int? fee,
     bool? reviewable,
     String? transactionHash,
+    TokenData? selectedToken,
   }) {
     return AddTransactionTestState(
       status: status ?? this.status,
@@ -90,6 +95,7 @@ class AddTransactionTestState
       fee: fee ?? this.fee,
       reviewable: reviewable ?? this.reviewable,
       transactionHash: transactionHash ?? this.transactionHash,
+      selectedToken: selectedToken ?? this.selectedToken,
     );
   }
 

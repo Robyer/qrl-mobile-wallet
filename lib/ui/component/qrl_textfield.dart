@@ -66,6 +66,7 @@ class QrlTextFormField extends TextFormField {
     List<TextInputFormatter>? inputFormatters,
     int? maxLength,
     String? helpText,
+    bool? enabled,
   }) : super(
           onChanged: _onChanged,
           initialValue: initialValue,
@@ -91,5 +92,6 @@ class QrlTextFormField extends TextFormField {
           ),
           maxLength: maxLength,
           cursorColor: baseColor ?? _defaultColor,
+          enabled: enabled ?? true,
         );
 }

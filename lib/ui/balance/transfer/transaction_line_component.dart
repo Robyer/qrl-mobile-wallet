@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mobile_wallet/ui/addtransaction/add_transaction_bloc.dart';
 import 'package:mobile_wallet/ui/component/qrl_textfield.dart';
-import 'package:mobile_wallet/ui/balance/transfer/address_field.dart';
+import 'package:mobile_wallet/ui/component/address_field.dart';
 
 import 'package:mobile_wallet/ui/balance/transfer/add_transfer_bloc.dart';
 import 'package:mobile_wallet/ui/balance/transfer/add_transfer_event.dart';
@@ -54,7 +56,9 @@ class TransactionLineComponent extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 8, left: 24, right: 24),
                     child: AddressField(
-                        index, state.transactionLines[index].address),
+                        state.transactionLines[index].address,
+                        (value) => BlocProvider.of<AddTransferBloc>(context)
+                            .add(AddressChangedEvent(value, index))),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 8, bottom: 8, top: 4),
@@ -100,50 +104,60 @@ class TransactionLineComponent extends StatelessWidget {
       buildWhen: (previous, current) =>
           (previous.status != AddTransactionStatus.ready &&
               current.status == AddTransactionStatus.ready) ||
-          previous.fee != current.fee,
-      builder: (context, state) => QrlTextFormField(
-        (value) => BlocProvider.of<AddTransferBloc>(context)
-            .add(AmountChangedEvent(value, index)),
-        key: ValueKey("amount-key-${state.transactionLines[index].amount}"),
-        initialValue: state.transactionLines[index].amount != null
-            ? StringUtil.formatAmount(state.transactionLines[index].amount!)
-            : "",
-        text: AppLocalizations.of(context)!.amount,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        inputFormatters: <TextInputFormatter>[
-          InputFormatter.getNumberFormatter(),
-          InputFormatter.getCommaDotFormatter(),
-          InputFormatter.getNumberDotFormatter(),
-          InputFormatter.getMaxValueFormatter(),
-          TextInputFormatter.withFunction(
-            (oldValue, newValue) {
-              if (newValue.text.isNotEmpty) {
-                BigInt newValueBigInt =
-                    (Decimal.parse(newValue.text) * Decimal.fromInt(1000000000))
-                        .toBigInt();
-                BigInt availableBalance =
-                    BigInt.from(state.extendedWalletData?.balance ?? 0) -
-                        BigInt.from(state.fee);
-                if (newValueBigInt > availableBalance) {
-                  var formattedAmount = StringUtil.formatAmount(
-                      availableBalance > BigInt.zero
-                          ? availableBalance.toInt()
-                          : 0);
-                  return newValue.copyWith(
-                    selection:
-                        const TextSelection(baseOffset: 0, extentOffset: 0),
-                    composing: TextRange.empty,
-                    text: formattedAmount,
-                  );
+          previous.fee != current.fee ||
+          (previous.status != AddTransactionStatus.tokenChanged &&
+              current.status == AddTransactionStatus.tokenChanged),
+      builder: (context, state) {
+        int decimals =
+            state.selectedToken?.tokenTransactionData?.tokenDecimals ?? 9;
+        BigInt availableBalance = state.selectedToken != null
+            ? BigInt.from(state.selectedToken!.balance)
+            : BigInt.from(state.extendedWalletData?.balance ?? 0) -
+                BigInt.from(state.fee);
+       return QrlTextFormField(
+          (value) => BlocProvider.of<AddTransferBloc>(context)
+              .add(AmountChangedEvent(value, index)),
+          key: ValueKey(
+              "amount-key-$decimals-${state.transactionLines[index].amount}"),
+          initialValue: state.transactionLines[index].amount != null
+              ? StringUtil.formatAmount(state.transactionLines[index].amount!,
+                  decimals: decimals)
+              : "",
+          text: AppLocalizations.of(context)!.amount,
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          inputFormatters: <TextInputFormatter>[
+            InputFormatter.getNumberFormatter(),
+            InputFormatter.getCommaDotFormatter(),
+            InputFormatter.getNumberDotFormatter(decimals: decimals),
+            InputFormatter.getMaxValueFormatter(decimals: decimals),
+            TextInputFormatter.withFunction(
+              (oldValue, newValue) {
+                if (newValue.text.isNotEmpty) {
+                  BigInt newValueBigInt = (Decimal.parse(newValue.text) *
+                          BigInt.from(10).pow(decimals).toDecimal())
+                      .toBigInt();
+                  if (newValueBigInt > availableBalance) {
+                    var formattedAmount = StringUtil.formatAmount(
+                        availableBalance > BigInt.zero
+                            ? availableBalance.toInt()
+                            : 0,
+                        decimals: decimals);
+                    return newValue.copyWith(
+                      selection: TextSelection.collapsed(
+                          offset: formattedAmount.length),
+                      composing: TextRange.empty,
+                      text: formattedAmount,
+                    );
+                  }
                 }
-              }
-              return newValue;
-            },
-          ),
-        ],
-        minLines: 1,
-        maxLines: 5,
-      ),
+                return newValue;
+              },
+            ),
+          ],
+          minLines: 1,
+          maxLines: 5,
+        );
+      },
     );
   }
 }

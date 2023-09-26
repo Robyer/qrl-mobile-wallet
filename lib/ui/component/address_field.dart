@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:mobile_wallet/ui/addressbook/address_book_page.dart';
 import 'package:mobile_wallet/ui/component/qrl_textfield.dart';
 import 'package:mobile_wallet/ui/component/scan_qr_page.dart';
-import 'package:mobile_wallet/ui/addressbook/address_book_page.dart';
-import 'package:mobile_wallet/ui/balance/transfer/add_transfer_bloc.dart';
-import 'package:mobile_wallet/ui/balance/transfer/add_transfer_event.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
 import 'package:mobile_wallet/ui/util/util.dart';
 
 class AddressField extends StatefulWidget {
-  final int _index;
   final String? _initialValue;
+  final void Function(String value) _onChange;
+  final String? header;
 
-  const AddressField(this._index, this._initialValue, {Key? key})
+  const AddressField(this._initialValue, this._onChange,
+      {Key? key, this.header})
       : super(key: key);
 
   @override
@@ -34,9 +33,8 @@ class _AddressFieldState extends State<AddressField> {
   Widget build(BuildContext context) {
     return QrlTextField(
       _addressController,
-      (value) => BlocProvider.of<AddTransferBloc>(context)
-          .add(AddressChangedEvent(value, widget._index)),
-      text: AppLocalizations.of(context)!.walletAddress,
+      (value) => widget._onChange(value),
+      text: widget.header ?? AppLocalizations.of(context)!.walletAddress,
       focusNode: _focusNode,
       autoFocus: false,
       keyboardType: TextInputType.multiline,
@@ -77,18 +75,14 @@ class _AddressFieldState extends State<AddressField> {
   }
 
   void _openAddressBook() async {
-    String? receiverWalletAddress = await Navigator.push(
+    String? walletAddress = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const AddressBookPage()),
     );
-    if (mounted &&
-        receiverWalletAddress != null &&
-        receiverWalletAddress.isNotEmpty) {
-      BlocProvider.of<AddTransferBloc>(context)
-          .add(AddressChangedEvent(receiverWalletAddress, widget._index));
+    if (mounted && walletAddress != null && walletAddress.isNotEmpty) {
+      widget._onChange(walletAddress);
       setState(() {
-        _addressController.value =
-            TextEditingValue(text: receiverWalletAddress);
+        _addressController.value = TextEditingValue(text: walletAddress);
         Util.dismissKeyboard(context);
       });
     }
@@ -102,8 +96,7 @@ class _AddressFieldState extends State<AddressField> {
     if (mounted &&
         scannedWalletAddress != null &&
         scannedWalletAddress.isNotEmpty) {
-      BlocProvider.of<AddTransferBloc>(context)
-          .add(AddressChangedEvent(scannedWalletAddress, widget._index));
+      widget._onChange(scannedWalletAddress);
       setState(() {
         _addressController.value = TextEditingValue(text: scannedWalletAddress);
         Util.dismissKeyboard(context);

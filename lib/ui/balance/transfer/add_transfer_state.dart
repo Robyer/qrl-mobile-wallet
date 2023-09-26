@@ -18,6 +18,7 @@ class AddTransferState extends AddTransactionState<AddTransferState> {
   final bool hasMessage;
 
   const AddTransferState({
+    transactionType = TransactionType.transfer,
     status = AddTransactionStatus.initial,
     wallets = const <Wallet>[],
     currentWallet,
@@ -26,12 +27,13 @@ class AddTransferState extends AddTransactionState<AddTransferState> {
     fee = 1000000,
     reviewable = false,
     transactionHash,
+    selectedToken,
     this.transferStatus = AddTransferStatus.initial,
     this.transactionLines = const [],
     this.message,
     this.hasMessage = false,
   }) : super(
-          TransactionType.transfer,
+          transactionType: transactionType,
           status: status,
           wallets: wallets,
           currentWallet: currentWallet,
@@ -40,10 +42,39 @@ class AddTransferState extends AddTransactionState<AddTransferState> {
           fee: fee,
           reviewable: reviewable,
           transactionHash: transactionHash,
+          selectedToken: selectedToken,
         );
 
   @override
-  AddTransferState copyBase({
+  AddTransferState copyBase(
+      {TransactionType? transactionType,
+      AddTransactionStatus? status,
+      List<Wallet>? wallets,
+      Wallet? currentWallet,
+      ExtendedWalletData? extendedWalletData,
+      String? errorMessage,
+      int? fee,
+      bool? reviewable,
+      String? transactionHash,
+      TokenData? selectedToken}) {
+    if (status != AddTransactionStatus.tokenChanged) {
+      selectedToken = selectedToken ?? this.selectedToken;
+    }
+    return copyWith(
+      transactionType: transactionType ?? this.transactionType,
+      status: status ?? this.status,
+      wallets: wallets ?? this.wallets,
+      currentWallet: currentWallet ?? this.currentWallet,
+      extendedWalletData: extendedWalletData ?? this.extendedWalletData,
+      errorMessage: errorMessage ?? this.errorMessage,
+      fee: fee ?? this.fee,
+      reviewable: reviewable ?? this.reviewable,
+      transactionHash: transactionHash ?? this.transactionHash,
+      selectedToken: selectedToken,
+    );
+  }
+
+  AddTransferState copyWith({
     TransactionType? transactionType,
     AddTransactionStatus? status,
     List<Wallet>? wallets,
@@ -53,34 +84,17 @@ class AddTransferState extends AddTransactionState<AddTransferState> {
     int? fee,
     bool? reviewable,
     String? transactionHash,
-  }) {
-    return copyWith(
-      status: status ?? this.status,
-      wallets: wallets ?? this.wallets,
-      currentWallet: currentWallet ?? this.currentWallet,
-      extendedWalletData: extendedWalletData ?? this.extendedWalletData,
-      errorMessage: errorMessage ?? this.errorMessage,
-      fee: fee ?? this.fee,
-      reviewable: reviewable ?? this.reviewable,
-      transactionHash: transactionHash ?? this.transactionHash,
-    );
-  }
-
-  AddTransferState copyWith({
-    AddTransactionStatus? status,
-    List<Wallet>? wallets,
-    Wallet? currentWallet,
-    ExtendedWalletData? extendedWalletData,
-    String? errorMessage,
-    int? fee,
-    bool? reviewable,
-    String? transactionHash,
+    TokenData? selectedToken,
     AddTransferStatus? transferStatus,
     List<TransactionLine>? transactionLines,
     String? message,
     bool? hasMessage,
   }) {
+    if (status != AddTransactionStatus.tokenChanged) {
+      selectedToken = selectedToken ?? this.selectedToken;
+    }
     return AddTransferState(
+      transactionType: transactionType ?? this.transactionType,
       status: status ?? this.status,
       wallets: wallets ?? this.wallets,
       currentWallet: currentWallet ?? this.currentWallet,
@@ -89,6 +103,7 @@ class AddTransferState extends AddTransactionState<AddTransferState> {
       fee: fee ?? this.fee,
       reviewable: reviewable ?? this.reviewable,
       transactionHash: transactionHash ?? this.transactionHash,
+      selectedToken: selectedToken,
       transferStatus: transferStatus ?? this.transferStatus,
       transactionLines: transactionLines ?? this.transactionLines,
       message: message ?? this.message,

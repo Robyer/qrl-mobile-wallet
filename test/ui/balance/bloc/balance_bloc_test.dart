@@ -79,7 +79,7 @@ void main() {
           status: BalanceStatus.ready,
           wallets: MockWalletService.wallets,
           currentWallet: MockWalletService.wallets[1],
-          extendedWalletData: ExtendedWalletData(1337, 25),
+          extendedWalletData: ExtendedWalletData(1337, 25, []),
           marketData: MarketData(
               Decimal.ten, Decimal.fromInt(1000000000), Decimal.one)),
       act: (bloc) =>

@@ -11,7 +11,8 @@ enum AddTransactionStatus {
   verified,
   sending,
   sendError,
-  send
+  send,
+  tokenChanged,
 }
 
 abstract class AddTransactionState<T> extends Equatable {
@@ -24,9 +25,10 @@ abstract class AddTransactionState<T> extends Equatable {
   final int fee;
   final bool reviewable;
   final String? transactionHash;
+  final TokenData? selectedToken;
 
-  const AddTransactionState(
-    this.transactionType, {
+  const AddTransactionState({
+    this.transactionType = TransactionType.transfer,
     this.status = AddTransactionStatus.initial,
     this.wallets = const [],
     this.currentWallet,
@@ -35,6 +37,7 @@ abstract class AddTransactionState<T> extends Equatable {
     this.fee = 1000000,
     this.reviewable = false,
     this.transactionHash,
+    this.selectedToken,
   });
 
   T copyBase({
@@ -47,6 +50,7 @@ abstract class AddTransactionState<T> extends Equatable {
     int? fee,
     bool? reviewable,
     String? transactionHash,
+    TokenData? selectedToken,
   });
 
   @override
@@ -60,5 +64,6 @@ abstract class AddTransactionState<T> extends Equatable {
         fee,
         reviewable,
         transactionHash ?? "",
+        selectedToken ?? "",
       ];
 }

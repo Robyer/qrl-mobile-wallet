@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:mobile_wallet/model/transaction.dart';
 import 'package:mobile_wallet/ui/addressbook/addentry/add_entry_bloc.dart';
 import 'package:mobile_wallet/ui/addressbook/addentry/add_entry_view.dart';
 import 'package:mobile_wallet/ui/addtransaction/add_transaction_page.dart';
@@ -82,7 +83,7 @@ class _AddTransferView extends AddTransactionPage<AddTransferBloc> {
           return Padding(
             padding: const EdgeInsets.only(left: 32, right: 32, bottom: 8),
             child: SizedBox(
-              width: 256,
+              width: double.infinity,
               child: QrlButton(
                 () => BlocProvider.of<AddTransferBloc>(context)
                     .add(AddTransactionLineEvent()),
@@ -101,9 +102,13 @@ class _AddTransferView extends AddTransactionPage<AddTransferBloc> {
       BuildContext context) {
     return BlocBuilder<AddTransferBloc, AddTransferState>(
       buildWhen: (previous, current) =>
-          previous.hasMessage || current.hasMessage,
+          previous.hasMessage ||
+          current.hasMessage ||
+          (previous.transactionType != current.transactionType),
       builder: (context, state) {
-        if (state.hasMessage) {
+        if (state.transactionType == TransactionType.transferToken) {
+          return Container();
+        } else if (state.hasMessage) {
           return Column(
             children: [
               Align(
@@ -136,7 +141,7 @@ class _AddTransferView extends AddTransactionPage<AddTransferBloc> {
           return Padding(
             padding: const EdgeInsets.only(left: 32, right: 32, bottom: 8),
             child: SizedBox(
-              width: 256,
+              width: double.infinity,
               child: QrlButton(
                 () => BlocProvider.of<AddTransferBloc>(context)
                     .add(const HasMessageChangedEvent(true)),

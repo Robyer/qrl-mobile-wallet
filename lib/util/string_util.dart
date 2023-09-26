@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:decimal/decimal.dart';
 
 class StringUtil {
@@ -9,11 +11,11 @@ class StringUtil {
     return stringBuffer.toString();
   }
 
-  static String formatAmount(int amount) {
+  static String formatAmount(int amount, {int decimals = 9}) {
     if (amount <= 0) {
       return "0";
     }
-    return (Decimal.fromInt(amount) / Decimal.fromInt(1000000000))
+    return (Decimal.fromInt(amount) / BigInt.from(10).pow(decimals).toDecimal())
         .toDecimal()
         .toString();
   }
@@ -29,5 +31,13 @@ class StringUtil {
 
   static String fromBytes(List<int> bytes) {
     return bytes.map((e) => e.toRadixString(16).padLeft(2, '0')).join();
+  }
+
+  static List<int> toBigEndianUint64BytesUnsigned(int value) {
+    List<int> bytes = [0, 0, 0, 0, 0, 0, 0, 0];
+    for (int i = 0; i < 8; i++) {
+      bytes[7 - i] = (value >> (i * 8)) & 0xFF;
+    }
+    return bytes;
   }
 }

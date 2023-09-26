@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:mobile_wallet/model/notarization_message.dart';
 import 'package:mobile_wallet/model/transaction.dart';
@@ -5,6 +7,7 @@ import 'package:mobile_wallet/model/wallet.dart';
 import 'package:mobile_wallet/service/ffi_wallet_service.dart';
 import 'package:mobile_wallet/service/grpc_service.dart';
 import 'package:mobile_wallet/service/wallet_service.dart';
+import 'package:mobile_wallet/util/string_util.dart';
 
 class TransactionService {
   final WalletService _walletService;
@@ -22,54 +25,171 @@ class TransactionService {
       int fee,
       String? message) async {
     Wallet wallet = await _walletService.getWallet(id);
-    receiverWalletAddresses = receiverWalletAddresses
-        .map((receiverWalletAddress) => receiverWalletAddress.startsWith("Q")
+    List<List<int>> receiverWalletAddressesBytes = receiverWalletAddresses
+        .map((receiverWalletAddress) => StringUtil.toBytes(receiverWalletAddress
+                .startsWith("Q")
             ? receiverWalletAddress.substring(1, receiverWalletAddress.length)
-            : receiverWalletAddress)
+            : receiverWalletAddress))
         .toList();
+
+    List<int> concatenatedArray = [];
+    concatenatedArray.addAll(StringUtil.toBigEndianUint64BytesUnsigned(fee));
+    List<int> messageBytes = [];
+    if (message != null) {
+      messageBytes = utf8.encode(message);
+      concatenatedArray.addAll(messageBytes);
+    }
+    for (int i = 0; i < receiverWalletAddressesBytes.length; i++) {
+      concatenatedArray.addAll(receiverWalletAddressesBytes[i]);
+      concatenatedArray
+          .addAll(StringUtil.toBigEndianUint64BytesUnsigned(amounts[i]));
+    }
+
     String transactionData = await compute<List<Object>, String>(
         _ffiWalletService.ffiCreateTransaction, [
       await _walletService.getHexSeed(id),
-      amounts,
-      receiverWalletAddresses,
+      concatenatedArray,
       otsIndex,
-      fee,
-      message ?? "",
-      1,
     ]);
     return await _grpcService.sendTransferTransaction(
         wallet.address,
         await _walletService.getXmsspk(id),
         amounts,
-        receiverWalletAddresses,
+        receiverWalletAddressesBytes,
         otsIndex,
         fee,
         transactionData,
-        message ?? "");
+        messageBytes);
+  }
+
+  Future<String> sendTransferTokenTransaction(
+      int id,
+      List<int> amounts,
+      List<String> receiverWalletAddresses,
+      int otsIndex,
+      int fee,
+      String tokenTransactionHash) async {
+    Wallet wallet = await _walletService.getWallet(id);
+    List<List<int>> receiverWalletAddressesBytes = receiverWalletAddresses
+        .map((receiverWalletAddress) => StringUtil.toBytes(receiverWalletAddress
+                .startsWith("Q")
+            ? receiverWalletAddress.substring(1, receiverWalletAddress.length)
+            : receiverWalletAddress))
+        .toList();
+
+    List<int> concatenatedArray = [];
+    concatenatedArray.addAll(StringUtil.toBigEndianUint64BytesUnsigned(fee));
+    concatenatedArray.addAll(StringUtil.toBytes(tokenTransactionHash));
+    for (int i = 0; i < receiverWalletAddressesBytes.length; i++) {
+      concatenatedArray.addAll(receiverWalletAddressesBytes[i]);
+      concatenatedArray
+          .addAll(StringUtil.toBigEndianUint64BytesUnsigned(amounts[i]));
+    }
+
+    String transactionData = await compute<List<Object>, String>(
+        _ffiWalletService.ffiCreateTransaction, [
+      await _walletService.getHexSeed(id),
+      concatenatedArray,
+      otsIndex,
+    ]);
+    return await _grpcService.sendTransferTokenTransaction(
+        wallet.address,
+        await _walletService.getXmsspk(id),
+        amounts,
+        receiverWalletAddressesBytes,
+        otsIndex,
+        fee,
+        transactionData,
+        utf8.encode(tokenTransactionHash));
   }
 
   Future<String> sendMessageTransaction(
       int id, String message, int otsIndex, int fee,
       {MessageType messageType = MessageType.text}) async {
     Wallet wallet = await _walletService.getWallet(id);
+
+    List<int> concatenatedArray = [];
+    concatenatedArray.addAll(StringUtil.toBigEndianUint64BytesUnsigned(fee));
+    List<int> messageBytes = [];
+    if (messageType == MessageType.text) {
+      messageBytes = utf8.encode(message);
+    } else {
+      messageBytes = StringUtil.toBytes(message);
+    }
+    concatenatedArray.addAll(messageBytes);
     String transactionData = await compute<List<Object>, String>(
         _ffiWalletService.ffiCreateTransaction, [
       await _walletService.getHexSeed(id),
-      <int>[],
-      <String>[],
+      concatenatedArray,
       otsIndex,
-      fee,
-      message,
-      messageType == MessageType.text ? 1 : 2,
     ]);
+
     return await _grpcService.sendMessageTransaction(
         wallet.address,
         await _walletService.getXmsspk(id),
-        message,
+        messageBytes,
         otsIndex,
         fee,
         transactionData,
         messageType: messageType);
+  }
+
+  Future<String> sendTokenTransaction(
+    int id,
+    String tokenSymbol,
+    String tokenName,
+    String ownerAddress,
+    int tokenDecimals,
+    List<int> initialBalances,
+    List<String> receiverWalletAddresses,
+    int otsIndex,
+    int fee,
+  ) async {
+    Wallet wallet = await _walletService.getWallet(id);
+    List<List<int>> receiverWalletAddressesBytes = receiverWalletAddresses
+        .map((receiverWalletAddress) => StringUtil.toBytes(receiverWalletAddress
+                .startsWith("Q")
+            ? receiverWalletAddress.substring(1, receiverWalletAddress.length)
+            : receiverWalletAddress))
+        .toList();
+
+    List<int> tokenSymbolBytes = utf8.encode(tokenSymbol);
+    List<int> tokenNameBytes = utf8.encode(tokenName);
+    List<int> ownerBytes = StringUtil.toBytes(ownerAddress.startsWith("Q")
+        ? ownerAddress.substring(1, ownerAddress.length)
+        : ownerAddress);
+
+    List<int> concatenatedArray = [];
+    concatenatedArray.addAll(StringUtil.toBigEndianUint64BytesUnsigned(fee));
+    concatenatedArray.addAll(tokenSymbolBytes);
+    concatenatedArray.addAll(tokenNameBytes);
+    concatenatedArray.addAll(ownerBytes);
+    concatenatedArray
+        .addAll(StringUtil.toBigEndianUint64BytesUnsigned(tokenDecimals));
+    for (int i = 0; i < receiverWalletAddressesBytes.length; i++) {
+      concatenatedArray.addAll(receiverWalletAddressesBytes[i]);
+      concatenatedArray.addAll(
+          StringUtil.toBigEndianUint64BytesUnsigned(initialBalances[i]));
+    }
+
+    String transactionData = await compute<List<Object>, String>(
+        _ffiWalletService.ffiCreateTransaction, [
+      await _walletService.getHexSeed(id),
+      concatenatedArray,
+      otsIndex,
+    ]);
+    return await _grpcService.sendTokenTransaction(
+        wallet.address,
+        await _walletService.getXmsspk(id),
+        tokenSymbolBytes,
+        tokenNameBytes,
+        ownerBytes,
+        tokenDecimals,
+        initialBalances,
+        receiverWalletAddressesBytes,
+        otsIndex,
+        fee,
+        transactionData);
   }
 
   Future<List<TransactionData>> findTransactions(
@@ -82,5 +202,9 @@ class TransactionService {
   Future<NotarizationMessage?> findNotarization(String transactionHash) async {
     return NotarizationMessage.fromTransactionData(
         await _grpcService.findMessageTransaction(transactionHash));
+  }
+
+  Future<TransactionData?> findToken(String transactionHash) async {
+    return await _grpcService.findTokenTransaction(transactionHash);
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:mobile_wallet/model/transaction.dart';
 import 'package:mobile_wallet/ui/addtransaction/review_transaction_page.dart';
 import 'package:mobile_wallet/ui/balance/transfer/add_transfer_bloc.dart';
 import 'package:mobile_wallet/ui/balance/transfer/add_transfer_state.dart';
@@ -20,6 +21,14 @@ class ReviewTransferPage
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) {
           final TransactionLine transactionLine = state.transactionLines[index];
+          String amountLabel;
+          if (state.transactionType == TransactionType.transferToken) {
+            amountLabel =
+                "${StringUtil.formatAmount(transactionLine.amount ?? 0, decimals: state.selectedToken!.tokenTransactionData?.tokenDecimals ?? 0)} ${state.selectedToken!.tokenTransactionData?.tokenSymbol ?? ""}";
+          } else {
+            amountLabel =
+                "${StringUtil.formatAmount(state.extendedWalletData?.balance ?? 0)} QRL";
+          }
           return Card(
             elevation: 1,
             color: CustomColors.qrlLightBlueColor.withOpacity(0.1),
@@ -41,7 +50,7 @@ class ReviewTransferPage
                   Padding(
                     padding: const EdgeInsets.only(bottom: 16),
                     child: Text(
-                      "${StringUtil.formatAmount(transactionLine.amount!)} QRL",
+                      amountLabel,
                     ),
                   ),
                   Padding(

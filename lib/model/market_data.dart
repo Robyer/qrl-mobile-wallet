@@ -1,14 +1,14 @@
 import 'package:decimal/decimal.dart';
 
 class MarketData {
-  final Decimal _price;
-  final Decimal _marketCap;
-  final Decimal _change24Hr;
+  final Decimal price;
+  final Decimal marketCap;
+  final Decimal change24Hr;
 
   const MarketData(
-    this._price,
-    this._marketCap,
-    this._change24Hr,
+    this.price,
+    this.marketCap,
+    this.change24Hr,
   );
 
   factory MarketData.fromJson(Map<String, dynamic> json) {
@@ -18,10 +18,4 @@ class MarketData {
       Decimal.parse(json['change_24hr'].toString()),
     );
   }
-
-  Decimal get price => _price;
-
-  Decimal get marketCap => _marketCap;
-
-  Decimal get change24Hr => _change24Hr;
 }

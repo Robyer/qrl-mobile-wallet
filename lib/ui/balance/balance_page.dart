@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mobile_wallet/model/wallet.dart';
 import 'package:mobile_wallet/ui/addwallet/add_wallet_page.dart';
+import 'package:mobile_wallet/ui/balance/assets/assets_page.dart';
 import 'package:mobile_wallet/ui/balance/community_list.dart';
 import 'package:mobile_wallet/ui/balance/receive_amount_page.dart';
 import 'package:mobile_wallet/ui/balance/transactions/transactions_page.dart';
@@ -180,21 +181,53 @@ class _BalanceView extends StatelessWidget {
               Center(
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      top: 12, left: 24, right: 24, bottom: 8),
+                      top: 8, left: 24, right: 24, bottom: 8),
                   child: _buildBalanceBlocBuilder(),
                 ),
               ),
               Center(
                 child: Padding(
                   padding:
-                      const EdgeInsets.only(left: 24, right: 24, bottom: 16),
+                      const EdgeInsets.only(left: 24, right: 24, bottom: 8),
                   child: _buildConvertedBalanceBlocBuilder(),
                 ),
               ),
               Center(
                 child: Padding(
-                  padding: const EdgeInsets.only(
-                      left: 24, right: 24, bottom: 8, top: 8),
+                  padding:
+                      const EdgeInsets.only(left: 24, right: 24, bottom: 8),
+                  child: OutlinedButton(
+                    onPressed: () => _onClickAssets(context),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.only(left: 12, right: 4),
+                      foregroundColor: Colors.white,
+                      side: const BorderSide(
+                          color: CustomColors.qrlLightBlueColor),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Icon(Icons.menu_book_outlined,
+                            color: CustomColors.qrlLightBlueColor),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Text(AppLocalizations.of(context)!.assets),
+                        ),
+                        const Icon(Icons.keyboard_arrow_right_outlined,
+                            color: CustomColors.qrlLightBlueColor),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Center(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.only(left: 24, right: 24, bottom: 8),
                   child: Text(
                     AppLocalizations.of(context)!.priceChange,
                     textAlign: TextAlign.center,
@@ -208,7 +241,7 @@ class _BalanceView extends StatelessWidget {
               Center(
                 child: Padding(
                   padding:
-                      const EdgeInsets.only(left: 24, right: 24, bottom: 16),
+                      const EdgeInsets.only(left: 24, right: 24, bottom: 8),
                   child: BlocBuilder<BalanceBloc, BalanceState>(
                       buildWhen: (previous, current) =>
                           (previous.marketData?.change24Hr ?? 0) !=
@@ -222,7 +255,7 @@ class _BalanceView extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(bottom: 16),
+                padding: const EdgeInsets.only(bottom: 8),
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   child: Row(
@@ -404,11 +437,23 @@ class _BalanceView extends StatelessWidget {
     }
   }
 
+  void _onClickAssets(BuildContext context) {
+    BalanceState state = BlocProvider.of<BalanceBloc>(context).state;
+    if (state.currentWallet != null && state.extendedWalletData != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AssetsPage(state.currentWallet!),
+        ),
+      );
+    }
+  }
+
   NotificationListener<DraggableScrollableNotification>
       _buildNotificationListener(BuildContext context) {
     double height = MediaQuery.of(context).size.height -
         (MediaQuery.of(context).padding.top + kToolbarHeight);
-    double childHeight = 1 - (325 / height);
+    double childHeight = 1 - (350 / height);
     if (childHeight > 0.65) {
       childHeight = 0.65;
     }

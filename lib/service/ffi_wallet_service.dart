@@ -73,6 +73,9 @@ String _ffiOpenWalletWithHexSeed(String hexSeed) {
   String result = resultPtr.toDartString();
   calloc.free(nativeHexSeed);
   calloc.free(resultPtr);
+  if (result.isEmpty) {
+    throw Exception("Invalid Hexseed");
+  }
   return result;
 }
 
@@ -87,6 +90,9 @@ String _ffiOpenWalletWithMnemonic(String mnemonic) {
   String result = resultPtr.toDartString();
   calloc.free(nativeMnemonic);
   calloc.free(resultPtr);
+  if (result.isEmpty) {
+    throw Exception("Invalid Mnemonic");
+  }
   return result;
 }
 
@@ -106,67 +112,41 @@ bool _ffiIsAddressValid(String address) {
 
 String _ffiCreateTransaction(List<Object> params) {
   Pointer<Utf8> nativeHexSeed = (params[0] as String).toNativeUtf8();
-  List<int> amounts = (params[1] as List<int>);
-  List<String> receiverWalletAddresses = (params[2] as List<String>);
-  int otsIndex = params[3] as int;
-  int fee = params[4] as int;
-  int transactionCount = amounts.length;
-  Pointer<Utf8> nativeMessage = (params[5] as String).toNativeUtf8();
-  int messageType = params[6] as int;
+  List<int> concatenatedArray = (params[1] as List<int>);
+  int otsIndex = params[2] as int;
 
   Pointer<Utf8> Function(
     Pointer<Utf8> hexSeed,
-    Pointer<Int64> amounts,
-    Pointer<Pointer<Utf8>> receiverWalletAddresses,
-    int transactionCount,
+    Pointer<Uint8> concatenatedArray,
+    int concatenatedArrayLength,
     int otsIndex,
-    int fee,
-    Pointer<Utf8> message,
-    int messageType,
   ) nativeCreateTransaction = _openWalletLib()
       .lookup<
           NativeFunction<
               Pointer<Utf8> Function(
         Pointer<Utf8>,
-        Pointer<Int64>,
-        Pointer<Pointer<Utf8>>,
-        Int32,
+        Pointer<Uint8>,
         Int64,
         Int64,
-        Pointer<Utf8>,
-        Int32,
       )>>("createTransaction")
       .asFunction();
 
-  final amountsPtr = malloc<Int64>(transactionCount);
-  for (int i = 0; i < transactionCount; i++) {
-    amountsPtr[i] = amounts[i];
-  }
-
-  final receiverWalletAddressesPtr = malloc<Pointer<Utf8>>(transactionCount);
-  for (int i = 0; i < transactionCount; i++) {
-    receiverWalletAddressesPtr[i] = receiverWalletAddresses[i].toNativeUtf8();
+  final concatenatedArrayPtr = malloc<Uint8>(concatenatedArray.length);
+  for (int i = 0; i < concatenatedArray.length; i++) {
+    concatenatedArrayPtr[i] = concatenatedArray[i];
   }
 
   Pointer<Utf8> resultPtr = nativeCreateTransaction(
-      nativeHexSeed,
-      amountsPtr,
-      receiverWalletAddressesPtr,
-      transactionCount,
-      otsIndex,
-      fee,
-      nativeMessage,
-      messageType);
+    nativeHexSeed,
+    concatenatedArrayPtr,
+    concatenatedArray.length,
+    otsIndex,
+  );
 
   String result = resultPtr.toDartString();
 
   malloc.free(nativeHexSeed);
-  malloc.free(nativeMessage);
-  for (int i = 0; i < transactionCount; i++) {
-    malloc.free(receiverWalletAddressesPtr[i]);
-  }
-  malloc.free(receiverWalletAddressesPtr);
-  malloc.free(amountsPtr);
+  malloc.free(concatenatedArrayPtr);
   calloc.free(resultPtr);
 
   return result;

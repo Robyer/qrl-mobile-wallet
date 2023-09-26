@@ -27,6 +27,15 @@ class FeeChangedEvent extends AddTransactionEvent {
   List<Object?> get props => [value];
 }
 
+class TokenChangedEvent extends AddTransactionEvent {
+  final TokenData? tokenData;
+
+  const TokenChangedEvent(this.tokenData);
+
+  @override
+  List<Object?> get props => [tokenData];
+}
+
 class ReviewEvent extends AddTransactionEvent {}
 
 class SendEvent extends AddTransactionEvent {}

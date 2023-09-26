@@ -4,6 +4,7 @@ import 'package:mobile_wallet/ui/component/qrl_app_bar.dart';
 import 'package:mobile_wallet/ui/tools/message/add_message_page.dart';
 import 'package:mobile_wallet/ui/tools/notarization/add/add_notarization_page.dart';
 import 'package:mobile_wallet/ui/tools/notarization/verify/verify_notarization_page.dart';
+import 'package:mobile_wallet/ui/tools/token/create/create_token_page.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
 
 class ToolsPage extends StatelessWidget {
@@ -59,6 +60,15 @@ class ToolsPage extends StatelessWidget {
                         MaterialPageRoute(
                             builder: (context) =>
                                 const VerifyNotarizationPage()))),
+                _buildCard(
+                    context,
+                    AppLocalizations.of(context)!.createTokenToolsTitle,
+                    AppLocalizations.of(context)!.createTokenToolsBody,
+                    Icons.token_outlined,
+                    () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const CreateTokenPage()))),
               ],
             ),
           ),
@@ -88,7 +98,6 @@ class ToolsPage extends StatelessWidget {
               )),
           subtitle: Text(
             subTitle,
-            overflow: TextOverflow.ellipsis,
           ),
           dense: true,
           onTap: onTap,

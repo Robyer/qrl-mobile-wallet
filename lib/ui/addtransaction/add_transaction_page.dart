@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:mobile_wallet/model/extended_wallet_data.dart';
+import 'package:mobile_wallet/model/transaction.dart';
 import 'package:mobile_wallet/model/wallet.dart';
 import 'package:mobile_wallet/ui/addtransaction/add_transaction_bloc.dart';
 import 'package:mobile_wallet/ui/component/bottomsheetselect/bottom_sheet_select.dart';
@@ -73,14 +75,16 @@ abstract class AddTransactionPage<T extends AddTransactionBloc>
                   overscroll.disallowIndicator();
                   return true;
                 },
-                child: ListView(
-                  children: [
-                    _buildWalletsBlocBuilder(),
-                    _buildBalanceComponent(context),
-                    _buildOtsComponent(context),
-                    _buildFeeBlocBuilder(context),
-                    ...buildWidgets(context),
-                  ],
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      _buildWalletsBlocBuilder(),
+                      _buildBalanceComponent(context),
+                      _buildOtsComponent(context),
+                      _buildFeeBlocBuilder(context),
+                      ...buildWidgets(context),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -170,10 +174,16 @@ abstract class AddTransactionPage<T extends AddTransactionBloc>
           ),
           BlocBuilder<T, AddTransactionState>(
               buildWhen: (previous, current) =>
-                  previous.status != AddTransactionStatus.ready &&
-                  current.status == AddTransactionStatus.ready,
+                  (previous.status != AddTransactionStatus.ready &&
+                      current.status == AddTransactionStatus.ready),
               builder: (context, state) {
                 if (state.extendedWalletData != null) {
+                  if ((state.transactionType == TransactionType.transfer ||
+                          state.transactionType ==
+                              TransactionType.transferToken) &&
+                      state.extendedWalletData!.tokens.isNotEmpty) {
+                    return _buildBalanceSelect(context, state);
+                  }
                   return Text(
                       "${StringUtil.formatAmount(state.extendedWalletData?.balance ?? 0)} QRL",
                       style: const TextStyle(
@@ -183,6 +193,73 @@ abstract class AddTransactionPage<T extends AddTransactionBloc>
               }),
         ],
       ),
+    );
+  }
+
+  Widget _buildBalanceSelect(BuildContext context, AddTransactionState state) {
+    TokenData qrlData = TokenData("QRL", 0);
+    List<TokenData> tokens = [qrlData];
+    tokens.addAll(state.extendedWalletData!.tokens);
+    return BottomSheetSelect<TokenData>(
+      key: ValueKey("wallet-key-${state.currentWallet?.address}"),
+      selectedItem: qrlData,
+      items: tokens,
+      valueChanged: (value) {
+        BlocProvider.of<T>(context).add(TokenChangedEvent(
+            value.tokenTransactionData != null ? value : null));
+      },
+      labelWidgetConverter: (value) {
+        String label;
+        if (value.tokenTransactionData != null) {
+          label =
+              "${StringUtil.formatAmount(value.balance, decimals: value.tokenTransactionData?.tokenDecimals ?? 0)} ${value.tokenTransactionData?.tokenSymbol ?? ""}";
+        } else {
+          label =
+              "${StringUtil.formatAmount(state.extendedWalletData?.balance ?? 0)} QRL";
+        }
+        return Row(
+          children: [
+            Text(label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: CustomColors.qrlLightBlueColor)),
+            const Icon(
+              Icons.arrow_drop_down,
+              color: CustomColors.qrlLightBlueColor,
+            ),
+          ],
+        );
+      },
+      itemWidgetConverter: (value) {
+        String name;
+        String balance;
+        if (value.tokenTransactionData != null) {
+          name =
+              "${value.tokenTransactionData?.tokenName} (${value.tokenTransactionData?.tokenSymbol})";
+          balance = StringUtil.formatAmount(value.balance,
+              decimals: value.tokenTransactionData?.tokenDecimals ?? 0);
+        } else {
+          name = "QRL";
+          balance =
+              StringUtil.formatAmount(state.extendedWalletData?.balance ?? 0);
+        }
+        return Padding(
+          padding:
+              const EdgeInsets.only(bottom: 16, top: 16, right: 16, left: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(name,
+                    style: const TextStyle(color: CustomColors.qrlYellowColor)),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Text(balance),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -205,7 +282,7 @@ abstract class AddTransactionPage<T extends AddTransactionBloc>
                 ),
                 IntrinsicWidth(
                   child: Text(
-                    StringUtil.formatAmount(state.fee),
+                    "${StringUtil.formatAmount(state.fee)} QRL",
                     style:
                         const TextStyle(color: CustomColors.qrlLightBlueColor),
                     maxLines: 2,
