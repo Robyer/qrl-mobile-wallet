@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:developer' as developer;
 
 import 'package:flutter/foundation.dart';
 import 'package:mobile_wallet/model/extended_wallet_data.dart';
@@ -41,18 +42,26 @@ class WalletService {
     return await _sharedPreferenceService.setIntValue("current-wallet-id", id);
   }
 
-  Future<Wallet> getWallet(int id) async {
+  Future<Wallet?> getWallet(int id) async {
     String? walletString = await _securedStorageService.getValue("wallet-$id");
     if (walletString == null) {
-      throw Exception("No wallet with id $id found!");
+      deleteWallet(id);
+      developer.log("Wallet deleted with id $id");
+      return null;
     }
     return Wallet.fromJson(jsonDecode(walletString));
   }
 
   Future<List<Wallet>> getWallets() async {
-    return await Future.wait((await _getWalletIdList())
-        .map((walletId) async => await getWallet(walletId))
-        .toList());
+    List<int> walletIds = await _getWalletIdList();
+    List<Wallet> wallets = [];
+    for (int walletId in walletIds) {
+      Wallet? wallet = await getWallet(walletId);
+      if (wallet != null) {
+        wallets.add(wallet);
+      }
+    }
+    return wallets;
   }
 
   Future<void> deleteWallet(int id) async {
@@ -159,10 +168,12 @@ class WalletService {
   }
 
   updateWalletName(int id, String name) async {
-    Wallet wallet = await getWallet(id);
-    wallet.name = name;
-    await _securedStorageService.setValue(
-        "wallet-$id", jsonEncode(wallet.toJson()));
+    Wallet? wallet = await getWallet(id);
+    if (wallet != null) {
+      wallet.name = name;
+      await _securedStorageService.setValue(
+          "wallet-$id", jsonEncode(wallet.toJson()));
+    }
   }
 
   Future<ExtendedWalletData> getExtendedWalletData(String walletAddress,

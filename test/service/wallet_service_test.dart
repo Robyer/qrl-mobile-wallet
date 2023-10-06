@@ -33,7 +33,7 @@ void main() {
     test("test wallet service", () async {
       Wallet wallet = await walletService.createWallet("wallet-1",
           treeHeight: 1, hashFunction: 1);
-      wallet = await walletService.getWallet(wallet.id);
+      wallet = (await walletService.getWallet(wallet.id))!;
       expect(wallet.name, "wallet-1");
       expect(wallet.address, "address");
       expect(wallet.height, 1);
@@ -97,7 +97,7 @@ void main() {
               .firstWhere((storedWallet) => storedWallet.id == wallet2.id),
           wallet2);
       await walletService.updateWalletName(wallet1.id, "new name");
-      wallet1 = await walletService.getWallet(wallet1.id);
+      wallet1 = (await walletService.getWallet(wallet1.id))!;
       expect(wallet1.name, "new name");
     });
   });

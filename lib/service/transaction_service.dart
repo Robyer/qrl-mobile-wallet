@@ -24,7 +24,7 @@ class TransactionService {
       int otsIndex,
       int fee,
       String? message) async {
-    Wallet wallet = await _walletService.getWallet(id);
+    Wallet wallet = (await _walletService.getWallet(id))!;
     List<List<int>> receiverWalletAddressesBytes = receiverWalletAddresses
         .map((receiverWalletAddress) => StringUtil.toBytes(receiverWalletAddress
                 .startsWith("Q")
@@ -69,7 +69,7 @@ class TransactionService {
       int otsIndex,
       int fee,
       String tokenTransactionHash) async {
-    Wallet wallet = await _walletService.getWallet(id);
+    Wallet wallet = (await _walletService.getWallet(id))!;
     List<List<int>> receiverWalletAddressesBytes = receiverWalletAddresses
         .map((receiverWalletAddress) => StringUtil.toBytes(receiverWalletAddress
                 .startsWith("Q")
@@ -106,7 +106,7 @@ class TransactionService {
   Future<String> sendMessageTransaction(
       int id, String message, int otsIndex, int fee,
       {MessageType messageType = MessageType.text}) async {
-    Wallet wallet = await _walletService.getWallet(id);
+    Wallet wallet = (await _walletService.getWallet(id))!;
 
     List<int> concatenatedArray = [];
     concatenatedArray.addAll(StringUtil.toBigEndianUint64BytesUnsigned(fee));
@@ -145,7 +145,7 @@ class TransactionService {
     int otsIndex,
     int fee,
   ) async {
-    Wallet wallet = await _walletService.getWallet(id);
+    Wallet wallet = (await _walletService.getWallet(id))!;
     List<List<int>> receiverWalletAddressesBytes = receiverWalletAddresses
         .map((receiverWalletAddress) => StringUtil.toBytes(receiverWalletAddress
                 .startsWith("Q")
