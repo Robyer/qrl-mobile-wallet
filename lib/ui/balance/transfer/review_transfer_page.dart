@@ -27,7 +27,7 @@ class ReviewTransferPage
                 "${StringUtil.formatAmount(transactionLine.amount ?? 0, decimals: state.selectedToken!.tokenTransactionData?.tokenDecimals ?? 0)} ${state.selectedToken!.tokenTransactionData?.tokenSymbol ?? ""}";
           } else {
             amountLabel =
-                "${StringUtil.formatAmount(state.extendedWalletData?.balance ?? 0)} QRL";
+                "${StringUtil.formatAmount(transactionLine.amount ?? 0)} QRL";
           }
           return Card(
             elevation: 1,
