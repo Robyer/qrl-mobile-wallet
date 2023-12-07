@@ -12,10 +12,21 @@ class MarketData {
   );
 
   factory MarketData.fromJson(Map<String, dynamic> json) {
+    Decimal parseDecimal(dynamic value) {
+      if (value != null) {
+        try {
+          return Decimal.parse(value.toString());
+        } catch (e) {
+          return Decimal.zero;
+        }
+      }
+      return Decimal.zero;
+    }
+
     return MarketData(
-      Decimal.parse(json['price'].toString()),
-      Decimal.parse(json['market_cap'].toString()),
-      Decimal.parse(json['change_24hr'].toString()),
+      parseDecimal(json['price']),
+      parseDecimal(json['market_cap']),
+      parseDecimal(json['change_24hr']),
     );
   }
 }

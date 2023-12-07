@@ -11,7 +11,6 @@ import 'package:mobile_wallet/service/service_locator.dart';
 import 'package:mobile_wallet/service/wallet_service.dart';
 
 part 'balance_event.dart';
-
 part 'balance_state.dart';
 
 class BalanceBloc extends Bloc<BalanceEvent, BalanceState> {
@@ -69,7 +68,14 @@ class BalanceBloc extends Bloc<BalanceEvent, BalanceState> {
     emit(state.copyWith(
         status: BalanceStatus.loadingMarketData,
         extendedWalletData: extendedWalletData));
-    MarketData? marketData = await _marketService.getMarketData();
+
+    MarketData? marketData;
+    try {
+      marketData = await _marketService.getMarketData();
+    } on Exception catch (e, stacktrace) {
+      var errorMessage = e.toString();
+      log(errorMessage, stackTrace: stacktrace);
+    }
     emit(state.copyWith(status: BalanceStatus.ready, marketData: marketData));
   }
 }
