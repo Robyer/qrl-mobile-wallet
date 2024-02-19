@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mobile_wallet/ui/component/qrl_app_bar.dart';
+import 'package:mobile_wallet/ui/tools/export/export_transactions_page.dart';
 import 'package:mobile_wallet/ui/tools/message/add_message_page.dart';
 import 'package:mobile_wallet/ui/tools/notarization/add/add_notarization_page.dart';
 import 'package:mobile_wallet/ui/tools/notarization/verify/verify_notarization_page.dart';
@@ -60,6 +61,16 @@ class ToolsPage extends StatelessWidget {
                         MaterialPageRoute(
                             builder: (context) =>
                                 const VerifyNotarizationPage()))),
+                _buildCard(
+                    context,
+                    AppLocalizations.of(context)!.exportToolsTitle,
+                    AppLocalizations.of(context)!.exportToolsBody,
+                    Icons.file_download,
+                    () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const ExportTransactionsPage()))),
                 _buildCard(
                     context,
                     AppLocalizations.of(context)!.createTokenToolsTitle,

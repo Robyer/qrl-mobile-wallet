@@ -10,6 +10,8 @@ enum AppLanguage {
   it("Italiano", Locale.fromSubtags(languageCode: "it")),
   es("Español", Locale.fromSubtags(languageCode: "es")),
   ru("русский", Locale.fromSubtags(languageCode: "ru")),
+  id("bahasa Indonesia", Locale.fromSubtags(languageCode: "id")),
+  fr("français", Locale.fromSubtags(languageCode: "fr")),
   ;
 
   final String displayName;
@@ -37,6 +39,10 @@ enum AppLanguage {
         return es;
       case "AppLanguage.ru":
         return ru;
+      case "AppLanguage.id":
+        return id;
+      case "AppLanguage.fr":
+        return fr;
     }
     return en;
   }

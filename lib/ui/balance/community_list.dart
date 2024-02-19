@@ -87,22 +87,23 @@ class CommunityList extends StatelessWidget {
               padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
               child: InkWell(
                 onTap: () async {
-                  Uri url = Uri.parse("https://x.com/qrledger");
+                  Uri url = Uri.parse(
+                      "https://www.theqrl.org/blog/qrl-the-next-chapter/");
                   await Util.launchInBrowser(url);
                 },
                 child: Container(
-                  decoration: _buildBoxDecoration(
-                      'assets/images/x-background.png'),
+                  decoration:
+                      _buildBoxDecoration('assets/images/strategic-background.png'),
                   child: Padding(
                     padding: const EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 8),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
-                            AppLocalizations.of(context)!.xCardHeader,
+                            AppLocalizations.of(context)!.strategicCardHeader,
                             style: const TextStyle(
                                 color: CustomColors.qrlYellowColor,
                                 fontSize: 18),
@@ -112,7 +113,7 @@ class CommunityList extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 16, bottom: 16),
                           child: Text(
                             textAlign: TextAlign.start,
-                            AppLocalizations.of(context)!.xCardBody,
+                            AppLocalizations.of(context)!.strategicCardBody,
                             style: const TextStyle(fontSize: 12),
                           ),
                         ),
@@ -132,8 +133,7 @@ class CommunityList extends StatelessWidget {
                               height: 24,
                               child: Center(
                                 child: Text(
-                                  AppLocalizations.of(context)!
-                                      .xCardButton,
+                                  AppLocalizations.of(context)!.readMore,
                                   style: const TextStyle(
                                       color: CustomColors.qrlDarkBlueColor,
                                       fontSize: 14),
@@ -224,54 +224,37 @@ class CommunityList extends StatelessWidget {
               child: InkWell(
                 onTap: () async {
                   Uri url = Uri.parse(
-                      "https://www.youtube.com/c/QRLedger?app=mobile");
+                      "https://www.theqrl.org/features/proof-of-stake/");
                   await Util.launchInBrowser(url);
                 },
                 child: Container(
                   decoration:
-                      _buildBoxDecoration('assets/images/atom-background.png'),
+                      _buildBoxDecoration('assets/images/zond-background.png'),
                   child: Padding(
-                    padding:
-                        const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                    padding: const EdgeInsets.only(
+                        left: 16, right: 16, top: 8, bottom: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            const Text(
-                              "THE",
-                              style: TextStyle(
-                                  color: CustomColors.qrlLightBlueColor,
-                                  fontSize: 18),
-                            ),
-                            Image.asset(
-                              'assets/images/qrl-logo.png',
-                              fit: BoxFit.contain,
-                              height: 56,
-                            ),
-                            const Text(
-                              "SHOW",
-                              style: TextStyle(
-                                  color: CustomColors.qrlLightBlueColor,
-                                  fontSize: 18),
-                            ),
-                          ],
-                        ),
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text(
-                                textAlign: TextAlign.end,
-                                AppLocalizations.of(context)!.youtubeCardBody,
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                            ],
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            AppLocalizations.of(context)!.zondCardHeader,
+                            style: const TextStyle(
+                                color: CustomColors.qrlYellowColor,
+                                fontSize: 18),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 8, bottom: 16),
+                          padding: const EdgeInsets.only(top: 16, bottom: 16),
+                          child: Text(
+                            textAlign: TextAlign.start,
+                            AppLocalizations.of(context)!.zondCardBody,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 24, bottom: 16),
                           child: Container(
                             decoration: BoxDecoration(
                               gradient: RadialGradient(colors: [
@@ -286,8 +269,7 @@ class CommunityList extends StatelessWidget {
                               height: 24,
                               child: Center(
                                 child: Text(
-                                  AppLocalizations.of(context)!
-                                      .youtubeCardButton,
+                                  AppLocalizations.of(context)!.learnMore,
                                   style: const TextStyle(
                                       color: CustomColors.qrlDarkBlueColor,
                                       fontSize: 14),
@@ -306,12 +288,12 @@ class CommunityList extends StatelessWidget {
               padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
               child: InkWell(
                 onTap: () async {
-                  Uri url = Uri.parse("https://theqrc.com/");
+                  Uri url = Uri.parse("https://www.theqrl.org/blog/");
                   await Util.launchInBrowser(url);
                 },
                 child: Container(
                   decoration:
-                      _buildBoxDecoration('assets/images/lock-background.png'),
+                      _buildBoxDecoration('assets/images/news-background.png'),
                   child: Padding(
                     padding: const EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 8),
@@ -321,7 +303,7 @@ class CommunityList extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
-                            AppLocalizations.of(context)!.qrcCardHeader,
+                            AppLocalizations.of(context)!.newsCardHeader,
                             style: const TextStyle(
                                 color: CustomColors.qrlLightBlueColor,
                                 fontSize: 18),
@@ -330,7 +312,139 @@ class CommunityList extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(top: 16, bottom: 8),
                           child: Text(
-                            AppLocalizations.of(context)!.qrcCardBody,
+                            AppLocalizations.of(context)!.newsCardBody,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  gradient: RadialGradient(colors: [
+                                    CustomColors.qrlYellowColor,
+                                    CustomColors.qrlYellowColor
+                                        .withOpacity(0.1),
+                                  ], radius: 7),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
+                                ),
+                                child: SizedBox(
+                                  width: 144,
+                                  height: 24,
+                                  child: Center(
+                                    child: Text(
+                                      AppLocalizations.of(context)!.readMore,
+                                      style: const TextStyle(
+                                          color: CustomColors.qrlDarkBlueColor,
+                                          fontSize: 14),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+              child: InkWell(
+                onTap: () async {
+                  Uri url = Uri.parse("https://www.theqrl.org/weekly/");
+                  await Util.launchInBrowser(url);
+                },
+                child: Container(
+                  decoration: _buildBoxDecoration(
+                      'assets/images/atom-background.png'),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16, right: 16, top: 8, bottom: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            AppLocalizations.of(context)!.weeklyCardHeader,
+                            style: const TextStyle(
+                                color: CustomColors.qrlYellowColor,
+                                fontSize: 18),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16, bottom: 16),
+                          child: Text(
+                            AppLocalizations.of(context)!.weeklyCardBody,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8, bottom: 16),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: RadialGradient(colors: [
+                                CustomColors.qrlLightBlueColor,
+                                CustomColors.qrlLightBlueColor.withOpacity(0.1),
+                              ], radius: 7),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10)),
+                            ),
+                            child: SizedBox(
+                              width: 144,
+                              height: 24,
+                              child: Center(
+                                child: Text(
+                                  AppLocalizations.of(context)!.readMore,
+                                  style: const TextStyle(
+                                      color: CustomColors.qrlDarkBlueColor,
+                                      fontSize: 14),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+              child: InkWell(
+                onTap: () async {
+                  Uri url = Uri.parse("https://www.youtube.com/@VoltDevelopment/videos");
+                  await Util.launchInBrowser(url);
+                },
+                child: Container(
+                  decoration:
+                  _buildBoxDecoration('assets/images/tutorial-background.png'),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16, right: 16, top: 8, bottom: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            AppLocalizations.of(context)!.tutorialCardHeader,
+                            style: const TextStyle(
+                                color: CustomColors.qrlLightBlueColor,
+                                fontSize: 18),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16, bottom: 8),
+                          child: Text(
+                            AppLocalizations.of(context)!.tutorialCardBody,
                             style: const TextStyle(fontSize: 12),
                           ),
                         ),
@@ -371,71 +485,7 @@ class CommunityList extends StatelessWidget {
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
-              child: InkWell(
-                onTap: () async {
-                  Uri url = Uri.parse("https://youtu.be/auDAg8uW1wY");
-                  await Util.launchInBrowser(url);
-                },
-                child: Container(
-                  decoration: _buildBoxDecoration(
-                      'assets/images/notarization-background.png'),
-                  child: Padding(
-                    padding: const EdgeInsets.only(
-                        left: 16, right: 16, top: 8, bottom: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            AppLocalizations.of(context)!
-                                .notarizationCardHeader,
-                            style: const TextStyle(
-                                color: CustomColors.qrlYellowColor,
-                                fontSize: 18),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16, bottom: 16),
-                          child: Text(
-                            AppLocalizations.of(context)!.notarizationCardBody,
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8, bottom: 16),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              gradient: RadialGradient(colors: [
-                                CustomColors.qrlLightBlueColor,
-                                CustomColors.qrlLightBlueColor.withOpacity(0.1),
-                              ], radius: 7),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(10)),
-                            ),
-                            child: SizedBox(
-                              width: 144,
-                              height: 24,
-                              child: Center(
-                                child: Text(
-                                  AppLocalizations.of(context)!.learnMore,
-                                  style: const TextStyle(
-                                      color: CustomColors.qrlDarkBlueColor,
-                                      fontSize: 14),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
+                     Padding(
               padding: const EdgeInsets.only(
                   left: 16, right: 16, top: 16, bottom: 16),
               child: Container(

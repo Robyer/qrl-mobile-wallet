@@ -61,13 +61,16 @@ flutter:
     - assets/images/orange-dots-5.png
     - assets/images/background-balance.png
     - assets/images/background-wallet.png
-    - assets/images/security-background.png
+    - assets/images/news-background.png
     - assets/images/globe-background.png
     - assets/images/blocks-background.png
     - assets/images/lock-background.png
     - assets/images/atom-background.png
     - assets/images/notarization-background.png
-    - assets/images/x-background.png
+    - assets/images/strategic-background.png
+    - assets/images/zond-background.png
+    - assets/images/security-background.png
+    - assets/images/tutorial-background.png
   fonts:
     - family: Roboto-Medium
       fonts:

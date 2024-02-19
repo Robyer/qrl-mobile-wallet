@@ -51,6 +51,7 @@ class _AppView extends StatelessWidget {
           );
         }
         return MaterialApp(
+          debugShowCheckedModeBanner: false,
           locale: state.appSettings.appLanguage.locale,
           localizationsDelegates: const [
             AppLocalizations.delegate,

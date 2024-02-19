@@ -1,5 +1,4 @@
 {
-
   "@addHolder": {
     "description": "add a initial token holder button"
   },
@@ -163,7 +162,15 @@
   "@errorWalletCreation": {
     "description": "an error message that indicates an error occurred during wallet creation"
   },
-  "errorWalletCreation": "Error during creation of wallet:",
+  "errorWalletCreation": "Error during wallet creation:",
+  "@exportToolsTitle": {
+    "description": "Title for the tools menu for export function"
+  },
+  "exportToolsTitle": "Export Transactions",
+  "@exportToolsBody": {
+    "description": "Description for the tools menu for export function"
+  },
+  "exportToolsBody": "Export your transactions into a .csv file",
   "@fee": {
     "description": "a label for the fee field"
   },
@@ -223,7 +230,7 @@
   "@joinMailing": {
     "description": "a message that invites the user to join the mailing list or community channels"
   },
-  "joinMailing": "Join our mailing list, contact the team or join our vibrant and friendly community of users, developer and enthusiast on on of our channels.",
+  "joinMailing": "Join our mailing list, contact the team or join our vibrant and friendly community of users, developer and enthusiast on one of our channels.",
   "@keepPrivate": {
     "description": "a message that reminds the user to keep their private information private"
   },
@@ -292,6 +299,14 @@
     "description": "a label for the mnemonic field"
   },
   "mnemonic": "Mnemonic",
+  "@newsCardBody": {
+    "description": "news card body"
+  },
+  "newsCardBody": "Stay up-to-date with the latest project developments",
+  "@newsCardHeader": {
+    "description": "news card header"
+  },
+  "newsCardHeader": "NEWS AND BLOGS",
   "@nfts": {
     "description": "a tab label for NFTs"
   },
@@ -432,18 +447,14 @@
     "description": "A link that directs press inquiries to the QRL contact e-mail."
   },
   "pressEnquiries": "Press enquiries",
-  "@qrcCardHeader": {
-    "description": "Quantum resistant corporation card header"
-  },
-  "qrcCardHeader": "COMMUNITY SECURITY PROGRAM",
-  "@qrcCardBody": {
-    "description": "Quantum resistant corporation card body"
-  },
-  "qrcCardBody": "A SECURITY PROGRAM FOR \nDEVELOPERS THAT ARE \nUSING THE QRL NETWORK \nAND BLOCKCHAIN \nTECHNOLOGY",
   "@qrl": {
     "description": "QRL"
   },
   "qrl": "QRL",
+  "@readMore": {
+    "description": "Read More"
+  },
+  "readMore": "READ MORE",
   "@receive": {
     "description": "A button that allows a user to receive cryptocurrency."
   },
@@ -499,7 +510,7 @@
   "@securityCardBody": {
     "description": "Security box body"
   },
-  "securityCardBody": "A POWERFUL BLOCKCHAIN \nPLATFORM SECURED BY XMSS",
+  "securityCardBody": "A UNIQUE AND FORWARD-THINKING BLOCKCHAIN\nDESIGNED SPECIFICALLY TO VE SECURE AGAINST\nQUANTUM COMPUTING THREATS\n\n\u2022  HIGH SECURITY STANDARDS\n\u2022  ECOSYSTEM AND VERSATILITY",
   "@securityCardHeader": {
     "description": "Security box header"
   },
@@ -515,7 +526,7 @@
   "@sendMessageToolsBody": {
     "description": "Body text for send message tools card."
   },
-  "sendMessageToolsBody": "Save a message on the QRL",
+  "sendMessageToolsBody": "Save a message on the Blockchain",
   "@sendMessageToolsTitle": {
     "description": "Title text for send message tools card."
   },
@@ -548,6 +559,14 @@
     "description": "Button text to display the public and private keys associated with a wallet address."
   },
   "showKeys": "Show keys",
+  "@strategicCardBody": {
+    "description": "strategic card body"
+  },
+  "strategicCardBody": "New operational manager entrusted with strategic goals ",
+  "@strategicCardHeader": {
+    "description": "Strategic card header"
+  },
+  "strategicCardHeader": "STRATEGIC UPDATES",
   "@supportRequest": {
     "description": "link text to the QRL teams support e-mail."
   },
@@ -620,10 +639,18 @@
     "description": "Tree Height"
   },
   "treeHeight": "Tree Height",
-   "@unconfirmed": {
+  "@unconfirmed": {
     "description": "Text displayed to indicate that a transaction is still waiting for confirmation from the network."
   },
   "unconfirmed": "Unconfirmed",
+  "@tutorialCardHeader": {
+    "description": "Tutorial card header"
+  },
+  "tutorialCardHeader": "WALLET TUTORIALS",
+  "@tutorialCardBody": {
+    "description": "Tutorial card body"
+  },
+  "tutorialCardBody": "Watch our YouTube videos for more explanations on how to use the mobile wallet and its available features.",
   "@updateName": {
     "description": "Tooltip for change wallet name button."
   },
@@ -692,6 +719,14 @@
     "description": "Label for pages where the name of the user wallet is being displayed "
   },
   "walletName": "Wallet name",
+  "@weeklyCardBody": {
+    "description": "weekly card body"
+  },
+  "weeklyCardBody": "Read the latest development updates and \nstay informed about quantum threat. \n\n\u2022  Weekly development snapshots \n\u2022  Quantum news",
+  "@weeklyCardHeader": {
+    "description": "weekly card header"
+  },
+  "weeklyCardHeader": "WEEKLY UPDATES",
   "@welcomeTo": {
     "description": "Message in the splashscreen when someone is opening the wallet"
   },
@@ -704,24 +739,12 @@
     "description": "Label for pages where the users QRL wallet address is being displayed"
   },
   "yourPublicWalletAddress": "Your public wallet address",
-  "@youtubeCardBody": {
-    "description": "Youtube card body"
+  "@zondCardBody": {
+    "description": "zond card body"
   },
-  "youtubeCardBody": "STAY UP-TO-DATE WITH THE \nLATEST PROJECT DEVELOPMENTS \nAND WATCH INTERVIEWS WITH \nQUANTUM EXPERTS",
-  "@youtubeCardButton": {
-    "description": "Youtube card button"
+  "zondCardBody": "QRL Zond public beta-testnet: January 15th, 2024! \n\n\u2022  smart contracts \n\u2022  Proof-of-stake \n\u2022  web3 api compatibility",
+  "@zondCardHeader": {
+    "description": "zond card header"
   },
-  "youtubeCardButton": "WATCH NOW",
-  "@xCardHeader": {
-    "description": "X card header"
-  },
-  "xCardHeader": "NEWS FROM @THEQRLEDGER",
-  "@xCardBody": {
-    "description": "X card body"
-  },
-  "xCardBody": "DISCOVER THE LATEST NEWS \nAND SHARE YOUR VOICE ON \nX!",
-  "@xCardButton": {
-    "description": "X card button"
-  },
-  "xCardButton": "FOLLOW ON X"
+  "zondCardHeader": "PROJECT ZOND"
 }
