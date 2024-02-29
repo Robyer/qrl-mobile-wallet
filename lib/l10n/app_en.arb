@@ -163,6 +163,18 @@
     "description": "an error message that indicates an error occurred during wallet creation"
   },
   "errorWalletCreation": "Error during wallet creation:",
+  "@export": {
+    "description": "Title for the export button"
+  },
+  "export": "EXPORT",
+  "@exportedCSVTo": {
+    "description": "Text for a label to send the csv file to"
+  },
+  "exportedCSVTo": "Exported .csv to:",
+  "@exporting": {
+    "description": "Loading indicator when the user is waiting for the file"
+  },
+  "exporting": "Exporting...",
   "@exportToolsTitle": {
     "description": "Title for the tools menu for export function"
   },
@@ -191,6 +203,10 @@
     "description": "a label for the 'from address' field"
   },
   "fromAddress": "From address",
+  "@fromDate": {
+    "description": "a label for the 'from date' field"
+  },
+  "fromDate": "From date",
   "@generalEnquiries": {
     "description": "a label for general enquiries section"
   },
@@ -510,7 +526,7 @@
   "@securityCardBody": {
     "description": "Security box body"
   },
-  "securityCardBody": "A UNIQUE AND FORWARD-THINKING BLOCKCHAIN\nDESIGNED SPECIFICALLY TO VE SECURE AGAINST\nQUANTUM COMPUTING THREATS\n\n\u2022  HIGH SECURITY STANDARDS\n\u2022  ECOSYSTEM AND VERSATILITY",
+  "securityCardBody": "A UNIQUE AND FORWARD-THINKING BLOCKCHAIN\nDESIGNED SPECIFICALLY TO BE SECURE AGAINST\nQUANTUM COMPUTING THREATS\n\n\u2022  HIGH SECURITY STANDARDS\n\u2022  ECOSYSTEM AND VERSATILITY",
   "@securityCardHeader": {
     "description": "Security box header"
   },
@@ -575,6 +591,10 @@
     "description": "Label for a field where the user enters the wallet address of the recipient for a transaction."
   },
   "toAddress": "To address",
+  "@toDate": {
+    "description": "Label for a field where users can select a date."
+  },
+  "toDate": "To date",
   "@tokenCreation": {
     "description": "Label for a Token creation transaction."
   },
