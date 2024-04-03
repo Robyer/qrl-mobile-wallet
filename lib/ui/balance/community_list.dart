@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mobile_wallet/ui/util/util.dart';
 
 class CommunityList extends StatelessWidget {
@@ -83,7 +83,7 @@ class CommunityList extends StatelessWidget {
                 ),
               ),
             ),
-                        Padding(
+            Padding(
               padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
               child: InkWell(
                 onTap: () async {
@@ -245,14 +245,14 @@ class CommunityList extends StatelessWidget {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 16, bottom: 8),
+                          padding: const EdgeInsets.only(top: 16, bottom: 16),
                           child: Text(
                             AppLocalizations.of(context)!.newsCardBody,
                             style: const TextStyle(fontSize: 12),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.only(bottom: 16, top: 24),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -296,8 +296,8 @@ class CommunityList extends StatelessWidget {
                   await Util.launchInBrowser(url);
                 },
                 child: Container(
-                  decoration: _buildBoxDecoration(
-                      'assets/images/atom-background.png'),
+                  decoration:
+                      _buildBoxDecoration('assets/images/atom-background.png'),
                   child: Padding(
                     padding: const EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 8),
@@ -321,7 +321,7 @@ class CommunityList extends StatelessWidget {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 8, bottom: 16),
+                          padding: const EdgeInsets.only(top: 24, bottom: 16),
                           child: Container(
                             decoration: BoxDecoration(
                               gradient: RadialGradient(colors: [
@@ -355,12 +355,13 @@ class CommunityList extends StatelessWidget {
               padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
               child: InkWell(
                 onTap: () async {
-                  Uri url = Uri.parse("https://www.youtube.com/@VoltDevelopment/videos");
+                  Uri url = Uri.parse(
+                      "https://www.youtube.com/@VoltDevelopment/videos");
                   await Util.launchInBrowser(url);
                 },
                 child: Container(
-                  decoration:
-                  _buildBoxDecoration('assets/images/tutorial-background.png'),
+                  decoration: _buildBoxDecoration(
+                      'assets/images/tutorial-background.png'),
                   child: Padding(
                     padding: const EdgeInsets.only(
                         left: 16, right: 16, top: 8, bottom: 8),
@@ -377,14 +378,14 @@ class CommunityList extends StatelessWidget {
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 16, bottom: 8),
+                          padding: const EdgeInsets.only(top: 16, bottom: 16),
                           child: Text(
                             AppLocalizations.of(context)!.tutorialCardBody,
                             style: const TextStyle(fontSize: 12),
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
+                          padding: const EdgeInsets.only(bottom: 16, top: 24),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -420,7 +421,7 @@ class CommunityList extends StatelessWidget {
                 ),
               ),
             ),
-                     Padding(
+            Padding(
               padding: const EdgeInsets.only(
                   left: 16, right: 16, top: 16, bottom: 16),
               child: Container(

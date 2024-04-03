@@ -67,7 +67,7 @@ class GrpcService {
 
   Future<List<TransactionData>> findTransactions(
       String walletAddress, int batchCount,
-      {int skip = -1}) async {
+      {int skip = -1, DateTime? fromDate, DateTime? toDate}) async {
     List<int> addressBytes = StringUtil.toBytes(walletAddress);
     ClientChannel clientChannel = await getClientChannel();
     try {
@@ -82,7 +82,7 @@ class GrpcService {
       }
       transactions.addAll(await _findTransactions(
           state, publicAPIClient, walletAddress, transactions, batchCount,
-          skip: skip == -1 ? 0 : skip));
+          skip: skip == -1 ? 0 : skip, fromDate: fromDate, toDate: toDate));
       return transactions;
     } finally {
       clientChannel.shutdown();
@@ -156,7 +156,9 @@ class GrpcService {
       String walletAddress,
       List<TransactionData> transactions,
       int batchCount,
-      {int skip = 0}) async {
+      {int skip = 0,
+      DateTime? fromDate,
+      DateTime? toDate}) async {
     List<TransactionData> transactions = <TransactionData>[];
     List<List<int>> transactionsHashes = state.transactionHashes;
     int totalTransactions = transactionsHashes.length;
@@ -171,6 +173,16 @@ class GrpcService {
       GetObjectResp getObjectResp = await publicAPIClient
           .getObject(GetObjectReq(query: transactionsHashes[i]));
       TransactionExtended transaction = getObjectResp.transaction;
+      if (fromDate != null || toDate != null) {
+        DateTime transactionDate = DateTime.fromMillisecondsSinceEpoch(
+            transaction.timestampSeconds.toInt() * 1000);
+        if (fromDate != null && fromDate.isAfter(transactionDate)) {
+          break;
+        }
+        if (toDate != null && toDate.isBefore(transactionDate)) {
+          break;
+        }
+      }
       Transaction tx = transaction.tx;
       if ("transfer" == tx.whichTransactionType().name.toLowerCase()) {
         _convertTransfer(transaction, walletAddress, tx, transactions);

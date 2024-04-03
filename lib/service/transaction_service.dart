@@ -194,9 +194,9 @@ class TransactionService {
 
   Future<List<TransactionData>> findTransactions(
       String walletAddress, int batchCount,
-      {int skip = -1}) async {
+      {int skip = -1, DateTime? fromDate, DateTime? toDate}) async {
     return await _grpcService.findTransactions(walletAddress, batchCount,
-        skip: skip);
+        skip: skip, fromDate: fromDate, toDate: toDate);
   }
 
   Future<NotarizationMessage?> findNotarization(String transactionHash) async {
