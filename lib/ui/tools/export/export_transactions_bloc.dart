@@ -33,7 +33,7 @@ class ExportTransactionsBloc
     "Fee",
     "Transactionhash"
   ];
-  final DateFormat formatter = DateFormat("HH:mm, MMM d yyyy");
+  final DateFormat formatter = DateFormat("dd-MM-yyyy HH:mm");
 
   ExportTransactionsBloc()
       : _walletService = getIt<WalletService>(),
@@ -123,7 +123,7 @@ class ExportTransactionsBloc
           "Q${transaction.senderAddress}",
           transaction.receiverAddress != null
               ? "Q${transaction.receiverAddress}"
-              : "",
+              : "-",
           amount,
           token,
           StringUtil.formatAmount(transaction.fee),
