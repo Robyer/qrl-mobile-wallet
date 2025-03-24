@@ -10,9 +10,11 @@ import 'package:mobile_wallet/ui/balance/receive_amount_page.dart';
 import 'package:mobile_wallet/ui/balance/transactions/transactions_page.dart';
 import 'package:mobile_wallet/ui/balance/transfer/add_transfer_page.dart';
 import 'package:mobile_wallet/ui/component/bottomsheetselect/bottom_sheet_select.dart';
+import 'package:mobile_wallet/ui/component/dialogs.dart';
 import 'package:mobile_wallet/ui/component/qrl_button.dart';
 import 'package:mobile_wallet/ui/component/snack_bars.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
+import 'package:mobile_wallet/ui/util/util.dart';
 import 'package:mobile_wallet/util/string_util.dart';
 
 import 'bloc/balance_bloc.dart';
@@ -181,7 +183,7 @@ class _BalanceView extends StatelessWidget {
               Center(
                 child: Padding(
                   padding: const EdgeInsets.only(
-                      top: 8, left: 24, right: 24, bottom: 8),
+                      top: 4, left: 24, right: 24, bottom: 4),
                   child: _buildBalanceBlocBuilder(),
                 ),
               ),
@@ -227,7 +229,7 @@ class _BalanceView extends StatelessWidget {
               Center(
                 child: Padding(
                   padding:
-                      const EdgeInsets.only(left: 24, right: 24, bottom: 8),
+                      const EdgeInsets.only(left: 24, right: 24, bottom: 4),
                   child: Text(
                     AppLocalizations.of(context)!.priceChange,
                     textAlign: TextAlign.center,
@@ -240,8 +242,7 @@ class _BalanceView extends StatelessWidget {
               ),
               Center(
                 child: Padding(
-                  padding:
-                      const EdgeInsets.only(left: 24, right: 24, bottom: 8),
+                  padding: const EdgeInsets.only(left: 24, right: 24),
                   child: BlocBuilder<BalanceBloc, BalanceState>(
                       buildWhen: (previous, current) =>
                           (previous.marketData?.change24Hr ?? 0) !=
@@ -254,47 +255,57 @@ class _BalanceView extends StatelessWidget {
                       }),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Column(children: [
-                          Text(AppLocalizations.of(context)!.marketCap),
-                          BlocBuilder<BalanceBloc, BalanceState>(
-                              buildWhen: (previous, current) =>
-                                  (previous.marketData?.marketCap ?? 0) !=
-                                  (current.marketData?.marketCap ?? 0),
-                              builder: (context, state) {
-                                return Text(
-                                  state.marketData != null
-                                      ? "\$ ${(state.marketData!.marketCap / Decimal.fromInt(1000000)).toDecimal().toStringAsFixed(2)}M USD"
-                                      : "0.00 USD",
-                                );
-                              }),
-                        ]),
-                      ),
-                      Expanded(
-                        child: Column(children: [
-                          Text(AppLocalizations.of(context)!.price),
-                          BlocBuilder<BalanceBloc, BalanceState>(
-                              buildWhen: (previous, current) =>
-                                  (previous.marketData?.price ?? 0) !=
-                                  (current.marketData?.price ?? 0),
-                              builder: (context, state) {
-                                return Text(
-                                    "\$ ${state.marketData?.price.toStringAsFixed(2) ?? "0.00"} USD");
-                              }),
-                        ]),
-                      ),
-                    ],
-                  ),
+              Container(
+                padding: const EdgeInsets.all(8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(children: [
+                        Text(AppLocalizations.of(context)!.marketCap),
+                        BlocBuilder<BalanceBloc, BalanceState>(
+                            buildWhen: (previous, current) =>
+                                (previous.marketData?.marketCap ?? 0) !=
+                                (current.marketData?.marketCap ?? 0),
+                            builder: (context, state) {
+                              return Text(
+                                state.marketData != null
+                                    ? "\$ ${(state.marketData!.marketCap / Decimal.fromInt(1000000)).toDecimal().toStringAsFixed(2)}M USD"
+                                    : "0.00 USD",
+                              );
+                            }),
+                      ]),
+                    ),
+                    Expanded(
+                      child: Column(children: [
+                        Text(AppLocalizations.of(context)!.price),
+                        BlocBuilder<BalanceBloc, BalanceState>(
+                            buildWhen: (previous, current) =>
+                                (previous.marketData?.price ?? 0) !=
+                                (current.marketData?.price ?? 0),
+                            builder: (context, state) {
+                              return Text(
+                                  "\$ ${state.marketData?.price.toStringAsFixed(2) ?? "0.00"} USD");
+                            }),
+                      ]),
+                    ),
+                  ],
                 ),
               ),
-              _buildButtonBar(context)
+              _buildButtonBar(context),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(mainAxisSize: MainAxisSize.max, children: [
+                  Expanded(
+                    child: QrlButton(
+                      () => _onClickBuy(context),
+                      text: AppLocalizations.of(context)!.buy,
+                      baseColor: CustomColors.qrlYellowColor,
+                      backgroundColor: CustomColors.qrlYellowColorBackground,
+                    ),
+                  ),
+                ]),
+              )
             ],
           )
         ],
@@ -359,13 +370,14 @@ class _BalanceView extends StatelessWidget {
     return Stack(children: [
       Center(
         child: Padding(
-          padding: const EdgeInsets.only(left: 8, right: 8, bottom: 24),
+          padding: const EdgeInsets.only(left: 8, right: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.only(
+                      bottom: 4, top: 4, right: 8, left: 8),
                   child: QrlButton(
                     () => _onClickSend(context),
                     text: AppLocalizations.of(context)!.send,
@@ -376,7 +388,8 @@ class _BalanceView extends StatelessWidget {
               ),
               Expanded(
                 child: Container(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.only(
+                      bottom: 4, top: 4, right: 8, left: 8),
                   child: QrlButton(
                     () => _onClickReceive(context),
                     text: AppLocalizations.of(context)!.receive,
@@ -449,6 +462,20 @@ class _BalanceView extends StatelessWidget {
     }
   }
 
+  void _onClickBuy(BuildContext context) async {
+    BalanceState state = BlocProvider.of<BalanceBloc>(context).state;
+    if (state.currentWallet != null) {
+      Dialogs.showConfirmDialog(
+          context, AppLocalizations.of(context)!.buyDialogMessage, () async {
+        Uri url = Uri.parse(
+            "https://theqrl.banxa-sandbox.com/?coinType=QRL&fiatType=USD&walletAddress=${state.currentWallet!.address}&returnUrl=https://www.qrl-wallet.com/");
+        await Util.launchInApp(url);
+      },
+          header: AppLocalizations.of(context)!.buyDialogHeader,
+          checkboxLabel: AppLocalizations.of(context)!.buyDialogConfirmMessage);
+    }
+  }
+
   NotificationListener<DraggableScrollableNotification>
       _buildNotificationListener(BuildContext context) {
     double height = MediaQuery.of(context).size.height -
@@ -488,7 +515,10 @@ class _BalanceView extends StatelessWidget {
                   child: Column(
                     children: [
                       _buildBalanceBoxSmall(),
-                      CommunityList(scrollController)
+                      CommunityList(
+                        scrollController,
+                        () async => _onClickBuy(context),
+                      )
                     ],
                   ),
                 );
@@ -539,7 +569,7 @@ class _BalanceView extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(right: 16, bottom: 4),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             QrlButton(
                               () => _onClickSend(context),
@@ -548,18 +578,35 @@ class _BalanceView extends StatelessWidget {
                               backgroundColor:
                                   CustomColors.qrlLightBlueColorBackground,
                             ),
-                            QrlButton(
-                              () => _onClickReceive(context),
-                              text: AppLocalizations.of(context)!.receive,
-                              baseColor: CustomColors.qrlLightBlueColor,
-                              backgroundColor:
-                                  CustomColors.qrlLightBlueColorBackground,
-                            ),
+                            const SizedBox(width: 8),
                             QrlButton(
                               () => _onClickTransactions(context),
                               text: AppLocalizations.of(context)!
                                   .transactions
                                   .toUpperCase(),
+                              baseColor: CustomColors.qrlLightBlueColor,
+                              backgroundColor:
+                                  CustomColors.qrlLightBlueColorBackground,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(right: 16, bottom: 4),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            QrlButton(
+                              () => _onClickBuy(context),
+                              text: AppLocalizations.of(context)!.buy,
+                              baseColor: CustomColors.qrlYellowColor,
+                              backgroundColor:
+                                  CustomColors.qrlYellowColorBackground,
+                            ),
+                            const SizedBox(width: 8),
+                            QrlButton(
+                              () => _onClickReceive(context),
+                              text: AppLocalizations.of(context)!.receive,
                               baseColor: CustomColors.qrlLightBlueColor,
                               backgroundColor:
                                   CustomColors.qrlLightBlueColorBackground,

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mobile_wallet/model/wallet.dart';
 import 'package:mobile_wallet/ui/component/qrl_app_bar.dart';
 import 'package:mobile_wallet/ui/component/qrl_button.dart';
 import 'package:mobile_wallet/ui/component/snack_bars.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class ReceiveAmountPage extends StatelessWidget {
   final Wallet _currentWallet;
@@ -45,18 +45,16 @@ class ReceiveAmountPage extends StatelessWidget {
                 ),
               )),
               Center(
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: CustomColors.qrlYellowColor,
-                        width: 1,
-                      )),
-                  child: QrImageView(
-                    data: "Q${_currentWallet.address}",
-                    version: QrVersions.auto,
-                    size: 200.0,
-                  ),
+                child: QrImageView(
+                  data: "Q${_currentWallet.address}",
+                  version: QrVersions.auto,
+                  backgroundColor: Colors.transparent,
+                  size: 216.0,
+                  eyeStyle: const QrEyeStyle(
+                      color: Colors.grey, eyeShape: QrEyeShape.square),
+                  dataModuleStyle: const QrDataModuleStyle(
+                      dataModuleShape: QrDataModuleShape.square,
+                      color: Colors.grey),
                 ),
               ),
               Expanded(

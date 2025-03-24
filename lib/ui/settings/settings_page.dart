@@ -12,6 +12,8 @@ import 'package:mobile_wallet/ui/component/snack_bars.dart';
 import 'package:mobile_wallet/ui/settings/bloc/settings_bloc.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
 import 'package:mobile_wallet/ui/util/util.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../component/qrl_app_bar.dart';
 
@@ -146,6 +148,7 @@ class _SettingsView extends StatelessWidget {
                   ),
                   _buildNodeUrlBuilder(),
                   _buildPortBuilder(),
+                  _buildInviteFriendComponent(context),
                 ],
               ),
             ),
@@ -284,6 +287,85 @@ class _SettingsView extends StatelessWidget {
             ),
           );
         });
+  }
+
+  Widget _buildInviteFriendComponent(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8, bottom: 16, left: 24, right: 24),
+      child: Row(mainAxisSize: MainAxisSize.max, children: [
+        Expanded(
+          child: QrlButton(
+            () => showModalBottomSheet(
+                context: context,
+                builder: (modal) {
+                  return Container(
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          Color(0xff163246),
+                          CustomColors.qrlDarkBlueMaterial,
+                        ],
+                        stops: [0.1, 0.8],
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(AppLocalizations.of(context)!.inviteFriendHeader,
+                              style: const TextStyle(
+                                color: CustomColors.qrlYellowColor,
+                                fontSize: 16,
+                              )),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          SizedBox(
+                              width: 296,
+                              child: Text(
+                                AppLocalizations.of(context)!
+                                    .inviteFriendMessage,
+                                textAlign: TextAlign.center,
+                              )),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          QrImageView(
+                            data: "https://www.qrl-wallet.com/download",
+                            version: QrVersions.auto,
+                            backgroundColor: Colors.transparent,
+                            size: 216.0,
+                            eyeStyle: const QrEyeStyle(
+                                color: Colors.grey,
+                                eyeShape: QrEyeShape.square),
+                            dataModuleStyle: const QrDataModuleStyle(
+                                dataModuleShape: QrDataModuleShape.square,
+                                color: Colors.grey),
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          QrlButton(
+                            () => Share.share('https://www.qrl-wallet.com/'),
+                            text: AppLocalizations.of(context)!.shareLink,
+                            baseColor: CustomColors.qrlLightBlueColor,
+                            backgroundColor:
+                                CustomColors.qrlLightBlueColorBackground,
+                          )
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+            text: AppLocalizations.of(context)!.inviteFriend,
+          ),
+        ),
+      ]),
+    );
   }
 
   BlocBuilder<SettingsBloc, SettingsState> _buildConfirmBuilder() {

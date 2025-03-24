@@ -47,75 +47,98 @@ class Dialogs {
 
   static void showConfirmDialog(
       BuildContext context, String message, VoidCallback onConfirm,
-      {String? header}) {
+      {String? header, String? checkboxLabel}) {
     showDialog(
       context: context,
       builder: (BuildContext ctx) {
-        return Dialog(
-          insetPadding: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-            side: const BorderSide(color: CustomColors.qrlYellowColor),
-          ),
-          backgroundColor: CustomColors.qrlDarkBlueColor,
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: CustomColors.qrlDarkBlueLinearGradient,
+        bool isChecked = false;
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Dialog(
+            insetPadding: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(5),
+              side: const BorderSide(color: CustomColors.qrlYellowColor),
             ),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              if (header != null)
-                Container(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: Text(
-                    header,
-                    style: const TextStyle(
-                      color: CustomColors.qrlLightBlueColor,
-                      fontSize: 16,
+            backgroundColor: CustomColors.qrlDarkBlueColor,
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: CustomColors.qrlDarkBlueLinearGradient,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                if (header != null)
+                  Container(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: Text(
+                      header,
+                      style: const TextStyle(
+                        color: CustomColors.qrlLightBlueColor,
+                        fontSize: 16,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
+                  ),
+                Container(
+                  padding: const EdgeInsets.only(
+                      top: 24, left: 24, right: 24, bottom: 16),
+                  child: Text(
+                    message,
                     textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 14),
                   ),
                 ),
-              Container(
-                padding: const EdgeInsets.only(
-                    top: 24, left: 24, right: 24, bottom: 16),
-                child: Text(
-                  message,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 14),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 24, right: 24, bottom: 16),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: QrlButton(
-                        () {
-                          Navigator.of(context).pop();
-                        },
-                        text: AppLocalizations.of(context)!.cancel,
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 16,
-                    ),
-                    Expanded(
+                if (checkboxLabel != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: SwitchListTile(
+                        activeColor: CustomColors.qrlLightBlueColor,
+                        visualDensity: VisualDensity.compact,
+                        title: Text(
+                          checkboxLabel,
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                        onChanged: (value) => setState(() {
+                              isChecked = value;
+                            }),
+                        value: isChecked),
+                  ),
+                Padding(
+                  padding:
+                      const EdgeInsets.only(left: 24, right: 24, bottom: 16),
+                  child: Row(
+                    children: [
+                      Expanded(
                         child: QrlButton(
-                      () {
-                        Navigator.of(context).pop();
-                        onConfirm();
-                      },
-                      text: AppLocalizations.of(context)!.confirm,
-                      baseColor: CustomColors.qrlLightBlueColor,
-                      backgroundColor: CustomColors.qrlLightBlueColorBackground,
-                    )),
-                  ],
+                          () {
+                            Navigator.of(context).pop();
+                          },
+                          text: AppLocalizations.of(context)!.cancel,
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 16,
+                      ),
+                      Expanded(
+                          child: QrlButton(
+                        (checkboxLabel != null && !isChecked)
+                            ? null
+                            : () {
+                                Navigator.of(context).pop();
+                                onConfirm();
+                              },
+                        text: AppLocalizations.of(context)!.confirm,
+                        baseColor: CustomColors.qrlLightBlueColor,
+                        backgroundColor:
+                            CustomColors.qrlLightBlueColorBackground,
+                      )),
+                    ],
+                  ),
                 ),
-              ),
-            ]),
-          ),
-        );
+              ]),
+            ),
+          );
+        });
       },
     );
   }

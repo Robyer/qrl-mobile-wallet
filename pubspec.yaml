@@ -24,7 +24,7 @@ dependencies:
   decimal: ^2.3.0
   fixnum: ^1.1.0
   wakelock: ^0.6.2
-  url_launcher: ^6.1.5
+  url_launcher: ^6.1.11
   font_awesome_flutter: ^10.2.1
   flutter_localizations:
     sdk: flutter
@@ -41,6 +41,8 @@ dependencies:
   file_picker: ^5.2.10
   csv: ^6.0.0
   file_saver: ^0.2.6
+  flutter_custom_tabs: 2.0.0+1
+  share_plus: ^6.3.4
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -65,7 +67,8 @@ flutter:
     - assets/images/background-wallet.png
     - assets/images/news-background.png
     - assets/images/globe-background.png
-    - assets/images/blocks-background.png
+    - assets/images/banxa-background.png
+    - assets/images/banxa-logo.png
     - assets/images/lock-background.png
     - assets/images/atom-background.png
     - assets/images/notarization-background.png
@@ -73,9 +76,13 @@ flutter:
     - assets/images/zond-background.png
     - assets/images/security-background.png
     - assets/images/tutorial-background.png
+    - assets/images/qfl-logo.png
+    - assets/images/qfl-background.png
   fonts:
     - family: Roboto-Medium
       fonts:
         - asset: assets/fonts/Roboto-Medium.ttf
         - asset: assets/fonts/Roboto-MediumItalic.ttf
           style: italic
+dependency_overrides:
+  meta: ^1.9.1

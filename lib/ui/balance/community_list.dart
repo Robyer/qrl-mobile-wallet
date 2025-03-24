@@ -6,8 +6,10 @@ import 'package:mobile_wallet/ui/util/util.dart';
 
 class CommunityList extends StatelessWidget {
   final ScrollController? controller;
+  final Future<void> Function() onClickBuy;
 
-  const CommunityList(this.controller, {Key? key}) : super(key: key);
+  const CommunityList(this.controller, this.onClickBuy, {Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -84,35 +86,32 @@ class CommunityList extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 24),
               child: InkWell(
                 onTap: () async {
-                  Uri url =
-                      Uri.parse("https://qrl.volt-mine.com/getting-started");
-                  await Util.launchInBrowser(url);
+                  await onClickBuy.call();
                 },
                 child: Container(
-                  decoration: _buildBoxDecoration(
-                      'assets/images/blocks-background.png'),
+                  decoration:
+                      _buildBoxDecoration('assets/images/banxa-background.png'),
                   child: Padding(
                     padding: const EdgeInsets.only(
-                        left: 16, right: 16, top: 8, bottom: 8),
+                        left: 16, right: 16, top: 12, bottom: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(top: 8),
-                          child: Text(
-                            AppLocalizations.of(context)!.miningCardHeader,
-                            style: const TextStyle(
-                                color: CustomColors.qrlLightBlueColor,
-                                fontSize: 18),
+                          padding: const EdgeInsets.only(top: 8, bottom: 8),
+                          child: Image.asset(
+                            'assets/images/banxa-logo.png',
+                            fit: BoxFit.contain,
+                            height: 40,
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.only(top: 16, bottom: 16),
+                          padding: const EdgeInsets.only(top: 8, bottom: 8),
                           child: Text(
-                            AppLocalizations.of(context)!.miningCardBody,
+                            AppLocalizations.of(context)!.banxaCardBody,
                             style: const TextStyle(fontSize: 12),
                           ),
                         ),
@@ -124,8 +123,8 @@ class CommunityList extends StatelessWidget {
                               Container(
                                 decoration: BoxDecoration(
                                   gradient: RadialGradient(colors: [
-                                    CustomColors.qrlYellowColor,
-                                    CustomColors.qrlYellowColor
+                                    CustomColors.qrlLightBlueColor,
+                                    CustomColors.qrlLightBlueColor
                                         .withOpacity(0.1),
                                   ], radius: 7),
                                   borderRadius: const BorderRadius.all(
@@ -136,8 +135,7 @@ class CommunityList extends StatelessWidget {
                                   height: 24,
                                   child: Center(
                                     child: Text(
-                                      AppLocalizations.of(context)!
-                                          .miningCardButton,
+                                      AppLocalizations.of(context)!.buy,
                                       style: const TextStyle(
                                           color: CustomColors.qrlDarkBlueColor,
                                           fontSize: 14),
@@ -405,6 +403,83 @@ class CommunityList extends StatelessWidget {
                                   child: Center(
                                     child: Text(
                                       AppLocalizations.of(context)!.learnMore,
+                                      style: const TextStyle(
+                                          color: CustomColors.qrlDarkBlueColor,
+                                          fontSize: 14),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+              child: InkWell(
+                onTap: () async {
+                  Uri url = Uri.parse("https://quantum-future.org/");
+                  await Util.launchInBrowser(url);
+                },
+                child: Container(
+                  decoration:
+                      _buildBoxDecoration('assets/images/qfl-background.png'),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                        left: 16, right: 16, top: 12, bottom: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8, bottom: 8),
+                          child: Image.asset(
+                            'assets/images/qfl-logo.png',
+                            fit: BoxFit.contain,
+                            height: 32,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Text(
+                            AppLocalizations.of(context)!.qflCardHeader,
+                            style: const TextStyle(
+                                color: CustomColors.qrlYellowColor,
+                                fontSize: 18),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16, bottom: 16),
+                          child: Text(
+                            AppLocalizations.of(context)!.qflCardBody,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16, top: 24),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  gradient: RadialGradient(colors: [
+                                    CustomColors.qrlYellowColor,
+                                    CustomColors.qrlYellowColor
+                                        .withOpacity(0.1),
+                                  ], radius: 7),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
+                                ),
+                                child: SizedBox(
+                                  width: 144,
+                                  height: 24,
+                                  child: Center(
+                                    child: Text(
+                                      AppLocalizations.of(context)!.contact,
                                       style: const TextStyle(
                                           color: CustomColors.qrlDarkBlueColor,
                                           fontSize: 14),

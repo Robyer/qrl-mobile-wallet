@@ -1,9 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
+import 'package:flutter_custom_tabs/flutter_custom_tabs.dart' as custom_tabs;
 import 'package:mobile_wallet/model/extended_wallet_data.dart';
 import 'package:mobile_wallet/model/wallet.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
 import 'package:url_launcher/url_launcher.dart';
 
 class Util {
@@ -11,8 +14,37 @@ class Util {
     "2": "SHA256",
   };
 
+  static Future<void> launchInApp(Uri url) async {
+    try {
+      await custom_tabs.launchUrl(
+        url,
+        customTabsOptions: CustomTabsOptions(
+          colorSchemes: CustomTabsColorSchemes.defaults(
+            toolbarColor: CustomColors.qrlDarkBlueColor,
+          ),
+          shareState: CustomTabsShareState.browserDefault,
+          urlBarHidingEnabled: true,
+          showTitle: false,
+          instantAppsEnabled: true,
+          closeButton: CustomTabsCloseButton(
+            icon: CustomTabsCloseButtonIcons.back,
+          ),
+        ),
+        safariVCOptions: const SafariViewControllerOptions(
+          preferredBarTintColor: CustomColors.qrlDarkBlueColor,
+          preferredControlTintColor: Colors.white,
+          barCollapsingEnabled: true,
+          dismissButtonStyle: SafariViewControllerDismissButtonStyle.close,
+        ),
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+      throw 'Could not launch $url';
+    }
+  }
+
   static Future<void> launchInBrowser(Uri url) async {
-    if (!await launchUrl(
+    if (!await url_launcher.launchUrl(
       url,
       mode: LaunchMode.externalApplication,
     )) {

@@ -39,6 +39,26 @@
     "description": "a label for the balance field"
   },
   "balance": "Balance",
+  "@banxaCardBody": {
+    "description": "a label for the banxa card"
+  },
+  "banxaCardBody": "BUY QRL EASILY WITH BANXA.\nPURCHASE USING FIAT, GOOGLE PAY,\nAPPLE PAY AND MORE.",
+  "@buy": {
+    "description": "a label for the buy buttons"
+  },
+  "buy": "BUY QRL",
+  "@buyDialogConfirmMessage": {
+    "description": "a label for the buy dialogs confirm message"
+  },
+  "buyDialogConfirmMessage": "Very very very sure?",
+  "@buyDialogHeader": {
+    "description": "a label for the buy dialogs header"
+  },
+  "buyDialogHeader": "Buy dialog header",
+  "@buyDialogMessage": {
+    "description": "a label for the buy dialogs message"
+  },
+  "buyDialogMessage": "Buy dialog message",
   "@cancel": {
     "description": "a button label for cancelling an action"
   },
@@ -67,6 +87,10 @@
     "description": "a confirmation message for removing a wallet"
   },
   "confirmRemoveWallet": "Are you sure you want to remove this wallet?",
+  "@contact": {
+    "description": "a button text for contact"
+  },
+  "contact": "CONTACT",
   "@community": {
     "description": "a label for the community section"
   },
@@ -239,6 +263,18 @@
     "description": "a message that indicates insufficient balance for a transaction"
   },
   "insufficientBalance": "Insufficient balance: Your account balance is not sufficient to complete this transaction. Please add funds to your account and try again.",
+  "@inviteFriend": {
+    "description": "a label for the invite friend button"
+  },
+  "inviteFriend": "INVITE FRIEND",
+  "@inviteFriendHeader": {
+    "description": "a label for the invite friend header"
+  },
+  "inviteFriendHeader": "Get the app",
+  "@inviteFriendMessage": {
+    "description": "a label for the invite friend message"
+  },
+  "inviteFriendMessage": "Scan to get the QRL wallet for IOS & Android and join the QRL community",
   "@join": {
     "description": "a button label for joining the community"
   },
@@ -299,18 +335,6 @@
     "description": "a label for the message label"
   },
   "message": "Message",
-  "@miningCardHeader": {
-    "description": "Mining card header"
-  },
-  "miningCardHeader": "HELP TO SECURE OUR NETWORK",
-  "@miningCardBody": {
-    "description": "Mining card body"
-  },
-  "miningCardBody": "SECURE YOUR DIGITAL FUTURE WITH QRL \nMINING AND STAY ONE STEP AHEAD OF \nEMERGING THREATS",
-  "@miningCardButton": {
-    "description": "Mining card button"
-  },
-  "miningCardButton": "START MINING",
   "@mnemonic": {
     "description": "a label for the mnemonic field"
   },
@@ -463,6 +487,14 @@
     "description": "A link that directs press inquiries to the QRL contact e-mail."
   },
   "pressEnquiries": "Press enquiries",
+  "@qflCardHeader": {
+    "description": "QFL box header"
+  },
+  "qflCardHeader": "Quantum-Secure by Design",
+  "@qflCardBody": {
+    "description": "QFL box body"
+  },
+  "qflCardBody": "Built in collaboration with The Quantum Resistant Ledger.\nDesigned to withstand future quantum attacks while\nenabling next-gen Web3 applications.",
   "@qrl": {
     "description": "QRL"
   },
@@ -571,6 +603,10 @@
     "description": "Label for a section of the wallet app used to configure various settings, such as security or languages."
   },
   "settings": "Settings",
+  "@shareLink": {
+    "description": "Button text to share link."
+  },
+  "shareLink": "SHARE LINK",
   "@showKeys": {
     "description": "Button text to display the public and private keys associated with a wallet address."
   },
