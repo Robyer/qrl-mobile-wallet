@@ -4,12 +4,12 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:mobile_wallet/model/address_book_entry.dart';
 import 'package:mobile_wallet/service/address_book_service.dart';
 import 'package:mobile_wallet/service/service_locator.dart';
+import 'package:mobile_wallet/ui/addressbook/changeaddressname/change_address_name_bloc.dart';
+import 'package:mobile_wallet/ui/addressbook/changeaddressname/change_address_name_view.dart';
 import 'package:mobile_wallet/ui/component/dialogs.dart';
 import 'package:mobile_wallet/ui/component/middle_ellipsis_text.dart';
 import 'package:mobile_wallet/ui/component/qrl_app_bar.dart';
 import 'package:mobile_wallet/ui/component/qrl_button.dart';
-import 'package:mobile_wallet/ui/addressbook/changeaddressname/change_address_name_bloc.dart';
-import 'package:mobile_wallet/ui/addressbook/changeaddressname/change_address_name_view.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
 
 class AddressBookPage extends StatefulWidget {
@@ -211,8 +211,7 @@ class _AddressBookPageState extends State<AddressBookPage> {
   }
 
   void _onPressedDelete(int index) async {
-    Dialogs.showConfirmDialog(
-        context, AppLocalizations.of(context)!.confirmRemoveAddress, () async {
+    Dialogs.showConfirmDialog(context, () async {
       if (mounted) {
         Dialogs.showLoadingDialog(
             context, AppLocalizations.of(context)!.deletingAddress);
@@ -224,6 +223,6 @@ class _AddressBookPageState extends State<AddressBookPage> {
         _init();
         Dialogs.hideLoadingDialog(context);
       }
-    });
+    }, message: AppLocalizations.of(context)!.confirmRemoveAddress);
   }
 }

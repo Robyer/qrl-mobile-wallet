@@ -483,6 +483,10 @@
     "description": "A label that indicates a network port number."
   },
   "port": "Port",
+  "@poweredBy": {
+    "description": "Powered by label."
+  },
+  "poweredBy": "POWERED BY",
   "@pressEnquiries": {
     "description": "A link that directs press inquiries to the QRL contact e-mail."
   },

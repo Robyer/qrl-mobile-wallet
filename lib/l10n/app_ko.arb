@@ -120,6 +120,7 @@
   "priceNotificationHeader": "가격 통지",
   "priceNotificationMessage": "가격: ${price} 미국 달러, 24시간 변동률: {change24hours}%",
   "port": "포트",
+  "poweredBy": "POWERED BY",
   "pressEnquiries": "언론 보도 문의",
   "qflCardHeader": "양자 보안 설계",
   "qflCardBody": "Quantum Resistant Ledger와의 협업으로 개발.\n미래의 양자 공격에 대비하고,\n차세대 Web3 애플리케이션을 지원합니다.",

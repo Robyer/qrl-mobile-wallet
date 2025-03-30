@@ -120,6 +120,7 @@
   "priceNotificationHeader": "价格通知",
   "priceNotificationMessage": "价格：${price} 美元，24小时涨跌幅：{change24hours}%",
   "port": "端口号",
+  "poweredBy": "POWERED BY",
   "pressEnquiries": "媒体查询",
   "qflCardHeader": "量子安全设计",
   "qflCardBody": "与 Quantum Resistant Ledger 合作开发。\n旨在抵御未来的量子攻击，\n并支持下一代 Web3 应用。",

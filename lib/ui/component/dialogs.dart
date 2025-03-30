@@ -45,9 +45,12 @@ class Dialogs {
     Navigator.of(context).pop();
   }
 
-  static void showConfirmDialog(
-      BuildContext context, String message, VoidCallback onConfirm,
-      {String? header, String? checkboxLabel}) {
+  static void showConfirmDialog(BuildContext context, VoidCallback onConfirm,
+      {String? header,
+      Widget? headerComponent,
+      String? message,
+      Widget? messageComponent,
+      String? checkboxLabel}) {
     showDialog(
       context: context,
       builder: (BuildContext ctx) {
@@ -67,32 +70,15 @@ class Dialogs {
                 borderRadius: BorderRadius.circular(5),
               ),
               child: Column(mainAxisSize: MainAxisSize.min, children: [
-                if (header != null)
-                  Container(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Text(
-                      header,
-                      style: const TextStyle(
-                        color: CustomColors.qrlLightBlueColor,
-                        fontSize: 16,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                Container(
-                  padding: const EdgeInsets.only(
-                      top: 24, left: 24, right: 24, bottom: 16),
-                  child: Text(
-                    message,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 14),
-                  ),
-                ),
+                if (header != null || headerComponent != null)
+                  _createHeader(header, headerComponent),
+                if (message != null || messageComponent != null)
+                  _createMessage(message, messageComponent),
                 if (checkboxLabel != null)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     child: SwitchListTile(
-                        activeColor: CustomColors.qrlLightBlueColor,
+                        activeColor: CustomColors.qrlYellowColor,
                         visualDensity: VisualDensity.compact,
                         title: Text(
                           checkboxLabel,
@@ -141,5 +127,43 @@ class Dialogs {
         });
       },
     );
+  }
+
+  static Widget _createHeader(String? header, Widget? headerComponent) {
+    if (headerComponent != null) {
+      return headerComponent;
+    }
+    if (header != null) {
+      return Container(
+        padding: const EdgeInsets.only(top: 16),
+        child: Text(
+          header,
+          style: const TextStyle(
+            color: CustomColors.qrlLightBlueColor,
+            fontSize: 16,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      );
+    }
+    return Container();
+  }
+
+  static Widget _createMessage(String? message, Widget? messageComponent) {
+    if (messageComponent != null) {
+      return messageComponent;
+    }
+    if (message != null) {
+      return Container(
+        padding:
+            const EdgeInsets.only(top: 24, left: 24, right: 24, bottom: 16),
+        child: Text(
+          message,
+          textAlign: TextAlign.center,
+          style: const TextStyle(fontSize: 14),
+        ),
+      );
+    }
+    return Container();
   }
 }

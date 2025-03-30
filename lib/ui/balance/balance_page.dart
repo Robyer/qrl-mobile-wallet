@@ -13,6 +13,7 @@ import 'package:mobile_wallet/ui/component/bottomsheetselect/bottom_sheet_select
 import 'package:mobile_wallet/ui/component/dialogs.dart';
 import 'package:mobile_wallet/ui/component/qrl_button.dart';
 import 'package:mobile_wallet/ui/component/snack_bars.dart';
+import 'package:mobile_wallet/ui/util/component_util.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
 import 'package:mobile_wallet/ui/util/util.dart';
 import 'package:mobile_wallet/util/string_util.dart';
@@ -465,13 +466,62 @@ class _BalanceView extends StatelessWidget {
   void _onClickBuy(BuildContext context) async {
     BalanceState state = BlocProvider.of<BalanceBloc>(context).state;
     if (state.currentWallet != null) {
-      Dialogs.showConfirmDialog(
-          context, AppLocalizations.of(context)!.buyDialogMessage, () async {
+      Dialogs.showConfirmDialog(context, () async {
         Uri url = Uri.parse(
-            "https://theqrl.banxa-sandbox.com/?coinType=QRL&fiatType=USD&walletAddress=Q${state.currentWallet!.address}");
+            "https://theqrl.banxa-sandbox.com/?coinType=QRL&blockchain=QRL&walletAddress=Q${state.currentWallet!.address}");
         await Util.launchInApp(url);
       },
-          header: AppLocalizations.of(context)!.buyDialogHeader,
+          headerComponent: Padding(
+            padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+            child: Column(mainAxisSize: MainAxisSize.max, children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      AppLocalizations.of(context)!.poweredBy,
+                      style: const TextStyle(fontSize: 10),
+                    ),
+                    const SizedBox(
+                      width: 8,
+                    ),
+                    Image.asset(
+                      'assets/images/banxa-logo.png',
+                      fit: BoxFit.contain,
+                      height: 12,
+                    )
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    AppLocalizations.of(context)!.buyDialogHeader,
+                    style: const TextStyle(color: CustomColors.qrlYellowColor),
+                  )
+                ],
+              )
+            ]),
+          ),
+          messageComponent: Padding(
+            padding:
+                const EdgeInsets.only(top: 16, left: 24, right: 24, bottom: 16),
+            child: ComponentUtil.buildRichTextWithLinks(
+                AppLocalizations.of(context)!.buyDialogMessage, [
+              "https://banxa.com/wp-content/uploads/2025/02/Customer-Terms-and-Conditions-13-December-2024-BANXA.pdf",
+              "https://banxa.com/wp-content/uploads/2025/02/Privacy-and-Cookies-Policy-1-July-2024-Banxa.pdf",
+              "https://banxa.com/contact",
+              "https://www.qrl-wallet.com/disclaimer"
+            ]),
+          ),
           checkboxLabel: AppLocalizations.of(context)!.buyDialogConfirmMessage);
     }
   }

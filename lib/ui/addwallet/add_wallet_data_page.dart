@@ -181,7 +181,7 @@ class _AddWalletDataView extends StatelessWidget {
         ),
       ));
       widgets.add(Padding(
-        padding: const EdgeInsets.only(top: 16,bottom: 8),
+        padding: const EdgeInsets.only(top: 16, bottom: 8),
         child: BottomSheetSelect<int>(
           selectedItem: 1,
           items: _hashFunctionMap.keys.toList(),
@@ -251,11 +251,11 @@ class _AddWalletDataView extends StatelessWidget {
             ? () {
                 Util.dismissKeyboard(context);
                 if (_addWalletMode == AddWalletMode.create) {
-                  Dialogs.showConfirmDialog(
-                      context, AppLocalizations.of(context)!.outOfSignatures,
-                      () async {
+                  Dialogs.showConfirmDialog(context, () async {
                     BlocProvider.of<AddWalletBloc>(context).add(ConfirmEvent());
-                  }, header: AppLocalizations.of(context)!.important);
+                  },
+                      header: AppLocalizations.of(context)!.important,
+                      message: AppLocalizations.of(context)!.outOfSignatures);
                 } else {
                   BlocProvider.of<AddWalletBloc>(context).add(ConfirmEvent());
                 }

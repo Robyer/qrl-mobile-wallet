@@ -120,6 +120,7 @@
   "priceNotificationHeader": "Pemberitahuan Harga",
   "priceNotificationMessage": "Harga: ${price} USD, Perubahan 24 Jam: {change24hours}%",
   "port": "Port",
+  "poweredBy": "POWERED BY",
   "pressEnquiries": "Pertanyaan pers",
 "qflCardHeader": "Keamanan Kuantum Sejak Awal",
 "qflCardBody": "Dibangun bekerja sama dengan The Quantum Resistant Ledger.\nDirancang untuk menghadapi serangan kuantum di masa depan sekaligus\nmemungkinkan aplikasi Web3 generasi berikutnya.",

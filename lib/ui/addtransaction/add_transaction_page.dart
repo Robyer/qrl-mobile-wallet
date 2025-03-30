@@ -5,13 +5,13 @@ import 'package:mobile_wallet/model/extended_wallet_data.dart';
 import 'package:mobile_wallet/model/transaction.dart';
 import 'package:mobile_wallet/model/wallet.dart';
 import 'package:mobile_wallet/ui/addtransaction/add_transaction_bloc.dart';
+import 'package:mobile_wallet/ui/changefee/change_fee_bloc.dart';
+import 'package:mobile_wallet/ui/changefee/change_fee_view.dart';
 import 'package:mobile_wallet/ui/component/bottomsheetselect/bottom_sheet_select.dart';
 import 'package:mobile_wallet/ui/component/dialogs.dart';
 import 'package:mobile_wallet/ui/component/qrl_app_bar.dart';
 import 'package:mobile_wallet/ui/component/qrl_button.dart';
 import 'package:mobile_wallet/ui/component/snack_bars.dart';
-import 'package:mobile_wallet/ui/changefee/change_fee_bloc.dart';
-import 'package:mobile_wallet/ui/changefee/change_fee_view.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
 import 'package:mobile_wallet/ui/util/util.dart';
 import 'package:mobile_wallet/util/string_util.dart';
@@ -373,11 +373,12 @@ abstract class AddTransactionPage<T extends AddTransactionBloc>
                                 "${AppLocalizations.of(context)!.noMoreOts1} ${StringUtil.formatAmount(state.extendedWalletData!.balance)} ${AppLocalizations.of(context)!.noMoreOts2}");
                           } else if (otsKeysLeft < 6) {
                             Dialogs.showConfirmDialog(context,
-                                "${AppLocalizations.of(context)!.otsKeysLeft1} $otsKeysLeft ${AppLocalizations.of(context)!.otsKeysLeft2}",
                                 header: AppLocalizations.of(context)!.warning,
                                 () {
                               BlocProvider.of<T>(context).add(ReviewEvent());
-                            });
+                            },
+                                message:
+                                    "${AppLocalizations.of(context)!.otsKeysLeft1} $otsKeysLeft ${AppLocalizations.of(context)!.otsKeysLeft2}");
                           } else {
                             BlocProvider.of<T>(context).add(ReviewEvent());
                           }

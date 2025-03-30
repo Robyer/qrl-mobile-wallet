@@ -1,5 +1,7 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
+import 'package:mobile_wallet/ui/util/util.dart';
 
 class ComponentUtil {
   static Card buildLabelValueCard(String label, String value) {
@@ -27,6 +29,53 @@ class ComponentUtil {
           ],
         ),
       ),
+    );
+  }
+
+  static RichText buildRichTextWithLinks(String text, List<String> links) {
+    int linkIndex = 0;
+    final RegExp regExp = RegExp(r"<link>(.*?)</link>");
+    int currentIndex = 0;
+    List<TextSpan> spans = [];
+
+    for (final match in regExp.allMatches(text)) {
+      if (match.start > currentIndex) {
+        spans.add(TextSpan(text: text.substring(currentIndex, match.start)));
+      }
+      final linkText = match.group(1);
+      String? url;
+      if (linkIndex < links.length) {
+        url = links[linkIndex];
+      }
+      spans.add(
+        TextSpan(
+          text: linkText,
+          style: const TextStyle(
+            decoration: TextDecoration.underline,
+          ),
+          recognizer: url != null
+              ? (TapGestureRecognizer()
+                ..onTap = () async {
+                  await Util.launchInBrowser(Uri.parse(url!));
+                })
+              : null,
+        ),
+      );
+      linkIndex++;
+      currentIndex = match.end;
+    }
+    if (currentIndex < text.length) {
+      spans.add(TextSpan(text: text.substring(currentIndex)));
+    }
+    return RichText(
+      text: TextSpan(
+        children: spans,
+        style: const TextStyle(
+          fontSize: 14,
+          fontFamily: "Roboto-Medium",
+        ),
+      ),
+      textAlign: TextAlign.center,
     );
   }
 }

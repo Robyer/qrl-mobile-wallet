@@ -187,13 +187,13 @@ class _WalletsView extends StatelessWidget {
                                       color: CustomColors.qrlYellowColor,
                                       Icons.delete_outline_sharp),
                                 ),
-                                onTap: () => Dialogs.showConfirmDialog(
-                                        context,
-                                        AppLocalizations.of(context)!
-                                            .confirmRemoveWallet, () {
+                                onTap: () => Dialogs.showConfirmDialog(context,
+                                        () {
                                       BlocProvider.of<WalletsBloc>(context)
                                           .add(DeleteWalletEvent(wallet));
-                                    })),
+                                    },
+                                        message: AppLocalizations.of(context)!
+                                            .confirmRemoveWallet)),
                           ],
                         ),
                       ),

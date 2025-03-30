@@ -120,6 +120,7 @@
   "priceNotificationHeader": "Prijsmelding",
   "priceNotificationMessage": "Prijs: ${price} USD, Wijziging 24 uur: {change24hours}%",
   "port": "Poort",
+  "poweredBy": "POWERED BY",
   "pressEnquiries": "Pers aanvragen",
   "qflCardHeader": "Quantum-veilige basisarchitectuur",
   "qflCardBody": "Ontwikkeld in samenwerking met The Quantum Resistant Ledger.\nOntworpen om bestand te zijn tegen toekomstige quantumaanvallen en\nde volgende generatie Web3-applicaties mogelijk te maken.",

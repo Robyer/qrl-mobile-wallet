@@ -120,6 +120,7 @@
   "priceNotificationHeader": "価格通知",
   "priceNotificationMessage": "価格：${price}ドル、24時間変化：{change24hours}%",
   "port": "ポート",
+  "poweredBy": "POWERED BY",
   "pressEnquiries": "プレスのお問い合わせ",
   "qflCardHeader": "量子安全設計",
   "qflCardBody": "Quantum Resistant Ledgerと共同開発。\n将来の量子攻撃に耐え、\n次世代のWeb3アプリケーションを可能にします。",

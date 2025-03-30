@@ -120,6 +120,7 @@
   "priceNotificationHeader": "Preisbenachrichtigung",
   "priceNotificationMessage": "Preis: ${price} USD, Änderung in 24 Stunden: {change24hours}%",
   "port": "Port",
+  "poweredBy": "POWERED BY",
   "pressEnquiries": "Presseanfragen",
   "qflCardHeader": "Quantum-sicher von Grund auf",
   "qflCardBody": "In Zusammenarbeit mit dem Quantum Resistant Ledger entwickelt.\nKonzipiert, um zukünftigen Quantenangriffen standzuhalten und\nWeb3-Anwendungen der nächsten Generation zu ermöglichen.",
