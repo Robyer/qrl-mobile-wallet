@@ -50,15 +50,15 @@
   "@buyDialogConfirmMessage": {
     "description": "a label for the buy dialogs confirm message"
   },
-  "buyDialogConfirmMessage": "Very very very sure?",
+  "buyDialogConfirmMessage": "I have read and agree to the disclaimer",
   "@buyDialogHeader": {
     "description": "a label for the buy dialogs header"
   },
-  "buyDialogHeader": "Buy dialog header",
+  "buyDialogHeader": "Disclaimer",
   "@buyDialogMessage": {
     "description": "a label for the buy dialogs message"
   },
-  "buyDialogMessage": "Buy dialog message",
+  "buyDialogMessage": "You are now leaving the QRL Wallet to use Banxa’s third-party payment service. All purchases are processed by Banxa. Exchange rates, transaction fees, and payment methods are determined solely by Banxa. By continuing, you agree to Banxa’s Terms of Use and Privacy-and-Cookies-Policy. For support regarding your purchase, please contact Banxa directly. For more information, please see our full disclaimer.",
   "@cancel": {
     "description": "a button label for cancelling an action"
   },
