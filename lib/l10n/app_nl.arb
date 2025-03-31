@@ -13,7 +13,7 @@
   "buy": "QRL KOPEN",
   "buyDialogConfirmMessage": "Ik heb de disclaimer gelezen en ga akkoord.",
   "buyDialogHeader": "Disclaimer",
-  "buyDialogMessage": "Je staat op het punt de QRL Wallet te verlaten om gebruik te maken van de externe betaaldienst van Banxa. Alle aankopen worden verwerkt door Banxa. Wisselkoersen, transactiekosten en betaalmethoden worden uitsluitend bepaald door Banxa. Door door te gaan, ga je akkoord met de Gebruiksvoorwaarden en het Privacy- en Cookiebeleid van Banxa. Voor vragen over je aankoop kun je rechtstreeks contact opnemen met de klantenservice van Banxa.",
+  "buyDialogMessage": "Je verlaat nu de QRL Wallet om gebruik te maken van Banxa’s betalingsdienst van derden. Alle aankopen worden volledig door Banxa verwerkt en wisselkoersen, transactiekosten en betaalmethoden worden uitsluitend door Banxa vastgesteld.\n\nLet op: Banxa kan aanvullende verificatiestappen (zoals KYC-controles) uitvoeren, wat de verwerkingstijd kan beïnvloeden. Door verder te gaan, ga je akkoord met de <link>Terms of Use</link> en het <link>Privacy- en Cookiesbeleid</link> van Banxa.\n\nVoor ondersteuning of vragen over je aankoop kun je rechtstreeks <link>contact</link> opnemen met Banxa.\n\nRaadpleeg onze <link>disclaimer</link> voor meer informatie.",
   "cancel": "ANNULEREN",
   "checkingDevice": "Controleer toestel...",
   "confirm": "BEVESTIG",

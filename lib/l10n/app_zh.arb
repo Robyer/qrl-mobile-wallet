@@ -13,7 +13,7 @@
   "buy": "购买 QRL",
   "buyDialogConfirmMessage": "我已阅读并同意免责声明。",
   "buyDialogHeader": "免责声明",
-  "buyDialogMessage": "您即将离开 QRL 钱包，前往使用 Banxa 的第三方支付服务。所有购买均由 Banxa 处理。汇率、交易费用和支付方式均由 Banxa 独立决定。继续操作即表示您同意 Banxa 的服务条款和隐私及 Cookie 政策。如有关于购买的任何问题，请直接联系 Banxa 客服。",
+  "buyDialogMessage": "您即将离开 QRL Wallet，前往使用 Banxa 的第三方支付服务。所有购买均由 Banxa 完全处理，汇率、交易费用及支付方式均由 Banxa 独自决定.\n\n请注意：Banxa 可能会执行额外的验证步骤（例如 KYC 检查），这可能会影响处理时间。继续操作即表示您同意 Banxa 的 <link>使用条款</link> 和 <link>隐私及 Cookie 政策</link>.\n\n如需支持或对您的购买有疑问，请通过 <link>联系</link>直接与 Banxa 联系.\n\n请参阅我们的 <link>免责声明</link> 以获取更多信息.",
   "cancel": "取消",
   "checkingDevice": "检查装置...",
   "confirm": "确认交易",

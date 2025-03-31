@@ -13,7 +13,7 @@
   "buy": "QRL 구매",
   "buyDialogConfirmMessage": "면책 조항을 읽고 동의합니다.",
   "buyDialogHeader": "면책 조항",
-  "buyDialogMessage": "QRL 지갑을 떠나 Banxa의 제3자 결제 서비스를 이용하게 됩니다. 모든 구매는 Banxa에서 처리됩니다. 환율, 거래 수수료 및 결제 수단은 전적으로 Banxa에 의해 결정됩니다. 계속 진행하면 Banxa의 이용 약관 및 개인정보 보호 및 쿠키 정책에 동의하는 것으로 간주됩니다. 구매 관련 문의는 Banxa 고객지원팀에 직접 문의해 주세요.",
+  "buyDialogMessage": "현재 QRL Wallet을 떠나 Banxa의 제3자 결제 서비스를 이용하고 있습니다. 모든 구매는 Banxa에 의해 완전히 처리되며, 환율, 거래 수수료 및 결제 방법은 Banxa가 단독으로 결정합니다.\n\n참고: Banxa는 처리 시간에 영향을 미칠 수 있는 추가적인 본인 확인 절차(예: KYC 점검 등)를 수행할 수 있습니다. 계속 진행함으로써, 귀하는 Banxa의 <link>이용 약관</link> 및 <link>개인정보 및 쿠키 정책</link>에 동의하게 됩니다.\n\n구매와 관련된 지원이나 문의 사항이 있으시면, <link>문의</link>를 통해 Banxa에 직접 연락해 주시기 바랍니다.\n\n자세한 내용은 당사의 <link>면책 조항</link>을 참조해 주시기 바랍니다.",
   "cancel": "취소",
   "checkingDevice": "장치 확인 중...",
   "confirm": "확인",

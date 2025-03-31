@@ -13,7 +13,7 @@
   "buy": "BELI QRL",
   "buyDialogConfirmMessage": "Saya telah membaca dan menyetujui penafian.",
   "buyDialogHeader": "Penafian",
-  "buyDialogMessage": "Anda akan meninggalkan Dompet QRL untuk menggunakan layanan pembayaran pihak ketiga dari Banxa. Semua pembelian diproses oleh Banxa. Nilai tukar, biaya transaksi, dan metode pembayaran sepenuhnya ditentukan oleh Banxa. Dengan melanjutkan, Anda menyetujui Syarat Penggunaan dan Kebijakan Privasi & Cookie dari Banxa. Untuk pertanyaan terkait pembelian Anda, silakan hubungi dukungan Banxa secara langsung.",
+  "buyDialogMessage": "Anda kini meninggalkan QRL Wallet untuk menggunakan layanan pembayaran pihak ketiga Banxa. Semua pembelian diproses sepenuhnya oleh Banxa, dan nilai tukar, biaya transaksi, serta metode pembayaran ditentukan semata-mata oleh Banxa.\n\nHarap dicatat: Banxa dapat melakukan langkah verifikasi tambahan (seperti pemeriksaan KYC) yang mungkin mempengaruhi waktu pemrosesan. Dengan melanjutkan, Anda menyetujui <link>Syarat Penggunaan</link> dan <link>Kebijakan Privasi dan Cookie</link> Banxa.\n\nUntuk dukungan atau pertanyaan mengenai pembelian Anda, silakan hubungi Banxa secara langsung melalui <link>kontak</link>.\n\nSilakan lihat <link>penafian</link> kami untuk informasi lebih lanjut.",
   "cancel": "BATALKAN",
   "checkingDevice": "Memeriksa perangkat...",
   "communityCardHeader": "BERGABUNG DENGAN KOMUNITAS QRL",

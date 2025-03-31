@@ -13,7 +13,7 @@
   "buy": "COMPRAR QRL",
   "buyDialogConfirmMessage": "He leído y acepto el descargo de responsabilidad.",
   "buyDialogHeader": "Aviso legal",
-  "buyDialogMessage": "Está saliendo de la billetera QRL para utilizar el servicio de pago de terceros de Banxa. Todas las compras son procesadas por Banxa. Las tasas de cambio, comisiones de transacción y métodos de pago son determinados exclusivamente por Banxa. Al continuar, usted acepta los Términos de uso y la Política de privacidad y cookies de Banxa. Para cualquier consulta relacionada con su compra, comuníquese directamente con el soporte de Banxa.",
+  "buyDialogMessage": "Ahora está saliendo de la QRL Wallet para utilizar el servicio de pago de terceros de Banxa. Todas las compras son procesadas completamente por Banxa, y los tipos de cambio, las tarifas de transacción y los métodos de pago son determinados exclusivamente por Banxa.\n\nTenga en cuenta: Banxa puede realizar pasos adicionales de verificación (como revisiones KYC) que pueden afectar los tiempos de procesamiento. Al continuar, usted acepta los <link>Términos de Uso</link> y la <link>Política de Privacidad y Cookies</link> de Banxa.\n\nPara obtener ayuda o realizar preguntas sobre su compra, póngase en contacto directamente con Banxa a través de <link>contacto</link>.\n\nPor favor, consulte nuestro <link>descargo de responsabilidad</link> para obtener más información.",
   "cancel": "CANCELAR",
   "checkingDevice": "Comprobando dispositivo...",
   "communityCardHeader": "ÚNETE A LA COMUNIDAD DE QRL",

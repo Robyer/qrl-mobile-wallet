@@ -518,7 +518,7 @@ class _BalanceView extends StatelessWidget {
                 AppLocalizations.of(context)!.buyDialogMessage, [
               "https://banxa.com/wp-content/uploads/2025/02/Customer-Terms-and-Conditions-13-December-2024-BANXA.pdf",
               "https://banxa.com/wp-content/uploads/2025/02/Privacy-and-Cookies-Policy-1-July-2024-Banxa.pdf",
-              "https://banxa.com/contact",
+              "https://banxa.com/talk-to-our-team",
               "https://www.qrl-wallet.com/disclaimer"
             ]),
           ),

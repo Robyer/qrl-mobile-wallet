@@ -58,7 +58,7 @@
   "@buyDialogMessage": {
     "description": "a label for the buy dialogs message"
   },
-  "buyDialogMessage": "You are now leaving the QRL Wallet to use Banxa’s third-party payment service. All purchases are processed by Banxa. Exchange rates, transaction fees, and payment methods are determined solely by Banxa. By continuing, you agree to Banxa’s Terms of Use and Privacy-and-Cookies-Policy. For support regarding your purchase, please contact Banxa directly. For more information, please see our full disclaimer.",
+  "buyDialogMessage": "You are now leaving the QRL Wallet to use Banxa’s third-party payment service. All purchases are processed entirely by Banxa, and exchange rates, transaction fees, and payment methods are determined solely by Banxa.\n\nPlease note: Banxa may perform additional verification steps (such as KYC checks) that may affect processing times. By continuing, you agree to Banxa’s <link>Terms of Use</link> and <link>Privacy and Cookies Policy</link>.\n\nFor support or questions regarding your purchase, please contact Banxa directly via <link>contact</link>.\n\nPlease refer to our <link>disclaimer</link> for more information.",
   "@cancel": {
     "description": "a button label for cancelling an action"
   },

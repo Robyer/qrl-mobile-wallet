@@ -52,6 +52,7 @@ class ComponentUtil {
           text: linkText,
           style: const TextStyle(
             decoration: TextDecoration.underline,
+            color: CustomColors.qrlYellowColor
           ),
           recognizer: url != null
               ? (TapGestureRecognizer()

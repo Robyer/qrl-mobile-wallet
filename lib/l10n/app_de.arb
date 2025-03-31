@@ -13,7 +13,7 @@
   "buy": "QRL KAUFEN",
   "buyDialogConfirmMessage": "Ich habe den Haftungsausschluss gelesen und stimme ihm zu.",
   "buyDialogHeader": "Haftungsausschluss",
-  "buyDialogMessage": "Sie verlassen jetzt die QRL Wallet, um den Drittanbieterdienst von Banxa zu nutzen.\nAlle Käufe werden von Banxa abgewickelt. Wechselkurse, Transaktionsgebühren und Zahlungsmethoden werden ausschließlich von Banxa festgelegt.\nDurch das Fortfahren stimmen Sie den Nutzungsbedingungen und der Datenschutz- und Cookie-Richtlinie von Banxa zu.\nBei Fragen zu Ihrem Kauf wenden Sie sich bitte direkt an den Banxa-Support.",
+  "buyDialogMessage": "Sie verlassen nun die QRL Wallet, um den Drittanbieter-Zahlungsdienst von Banxa zu nutzen. Alle Käufe werden vollständig von Banxa abgewickelt, und Wechselkurse, Transaktionsgebühren sowie Zahlungsmethoden werden ausschließlich von Banxa festgelegt.\n\nBitte beachten Sie: Banxa kann zusätzliche Überprüfungsschritte (wie z.B. KYC-Prüfungen) durchführen, die die Bearbeitungszeiten beeinflussen können. Wenn Sie fortfahren, stimmen Sie den <link>Nutzungsbedingungen</link> und der <link>Datenschutz- und Cookie-Richtlinie</link> von Banxa zu.\n\nFür Unterstützung oder Fragen zu Ihrem Kauf kontaktieren Sie bitte Banxa direkt über <link>Kontakt</link>.\n\nBitte beachten Sie unseren <link>Haftungsausschluss</link> für weitere Informationen.",
   "cancel": "ABBRECHEN",
   "checkingDevice": "Gerät wird überprüft...",
   "communityCardHeader": "DER QRL COMMUNITY BEITRETEN",
