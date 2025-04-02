@@ -468,7 +468,7 @@ class _BalanceView extends StatelessWidget {
     if (state.currentWallet != null) {
       Dialogs.showConfirmDialog(context, () async {
         Uri url = Uri.parse(
-            "https://theqrl.banxa-sandbox.com/?coinType=QRL&blockchain=QRL&walletAddress=Q${state.currentWallet!.address}");
+            "https://theqrl.banxa.com/?coinType=QRL&blockchain=QRL&walletAddress=Q${state.currentWallet!.address}");
         await Util.launchInApp(url);
       },
           headerComponent: Padding(
