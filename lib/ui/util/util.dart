@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_custom_tabs/flutter_custom_tabs.dart' as custom_tabs;
 import 'package:mobile_wallet/model/extended_wallet_data.dart';
 import 'package:mobile_wallet/model/wallet.dart';
 import 'package:mobile_wallet/ui/util/custom_colors.dart';
+import 'package:secure_application/secure_application.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
 import 'package:url_launcher/url_launcher.dart';
 
@@ -13,9 +15,15 @@ class Util {
   static final Map<String, String> notarizationHashFunctions = <String, String>{
     "2": "SHA256",
   };
+  static bool safariOpen = false;
 
-  static Future<void> launchInApp(Uri url) async {
+  static Future<void> launchInApp(BuildContext context, Uri url) async {
     try {
+      if (Platform.isIOS) {
+        var secureApplication = SecureApplicationProvider.of(context);
+        secureApplication!.open();
+        safariOpen = true;
+      }
       await custom_tabs.launchUrl(
         url,
         customTabsOptions: CustomTabsOptions(
@@ -38,6 +46,9 @@ class Util {
         ),
       );
     } catch (e) {
+      var secureApplication = SecureApplicationProvider.of(context);
+      secureApplication!.secure();
+      safariOpen = false;
       debugPrint(e.toString());
       throw 'Could not launch $url';
     }
